@@ -1,0 +1,33 @@
+#include "WindowsConstantBuffer.hpp"
+#include "WindowsGraphics.hpp"
+
+#include "Utility.hpp"
+
+#ifdef _WIN32
+
+WindowsConstantBuffer::WindowsConstantBuffer(Graphics * graphics, int size) :
+	ConstantBuffer(graphics, size)
+{
+	D3D11_BUFFER_DESC desc;
+
+	desc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_CONSTANT_BUFFER;
+	desc.ByteWidth = mSize;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+	desc.StructureByteStride = mSize;
+	desc.Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT;
+
+	static_cast<WindowsGraphics*>(mGraphics)->mDevice->CreateBuffer(&desc, nullptr, &mBuffer);
+}
+
+WindowsConstantBuffer::~WindowsConstantBuffer()
+{
+	Utility::Dispose(mBuffer);
+}
+
+void WindowsConstantBuffer::update(void * data)
+{
+	static_cast<WindowsGraphics*>(mGraphics)->mDeviceContext->UpdateSubresource(mBuffer, 0, nullptr, data, 0, 0);
+}
+
+#endif // _WIN32
