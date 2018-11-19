@@ -4,6 +4,8 @@
 
 #include <queue>
 
+#undef max
+
 OccupancyHistogramNode::OccupancyHistogramNode()
 {
 	FrontOrder = 0;
@@ -79,6 +81,10 @@ auto OccupancyHistogramTree::getOccupancyHistogramNode(OccupancyHistogramNode * 
 void OccupancyHistogramTree::insert(OccupancyHistogramNode * node, const glm::vec3 &position, OccupancyType type, int depth)
 {
 	if (depth >= mMaxDepth) {
+		assert(node->OccupancyTypeCount[0] == 0);
+		assert(node->OccupancyTypeCount[1] == 0);
+		assert(node->OccupancyTypeCount[2] == 0);
+
 		node->OccupancyTypeCount[(int)type]++;
 
 		node->update();
@@ -94,6 +100,18 @@ void OccupancyHistogramTree::insert(OccupancyHistogramNode * node, const glm::ve
 	insert(node->Chilren[(int)order], position, type, depth + 1);
 
 	node->update();
+
+	//delete node
+	int maxOccupancyTypeCount = std::max(node->OccupancyTypeCount[0], 
+		std::max(node->OccupancyTypeCount[1], node->OccupancyTypeCount[2]));
+
+	int target = (int)std::pow(8, (mMaxDepth - depth));
+
+	if (maxOccupancyTypeCount == target) {
+		for (int i = 0; i < (int)SpaceOrder::Count; i++) {
+			Utility::Delete(node->Chilren[i]);
+		}
+	}
 }
 
 void OccupancyHistogramTree::setEyePosition(OccupancyHistogramNode * node, const glm::vec3 &eyePosition, int & travelTimes)

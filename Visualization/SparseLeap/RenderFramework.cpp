@@ -124,6 +124,36 @@ void RenderFramework::renderRaySegmentList()
 	if (mInstanceData.size() != 0) renderInstance(mInstanceData.size());
 }
 
+auto RenderFramework::sampleVolumeData(AxiallyAlignedBoundingBox sampleBox, int width, int height, int depth, std::vector<unsigned char>& volumeData) -> float
+{
+	int startX, startY, startZ;
+	int endX, endY, endZ;
+
+	startX = (int)(sampleBox.Min.x * width);
+	startY = (int)(sampleBox.Min.y * height);
+	startZ = (int)(sampleBox.Min.z * depth);
+
+	endX = (int)(sampleBox.Max.x * width);
+	endY = (int)(sampleBox.Max.y * height);
+	endZ = (int)(sampleBox.Max.z * depth);
+
+	float sum = 0;
+	int count = 0;
+
+	for (int x = startX; x < endX; x++) {
+		for (int y = startY; y < endY; y++) {
+			for (int z = startZ; z < endZ; z++) {
+				int index = z * width * height + y * width + x;
+
+				sum = sum + volumeData[index] / 255.0f;
+				count = count + 1;
+			}
+		}
+	}
+
+	return sum / count;
+}
+
 void RenderFramework::buildState()
 {
 	mRasterizerState = mFactory->createRasterizerState();
@@ -206,20 +236,27 @@ void RenderFramework::buildVolumeData()
 	int height = 128;
 	int depth = 62;
 
-	for (int x = 0; x < width; x++) {
-		for (int y = 0; y < height; y++) {
-			for (int z = 0; z < depth; z++) {
-				int index = z * width * height + y * width + x;
+	int size = (int)std::pow(2, MAX_DEPTH - 1);
 
+	for (int x = 0; x < size; x++) {
+		for (int y = 0; y < size; y++) {
+			for (int z = 0; z < size; z++) {
 				glm::vec3 position;
 
-				position.x = (float)x / width;
-				position.y = (float)y / height;
-				position.z = (float)z / depth;
+				position.x = ((float)x + 0.5f) / size;
+				position.y = ((float)y + 0.5f) / size;
+				position.z = ((float)z + 0.5f) / size;
 
 				position = position * CUBE_SIZE - CUBE_SIZE * 0.5f;
 
-				if (mVolumeData[index] < EMPTY_LIMIT)
+				AxiallyAlignedBoundingBox sampleBox;
+
+				sampleBox.Min = glm::vec3((float)x / size, (float)y / size, (float)z / size);
+				sampleBox.Max = glm::vec3((float)(x + 1) / size, (float)(y + 1) / size, (float)(z + 1) / size);
+
+				float sampleValue = sampleVolumeData(sampleBox, width, height, depth, mVolumeData);
+
+				if (sampleValue <= EMPTY_LIMIT)
 					mOccupancyHistogramTree->insertNoEmpty(position, OccupancyType::Empty);
 				else
 					mOccupancyHistogramTree->insertNoEmpty(position, OccupancyType::NoEmpty);

@@ -13,7 +13,7 @@
 
 #define CUBE_SIZE glm::vec3(3, 3, 3)
 #define MAX_DEPTH 5
-#define EMPTY_LIMIT 37
+#define EMPTY_LIMIT 0.145
 #define MAX_RAYSEGMENT 30
 
 class RenderFramework : public WindowsFramework {
@@ -74,6 +74,8 @@ private:
 	void renderInstance(int requireInstanceCount);
 	void renderRaySegmentList();
 
+	static auto sampleVolumeData(AxiallyAlignedBoundingBox sampleBox,
+		int width, int height, int depth, std::vector<unsigned char> &volumeData) -> float;
 
 	void buildState();
 	void buildCamera();

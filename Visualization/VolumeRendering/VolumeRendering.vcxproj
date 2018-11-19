@@ -70,11 +70,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)ThirdParty;C:\Users\LinkC\Documents\Visual Studio 2017\Projects\Visualization\Framework;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)ThirdParty;$(SolutionDir)Utility\Framework;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)ThirdParty;C:\Users\LinkC\Documents\Visual Studio 2017\Projects\Visualization\Framework;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)ThirdParty;$(SolutionDir)Utility\Framework;$(IncludePath)</IncludePath>
+    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
