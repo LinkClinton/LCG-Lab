@@ -4,9 +4,24 @@
 
 void setRaySegmentList(float depth, uint type, uint eventType, uint3 location)
 {
+    /*int output = 0;
+
+    InterlockedExchange(RaySegmentListDepthRWTexture[location], depth, output);
+    InterlockedExchange(RaySegmentListBoxTypeRWTexture[location], type, output);
+    InterlockedExchange(RaySegmentListEventTypeRWTexture[location], eventType, output);*/
+    
     RaySegmentListDepthRWTexture[location] = depth;
     RaySegmentListBoxTypeRWTexture[location] = type;
     RaySegmentListEventTypeRWTexture[location] = eventType;
+}
+
+void setRaySegmentListCount(uint2 location, int value)
+{
+    /*int output = 0;
+
+    InterlockedExchange(RaySegmentListCountRWTexture[location], value, output);*/
+
+    RaySegmentListCountRWTexture[location] = value;
 }
 
 void addRaySegmentList(float depth, uint type, uint eventType, uint raySegmentListCount, uint2 location)
@@ -16,7 +31,7 @@ void addRaySegmentList(float depth, uint type, uint eventType, uint raySegmentLi
     
     //set the event
     setRaySegmentList(depth, type, eventType, secondPosition);
-    RaySegmentListCountRWTexture[location] = raySegmentListCount + 1;
+    setRaySegmentListCount(location, raySegmentListCount + 1);
 
     //do not need merge or delete
     if (raySegmentListCount == 0) return;
@@ -33,7 +48,7 @@ void addRaySegmentList(float depth, uint type, uint eventType, uint raySegmentLi
     if (beforeEventType == eventType)
     {
         setRaySegmentList(depth, type, eventType, firstPosition);
-        RaySegmentListCountRWTexture[location] = raySegmentListCount;
+        setRaySegmentListCount(location, raySegmentListCount);
 
         return;
     }
@@ -47,14 +62,14 @@ void addRaySegmentList(float depth, uint type, uint eventType, uint raySegmentLi
 
         //same, delete all
         if (type == RaySegmentListBoxTypeRWTexture[uint3(location, raySegmentListCount - 2)])
-            RaySegmentListCountRWTexture[location] = raySegmentListCount - 1;
+            setRaySegmentListCount(location, raySegmentListCount - 1);
 
         return;
     }
 
     //case 3, first is entry and second is exit
     if (beforeEventType == EntryEvent && eventType == ExitEvent) //of if (eventType == ExitEvent)
-        RaySegmentListCountRWTexture[location] = raySegmentListCount - 1;
+        setRaySegmentListCount(location, raySegmentListCount - 1);
 }
 
 float4 main(OutputData input, bool isFrontFace : SV_IsFrontFace) : SV_Target
