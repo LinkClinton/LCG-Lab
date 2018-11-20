@@ -15,8 +15,7 @@ private:
 
 	VertexShader* mVertexShader;
 	PixelShader* mPixelShader;
-	PixelShader* mDepthPixelShader;
-	
+
 	Texture3D* mVolumeTexture;
 
 	ResourceUsage* mVolumeUsage;
@@ -108,13 +107,11 @@ public:
 	}
 
 	void buildShader() {
-		auto vertexShaderCode = FileManager::ReadFile("VertexShader.hlsl");
-		auto pixelShaderCode = FileManager::ReadFile("PixelShader.hlsl");
-		auto depthPixelShaderCode = FileManager::ReadFile("DepthPixelShader.hlsl");
-
-		mVertexShader = mFactory->createVertexShader(vertexShaderCode);
-		mPixelShader = mFactory->createPixelShader(pixelShaderCode);
-		mDepthPixelShader = mFactory->createPixelShader(depthPixelShaderCode);
+		auto vertexShaderCode = FileManager::ReadFile("VertexShader.cso");
+		auto pixelShaderCode = FileManager::ReadFile("PixelShader.cso");
+		
+		mVertexShader = mFactory->createVertexShader(vertexShaderCode, true);
+		mPixelShader = mFactory->createPixelShader(pixelShaderCode, true);
 	}
 
 	void buildState() {
@@ -161,7 +158,6 @@ public:
 		mFactory->destoryInputLayout(mInputLayout);
 		mFactory->destoryVertexShader(mVertexShader);
 		mFactory->destoryPixelShader(mPixelShader);
-		mFactory->destoryPixelShader(mDepthPixelShader);
 
 		mFactory->destoryRasterizerState(mRasterizerState);
 		mFactory->destoryDepthStencilState(mDepthStencilState);

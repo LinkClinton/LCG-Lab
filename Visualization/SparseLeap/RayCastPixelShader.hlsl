@@ -31,6 +31,10 @@ float4 main(OutputData input) : SV_Target
     
     uint boxType = Empty;
 
+    float alphaLimit = EMPTY_LIMIT * STEP_SIZE * LIGHT;
+    float alphaScale = STEP_SIZE * LIGHT;
+    float3 texCoordStep = dir / cube_size;
+
     [loop]
     for (uint i = 0; i < raySegmentListCount; i++)
     {
@@ -57,15 +61,15 @@ float4 main(OutputData input) : SV_Target
         [loop]
         for (int j = 0; j < MAX_SAMPLE_COUNT_PER_EVENT; j++)
         {
-            float3 texCoord = input.TexCoord + dir * (depth - originDepth) / cube_size;
+            float3 texCoord = input.TexCoord + texCoordStep * (depth - originDepth);
 
-            if (result.a >= 1.0f || outLimit(texCoord) == true)
+            if (result.a >= 1.0f)
                 return result;
 
-            float4 sampleColor = float4(1, 1, 1, VolumeTexture.Sample(Sampler, texCoord).x * STEP_SIZE * LIGHT);
+            float sampleColor = VolumeTexture.Sample(Sampler, texCoord).x * alphaScale;
             
-            if (sampleColor.a >= EMPTY_LIMIT * STEP_SIZE * LIGHT)
-                result = float4(1, 1, 1, 1) * sampleColor.a + (1 - sampleColor.a) * result;
+            if (sampleColor >= alphaLimit)
+                result = float4(1, 1, 1, 1) * sampleColor + (1 - sampleColor) * result;
             
             depth += STEP_SIZE;
 
