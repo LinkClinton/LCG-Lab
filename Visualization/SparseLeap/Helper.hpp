@@ -15,7 +15,7 @@ struct InstanceData {
 
 class Helper {
 private:
-	
+
 	struct SpaceCompareComponent {
 		float Distance;
 		SpaceOrder SpaceOrderType;
@@ -69,6 +69,22 @@ public:
 		if (position.x > half.x) xOrder = 1;
 		if (position.y > half.y) yOrder = 1;
 		if (position.z > half.z) zOrder = 1;
+
+		int result = (zOrder << 2) + (yOrder << 1) + xOrder;
+
+		return (SpaceOrder)result;
+	}
+
+	static SpaceOrder getSpaceOrder(const AxiallyAlignedBoundingBox &parent, const AxiallyAlignedBoundingBox &children) {
+		int xOrder = 0;
+		int yOrder = 0;
+		int zOrder = 0;
+
+		glm::vec3 half = (parent.Max + parent.Min) * 0.5f;
+
+		if (children.Min.x >= half.x && children.Max.x > half.x) xOrder = 1;
+		if (children.Min.y >= half.y && children.Max.y > half.y) yOrder = 1;
+		if (children.Min.z >= half.z && children.Max.z > half.z) zOrder = 1;
 
 		int result = (zOrder << 2) + (yOrder << 1) + xOrder;
 

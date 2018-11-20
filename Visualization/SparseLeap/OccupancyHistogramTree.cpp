@@ -13,16 +13,17 @@ OccupancyHistogramNode::OccupancyHistogramNode()
 	Parent = nullptr;
 	Type = OccupancyType::Unknown;
 
-	memset(Chilren, 0, sizeof(Chilren));
+	memset(Children, 0, sizeof(Children));
 	memset(OccupancyTypeCount, 0, sizeof(OccupancyTypeCount));
 }
 
-OccupancyHistogramNode::OccupancyHistogramNode(OccupancyHistogramNode * parent, SpaceOrder order) :
+OccupancyHistogramNode::OccupancyHistogramNode(OccupancyHistogramNode * parent, SpaceOrder order, int depth) :
 	OccupancyHistogramNode()
 {
 	AxiallyAlignedBoundingBox = Helper::divideAxiallyAlignedBoundingBox(parent->AxiallyAlignedBoundingBox, order);
 
 	Parent = parent;
+	Depth = depth;
 }
 
 void OccupancyHistogramNode::update()
@@ -33,7 +34,7 @@ void OccupancyHistogramNode::update()
 
 		for (int type = 0; type < (int)OccupancyType::Count; type++) {
 			for (int order = 0; order < (int)SpaceOrder::Count; order++) {
-				OccupancyTypeCount[type] += getTypeCount(Chilren[order], (OccupancyType)type);
+				OccupancyTypeCount[type] += getTypeCount(Children[order], (OccupancyType)type);
 			}
 		}
 	}
@@ -44,7 +45,7 @@ void OccupancyHistogramNode::update()
 bool OccupancyHistogramNode::isLeaf()
 {
 	for (int i = 0; i < (int)SpaceOrder::Count; i++)
-		if (Chilren[i] != nullptr) return false;
+		if (Children[i] != nullptr) return false;
 
 	return true;
 }
@@ -71,11 +72,30 @@ int OccupancyHistogramNode::getTypeCount(OccupancyHistogramNode * node, Occupanc
 	return node->OccupancyTypeCount[(int)type];
 }
 
-auto OccupancyHistogramTree::getOccupancyHistogramNode(OccupancyHistogramNode * parent, SpaceOrder order) -> OccupancyHistogramNode *
+auto OccupancyHistogramTree::getOccupancyHistogramNode(OccupancyHistogramNode * parent, SpaceOrder order, int depth) -> OccupancyHistogramNode *
 {
 	mNodeCount++;
 
-	return new OccupancyHistogramNode(parent, order);
+	return new OccupancyHistogramNode(parent, order, depth);
+}
+
+auto OccupancyHistogramTree::getVirtualNode(VirtualNode * parent, OccupancyHistogramNode * target) -> VirtualNode *
+{
+	return new VirtualNode(parent, target);
+}
+
+auto OccupancyHistogramTree::getLowestCommonAncestor(OccupancyHistogramNode * nodeu, OccupancyHistogramNode * nodev) -> OccupancyHistogramNode *
+{
+	//up the node u
+	if (nodeu->Depth < nodev->Depth) std::swap(nodeu, nodev);
+
+	while (nodeu->Depth > nodev->Depth) nodeu = nodeu->Parent;
+
+	while (nodeu != nodev) nodeu = nodeu->Parent, nodev = nodev->Parent;
+
+	assert(nodeu != nullptr);
+
+	return nodeu;
 }
 
 void OccupancyHistogramTree::insert(OccupancyHistogramNode * node, const glm::vec3 &position, OccupancyType type, int depth)
@@ -94,10 +114,10 @@ void OccupancyHistogramTree::insert(OccupancyHistogramNode * node, const glm::ve
 
 	auto order = Helper::getSpaceOrder(node->AxiallyAlignedBoundingBox, position);
 
-	if (node->Chilren[(int)order] == nullptr) node->Chilren[(int)order] =
-		getOccupancyHistogramNode(node, order);
+	if (node->Children[(int)order] == nullptr) node->Children[(int)order] =
+		getOccupancyHistogramNode(node, order, depth + 1);
 
-	insert(node->Chilren[(int)order], position, type, depth + 1);
+	insert(node->Children[(int)order], position, type, depth + 1);
 
 	node->update();
 
@@ -109,7 +129,7 @@ void OccupancyHistogramTree::insert(OccupancyHistogramNode * node, const glm::ve
 
 	if (maxOccupancyTypeCount == target) {
 		for (int i = 0; i < (int)SpaceOrder::Count; i++) {
-			Utility::Delete(node->Chilren[i]);
+			Utility::Delete(node->Children[i]);
 		}
 	}
 }
@@ -123,12 +143,53 @@ void OccupancyHistogramTree::setEyePosition(OccupancyHistogramNode * node, const
 	Helper::getAccessOrder(node->AxiallyAlignedBoundingBox, eyePosition, accessOrder);
 
 	for (size_t i = 0; i < accessOrder.size(); i++) {
-		if (node->Chilren[(int)accessOrder[i]] == nullptr) continue;
+		if (node->Children[(int)accessOrder[i]] == nullptr) continue;
 
-		setEyePosition(node->Chilren[(int)accessOrder[i]], eyePosition, travelTimes);
+		setEyePosition(node->Children[(int)accessOrder[i]], eyePosition, travelTimes);
 	}
 
 	node->BackOrder = travelTimes++;
+}
+
+void OccupancyHistogramTree::buildVirtualTree(OccupancyHistogramNode * node, VirtualNode * virtualNode)
+{
+	for (int i = 0; i < (int)SpaceOrder::Count; i++) {
+		if (node->Children[i] == nullptr) continue;
+
+		if (node->Type != node->Children[i]->Type) {
+			SpaceOrder order = Helper::getSpaceOrder(virtualNode->Target->AxiallyAlignedBoundingBox,
+				node->Children[i]->AxiallyAlignedBoundingBox);
+
+			if (virtualNode->Children[(int)order] == nullptr) {
+				virtualNode->Children[(int)order] = getVirtualNode(virtualNode, node->Children[i]);
+
+				buildVirtualTree(node->Children[i], virtualNode->Children[(int)order]);
+			}
+			else {
+				auto oldChildren = virtualNode->Children[(int)order];
+				auto lcaNode = getLowestCommonAncestor(oldChildren->Target, node->Children[i]);
+
+				SpaceOrder order0 = Helper::getSpaceOrder(lcaNode->AxiallyAlignedBoundingBox,
+					oldChildren->Target->AxiallyAlignedBoundingBox);
+				SpaceOrder order1 = Helper::getSpaceOrder(lcaNode->AxiallyAlignedBoundingBox,
+					node->Children[i]->AxiallyAlignedBoundingBox);
+
+				auto newNode = getVirtualNode(virtualNode, lcaNode);
+
+				virtualNode->Children[(int)order] = newNode;
+
+				newNode->Children[(int)order0] = getVirtualNode(newNode, oldChildren->Target);
+				newNode->Children[(int)order1] = getVirtualNode(newNode, node->Children[i]);
+
+				memcpy(newNode->Children[(int)order0]->Children, oldChildren->Children, sizeof(oldChildren->Children));
+
+				delete oldChildren;
+
+				buildVirtualTree(node->Children[i], newNode->Children[(int)order1]);
+			}
+		}
+		else buildVirtualTree(node->Children[i], virtualNode);
+	}
 }
 
 void OccupancyHistogramTree::setSize(const AxiallyAlignedBoundingBox &box)
@@ -155,26 +216,27 @@ void OccupancyHistogramTree::insertNoEmpty(const glm::vec3 &position, OccupancyT
 
 void OccupancyHistogramTree::getOccupancyGeometry(std::vector<OccupancyHistogramNodeCompareComponent>& geometry, bool sort)
 {
+	mVirtualRoot.Target = &mRoot;
+
+	buildVirtualTree(&mRoot, &mVirtualRoot);
+
 	geometry.push_back(OccupancyHistogramNodeCompareComponent(&mRoot, true, mRoot.FrontOrder));
 	geometry.push_back(OccupancyHistogramNodeCompareComponent(&mRoot, false, mRoot.BackOrder));
 
-	std::queue<OccupancyHistogramNode*> queue;
+	std::queue<VirtualNode*> queue;
 
-	queue.push(&mRoot);
+	queue.push(&mVirtualRoot);
 
 	while (queue.empty() == false) {
 		auto node = queue.front(); queue.pop();
 
 		for (int i = 0; i < (int)SpaceOrder::Count; i++) {
-			if (node->Chilren[i] == nullptr) continue;
+			if (node->Children[i] == nullptr) continue;
 
-			if (node->Type != node->Chilren[i]->Type) 
-			{
-				geometry.push_back(OccupancyHistogramNodeCompareComponent(node->Chilren[i], true, node->Chilren[i]->FrontOrder));
-				geometry.push_back(OccupancyHistogramNodeCompareComponent(node->Chilren[i], false, node->Chilren[i]->BackOrder));
-			}
-
-			queue.push(node->Chilren[i]);
+			geometry.push_back(OccupancyHistogramNodeCompareComponent(node->Children[i]->Target, true, node->Children[i]->Target->FrontOrder));
+			geometry.push_back(OccupancyHistogramNodeCompareComponent(node->Children[i]->Target, false, node->Children[i]->Target->BackOrder));
+			
+			queue.push(node->Children[i]);
 		}
 	}
 
@@ -182,4 +244,24 @@ void OccupancyHistogramTree::getOccupancyGeometry(std::vector<OccupancyHistogram
 
 	std::sort(geometry.begin(), geometry.end(), OccupancyHistogramNodeCompareComponent::Compare);
 }
+
+VirtualNode::VirtualNode()
+{
+	Parent = nullptr;
+	Target = nullptr;
+
+	memset(Children, 0, sizeof(Children));
+}
+
+VirtualNode::VirtualNode(VirtualNode * parent, OccupancyHistogramNode * target)
+{
+	assert(parent != nullptr);
+	assert(target != nullptr);
+
+	Parent = parent;
+	Target = target;
+
+	memset(Children, 0, sizeof(Children));
+}
+
 

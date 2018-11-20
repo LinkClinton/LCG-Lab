@@ -47,6 +47,7 @@ struct AxiallyAlignedBoundingBox {
 struct OccupancyHistogramNode {
 	int FrontOrder;
 	int BackOrder;
+	int Depth;
 	
 	int OccupancyTypeCount[(int)OccupancyType::Count];
 
@@ -54,13 +55,13 @@ struct OccupancyHistogramNode {
 
 	OccupancyHistogramNode* Parent;
 
-	OccupancyHistogramNode* Chilren[(int)SpaceOrder::Count];
+	OccupancyHistogramNode* Children[(int)SpaceOrder::Count];
 	
 	AxiallyAlignedBoundingBox AxiallyAlignedBoundingBox;
 
 	OccupancyHistogramNode();
 
-	OccupancyHistogramNode(OccupancyHistogramNode* parent, SpaceOrder order);
+	OccupancyHistogramNode(OccupancyHistogramNode* parent, SpaceOrder order, int depth);
 
 	void update();
 
@@ -69,6 +70,18 @@ struct OccupancyHistogramNode {
 	auto getOccupancyType() -> OccupancyType;
 
 	static int getTypeCount(OccupancyHistogramNode* node, OccupancyType type);
+};
+
+struct VirtualNode {
+	VirtualNode* Parent;
+
+	VirtualNode* Children[(int)SpaceOrder::Count];
+
+	OccupancyHistogramNode* Target;
+
+	VirtualNode();
+
+	VirtualNode(VirtualNode* parent, OccupancyHistogramNode* target);
 };
 
 struct OccupancyHistogramNodeCompareComponent {
@@ -90,18 +103,27 @@ struct OccupancyHistogramNodeCompareComponent {
 class OccupancyHistogramTree {
 private:
 	OccupancyHistogramNode mRoot;
+	VirtualNode mVirtualRoot;
 
 	int mNodeCount;
 	int mMaxDepth;
 
-	auto getOccupancyHistogramNode(OccupancyHistogramNode* parent, SpaceOrder order) -> OccupancyHistogramNode*;
+	auto getOccupancyHistogramNode(OccupancyHistogramNode* parent, SpaceOrder order, int depth) -> OccupancyHistogramNode*;
+
+	auto getVirtualNode(VirtualNode* parent, OccupancyHistogramNode* target) -> VirtualNode*;
+
+	auto getLowestCommonAncestor(OccupancyHistogramNode* nodeu, OccupancyHistogramNode* nodev) -> OccupancyHistogramNode*;
 
 	void insert(OccupancyHistogramNode* node, const glm::vec3 &position, OccupancyType type ,int depth);
 
 	void setEyePosition(OccupancyHistogramNode* node, const glm::vec3 &eyePosition, int &travelTimes);
+
+	void buildVirtualTree(OccupancyHistogramNode* node, VirtualNode* virtualNode);
 public:
 	OccupancyHistogramTree() :
-		mMaxDepth(0), mNodeCount(0), mRoot() {}
+		mMaxDepth(0), mNodeCount(0), mRoot(), mVirtualRoot() {
+		mRoot.Depth = 1;
+	}
 
 	void setSize(const AxiallyAlignedBoundingBox &box);
 

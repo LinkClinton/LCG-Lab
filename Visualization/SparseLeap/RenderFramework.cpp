@@ -105,6 +105,8 @@ void RenderFramework::renderRaySegmentList()
 
 	mGraphics->setPrimitiveType(PrimitiveType::TriangleList);
 
+
+	//to do: use the draw instance
 	for (auto it = mOccupancyGeometry.begin(); it != mOccupancyGeometry.end(); it++) {
 		OccupancyHistogramNodeCompareComponent component = *it;
 		InstanceData data;
