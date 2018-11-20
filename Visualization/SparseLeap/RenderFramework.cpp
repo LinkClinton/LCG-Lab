@@ -79,12 +79,10 @@ void RenderFramework::renderInstance(int requireInstanceCount)
 
 void RenderFramework::renderRaySegmentList()
 {
-	if (mRaySegmentListCountClear.size() == 0) 
-		mRaySegmentListCountClear.resize(mWidth * mHeight);
-
-	mRaySegmentListCountTexture->update(&mRaySegmentListCountClear[0]);
-
 	float rgba[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	unsigned int clearValue[4] = { 0,0,0,0 };
+
+	mGraphics->clearUnorderedAccessUsageUint(mRaySegmentListCountUAVUsage, clearValue);
 
 	mRasterizerState->setFillMode(FillMode::Solid);
 	mRasterizerState->setCullMode(CullMode::None);

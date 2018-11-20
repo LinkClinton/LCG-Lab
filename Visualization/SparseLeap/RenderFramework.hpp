@@ -66,8 +66,6 @@ private:
 	std::vector<InstanceData> mInstanceData;
 	std::vector<OccupancyHistogramNodeCompareComponent> mOccupancyGeometry;
 
-	std::vector<int> mRaySegmentListCountClear;
-
 	virtual void update(void* sender)override;
 	virtual void render(void* sender)override;
 	

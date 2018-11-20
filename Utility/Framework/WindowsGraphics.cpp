@@ -33,7 +33,7 @@ void WindowsGraphics::setRenderTarget(RenderTarget * renderTarget, DepthStencil 
 
 	for (size_t i = 0; i < views.size(); i++)
 		views[i] = static_cast<WindowsUnorderedAccessUsage*>(unorderedAccessUsage[i])->mUnorderedAccessView;
-
+	
 	mDeviceContext->OMSetRenderTargetsAndUnorderedAccessViews(1, &renderTargetInstance,
 		depthStencilInstance, 1, views.size(), views.size() != 0 ? &views[0] : nullptr, nullptr);
 }
@@ -86,6 +86,12 @@ void WindowsGraphics::clearDepthStencil(DepthStencil * depthStencil, float depth
 
 	mDeviceContext->ClearDepthStencilView(windowsDepthStencil->mDepthStencil,
 		D3D11_CLEAR_FLAG::D3D11_CLEAR_DEPTH | D3D11_CLEAR_FLAG::D3D11_CLEAR_STENCIL, depth, stencil);
+}
+
+void WindowsGraphics::clearUnorderedAccessUsageUint(UnorderedAccessUsage * unorderedAccessUsage, const unsigned int value[4])
+{
+	mDeviceContext->ClearUnorderedAccessViewUint(static_cast<WindowsUnorderedAccessUsage*>(unorderedAccessUsage)->mUnorderedAccessView,
+		value);
 }
 
 void WindowsGraphics::setViewPort(float left, float top, float right, float bottom)
