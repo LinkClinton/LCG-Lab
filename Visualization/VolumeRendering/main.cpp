@@ -32,9 +32,10 @@ private:
 protected:
 	
 	virtual void update(void* sender)override {
-		//mCameraTranslation = glm::rotate(glm::mat4(1), glm::pi<float>() * 0.5f * 0.01f, glm::vec3(0, 0, -1)) * mCameraTranslation;
+		//mCameraTranslation = glm::rotate(glm::mat4(1), 0.5f, glm::vec3(0, 0, -1));// *mCameraTranslation;
+		mCameraTranslation = glm::rotate(glm::mat4(1), glm::pi<float>() * 0.5f * 0.01f, glm::vec3(0, 0, -1)) * mCameraTranslation;
 
-		mCameraPosition = mCameraTranslation * glm::vec4(0, 0, 0, 1);
+		mCameraPosition = mCameraTranslation * glm::vec4(0, -5, 0, 1);
 
 		mMatrix[1] = glm::lookAt(mCameraPosition, glm::vec3(0, 0, 0), glm::vec3(0, 0, -1));
 		mMatrix[3][0] = glm::vec4(mCameraPosition, 0.0f);

@@ -1,9 +1,10 @@
 #include "ShaderHeader.hlsl"
 
-#define STEP_SIZE 0.05f
+#define STEP_SIZE 0.01f
 #define EMPTY_LIMIT 0.145f
+#define LIGHT 2
 
-#define MAX_SAMPLE_COUNT_PER_EVENT 500
+#define MAX_SAMPLE_COUNT_PER_EVENT 3000
 
 bool outLimit(float3 texCoord)
 {
@@ -61,9 +62,9 @@ float4 main(OutputData input) : SV_Target
             if (result.a >= 1.0f || outLimit(texCoord) == true)
                 return result;
 
-            float4 sampleColor = float4(1, 1, 1, VolumeTexture.Sample(Sampler, texCoord).x * STEP_SIZE);
+            float4 sampleColor = float4(1, 1, 1, VolumeTexture.Sample(Sampler, texCoord).x * STEP_SIZE * LIGHT);
             
-            if (sampleColor.a >= EMPTY_LIMIT * STEP_SIZE)
+            if (sampleColor.a >= EMPTY_LIMIT * STEP_SIZE * LIGHT)
                 result = float4(1, 1, 1, 1) * sampleColor.a + (1 - sampleColor.a) * result;
             
             depth += STEP_SIZE;

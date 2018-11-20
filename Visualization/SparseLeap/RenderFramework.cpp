@@ -5,6 +5,21 @@
 
 void RenderFramework::update(void * sender)
 {
+	auto newCameraPosition = glm::vec4(mCamera.getPosition(), 1.0f) * glm::rotate(glm::mat4(1),
+		glm::pi<float>() * 0.5f * 0.01f, glm::vec3(0, 0, 1));
+
+	mCamera.setPosition(newCameraPosition);
+
+	mMatrix[1] = mCamera.getMatrix();
+	mMatrix[3][0] = glm::vec4(mCamera.getPosition(), 1.0f);
+	mMatrixBuffer->update(&mMatrix[0]);
+
+	mOccupancyGeometry.clear();
+
+	mOccupancyHistogramTree->setEyePosition(mCamera.getPosition());
+	mOccupancyHistogramTree->getOccupancyGeometry(mOccupancyGeometry);
+	
+	renderRaySegmentList();
 }
 
 void RenderFramework::render(void * sender)
@@ -104,7 +119,6 @@ void RenderFramework::renderRaySegmentList()
 	mGraphics->setUnorderedAccessUsage(unorderedAccessUsages);
 
 	mGraphics->setPrimitiveType(PrimitiveType::TriangleList);
-
 
 	//to do: use the draw instance
 	for (auto it = mOccupancyGeometry.begin(); it != mOccupancyGeometry.end(); it++) {
