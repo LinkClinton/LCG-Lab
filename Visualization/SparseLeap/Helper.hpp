@@ -91,6 +91,18 @@ public:
 		return (SpaceOrder)result;
 	}
 
+	static bool isContain(const AxiallyAlignedBoundingBox &parent, const AxiallyAlignedBoundingBox &children) {
+		if (children.Min.x < parent.Min.x) return false;
+		if (children.Min.y < parent.Min.y) return false;
+		if (children.Min.z < parent.Min.z) return false;
+
+		if (children.Max.x > parent.Max.x) return false;
+		if (children.Max.y > parent.Max.y) return false;
+		if (children.Max.z > parent.Max.z) return false;
+
+		return true;
+	}
+
 	static auto getSpaceCenter(const AxiallyAlignedBoundingBox &box, SpaceOrder order) -> const glm::vec3 {
 		AxiallyAlignedBoundingBox spaceBox;
 

@@ -266,6 +266,7 @@ void RenderFramework::buildVolumeData()
 		}
 	}
 
+	mOccupancyHistogramTree->buildVirtualTree();
 	mOccupancyHistogramTree->setEyePosition(mCamera.getPosition());
 	mOccupancyHistogramTree->getOccupancyGeometry(mOccupancyGeometry);
 

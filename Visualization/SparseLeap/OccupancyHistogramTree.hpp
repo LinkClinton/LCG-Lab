@@ -45,8 +45,6 @@ struct AxiallyAlignedBoundingBox {
 };
 
 struct OccupancyHistogramNode {
-	int FrontOrder;
-	int BackOrder;
 	int Depth;
 	
 	int OccupancyTypeCount[(int)OccupancyType::Count];
@@ -73,6 +71,9 @@ struct OccupancyHistogramNode {
 };
 
 struct VirtualNode {
+	int FrontOrder;
+	int BackOrder;
+
 	VirtualNode* Parent;
 
 	VirtualNode* Children[(int)SpaceOrder::Count];
@@ -114,9 +115,11 @@ private:
 
 	auto getLowestCommonAncestor(OccupancyHistogramNode* nodeu, OccupancyHistogramNode* nodev) -> OccupancyHistogramNode*;
 
-	void insert(OccupancyHistogramNode* node, const glm::vec3 &position, OccupancyType type ,int depth);
+	void insert(OccupancyHistogramNode* node, const glm::vec3 &position, OccupancyType type , int depth);
 
-	void setEyePosition(OccupancyHistogramNode* node, const glm::vec3 &eyePosition, int &travelTimes);
+	void insertVirtualTree(VirtualNode* virtualNode, OccupancyHistogramNode* node);
+	
+	void setEyePosition(VirtualNode* node, const glm::vec3 &eyePosition, int &travelTimes);
 
 	void buildVirtualTree(OccupancyHistogramNode* node, VirtualNode* virtualNode);
 public:
@@ -132,6 +135,8 @@ public:
 	void setEyePosition(const glm::vec3 &eyePosition);
 
 	void insertNoEmpty(const glm::vec3 &position, OccupancyType type);
+
+	void buildVirtualTree();
 
 	void getOccupancyGeometry(std::vector<OccupancyHistogramNodeCompareComponent> &geometry, bool sort = true);
 	
