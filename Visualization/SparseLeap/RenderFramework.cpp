@@ -5,20 +5,24 @@
 
 void RenderFramework::update(void * sender)
 {
+	//rotate the camera, because rotate the object is not easy(bug of texcoord)
 	auto newCameraPosition = glm::vec4(mCamera.getPosition(), 1.0f) * glm::rotate(glm::mat4(1),
 		glm::pi<float>() * 0.5f * 0.01f, glm::vec3(0, 0, 1));
 
 	mCamera.setPosition(newCameraPosition);
 
+	//update camera matrix and position
 	mMatrix[1] = mCamera.getMatrix();
 	mMatrix[3][0] = glm::vec4(mCamera.getPosition(), 1.0f);
 	mMatrixBuffer->update(&mMatrix[0]);
 
 	mOccupancyGeometry.clear();
 
+	//new occupancy geometry
 	mOccupancyHistogramTree->setEyePosition(mCamera.getPosition());
 	mOccupancyHistogramTree->getOccupancyGeometry(mOccupancyGeometry);
 	
+	//new ray segment list
 	renderRaySegmentList();
 }
 
@@ -63,6 +67,7 @@ void RenderFramework::render(void * sender)
 
 void RenderFramework::renderInstance(int requireInstanceCount)
 {
+	//instance 
 	if ((int)mInstanceData.size() < requireInstanceCount) return;
 
 	for (size_t i = mInstanceData.size(); i < MAX_INSTANCE_PER_DRAW; i++)
@@ -109,6 +114,7 @@ void RenderFramework::renderRaySegmentList()
 
 	std::vector<UnorderedAccessUsage*> unorderedAccessUsages(4);
 
+	//commit the RWTexture
 	unorderedAccessUsages[0] = mRaySegmentListCountUAVUsage;
 	unorderedAccessUsages[1] = mRaySegmentListDepthUAVUsage;
 	unorderedAccessUsages[2] = mRaySegmentListBoxTypeUAVUsage;
@@ -123,6 +129,7 @@ void RenderFramework::renderRaySegmentList()
 		OccupancyHistogramNodeCompareComponent component = *it;
 		InstanceData data;
 
+		//transform 
 		data.Transform = glm::translate(glm::mat4(1), (component.Node->AxiallyAlignedBoundingBox.Max + component.Node->AxiallyAlignedBoundingBox.Min) * 0.5f);
 		data.Transform = glm::scale(glm::mat4(data.Transform), component.Node->AxiallyAlignedBoundingBox.Max - component.Node->AxiallyAlignedBoundingBox.Min);
 
@@ -143,6 +150,7 @@ auto RenderFramework::sampleVolumeData(AxiallyAlignedBoundingBox sampleBox, int 
 	int startX, startY, startZ;
 	int endX, endY, endZ;
 
+	//find the area where we want to sample
 	startX = (int)(sampleBox.Min.x * width);
 	startY = (int)(sampleBox.Min.y * height);
 	startZ = (int)(sampleBox.Min.z * depth);

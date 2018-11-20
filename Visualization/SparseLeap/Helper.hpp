@@ -8,14 +8,23 @@
 
 #include "OccupancyHistogramTree.hpp"
 
+/*
+ * @brief buffer data using instance
+ */
 struct InstanceData {
 	glm::mat4x4 Transform;
 	int Setting[4];
 };
 
+/**
+ * @brief some help function
+ */
 class Helper {
 private:
 
+	/**
+	 * @brief component about sort the access order
+	 */
 	struct SpaceCompareComponent {
 		float Distance;
 		SpaceOrder SpaceOrderType;
@@ -26,6 +35,10 @@ private:
 	};
 
 public:
+	
+	/**
+	 * @brief make sub-AxiallyAlignedBoundingBox by space order
+	 */
 	static AxiallyAlignedBoundingBox divideAxiallyAlignedBoundingBox(const AxiallyAlignedBoundingBox &box, SpaceOrder order) {
 		float halfX = (box.Max.x + box.Min.x) * 0.5f;
 		float halfY = (box.Max.y + box.Min.y) * 0.5f;
@@ -55,10 +68,16 @@ public:
 		return AxiallyAlignedBoundingBox();
 	}
 
+	/**
+	 * @brief get distance from p1 to p2
+	 */
 	static float getDistance(const glm::vec3 point1, const glm::vec3 point2) {
 		return sqrt(point1.x * point2.x + point1.y * point2.y + point1.z * point2.z);
 	}
 
+	/**
+	 * @brief get the space order(which space order that the position is)
+	 */
 	static SpaceOrder getSpaceOrder(const AxiallyAlignedBoundingBox &box, const glm::vec3 &position) {
 		int xOrder = 0;
 		int yOrder = 0;
@@ -70,11 +89,15 @@ public:
 		if (position.y > half.y) yOrder = 1;
 		if (position.z > half.z) zOrder = 1;
 
+		//combine the sub propetry
 		int result = (zOrder << 2) + (yOrder << 1) + xOrder;
 
 		return (SpaceOrder)result;
 	}
 
+	/**
+	 * @brief get the space order(aabb version)
+	 */
 	static SpaceOrder getSpaceOrder(const AxiallyAlignedBoundingBox &parent, const AxiallyAlignedBoundingBox &children) {
 		int xOrder = 0;
 		int yOrder = 0;
@@ -91,6 +114,9 @@ public:
 		return (SpaceOrder)result;
 	}
 
+	/**
+	 * @brief does parent contain the children
+	 */
 	static bool isContain(const AxiallyAlignedBoundingBox &parent, const AxiallyAlignedBoundingBox &children) {
 		if (children.Min.x < parent.Min.x) return false;
 		if (children.Min.y < parent.Min.y) return false;
@@ -103,6 +129,9 @@ public:
 		return true;
 	}
 
+	/**
+	 * @brief get the space center
+	 */
 	static auto getSpaceCenter(const AxiallyAlignedBoundingBox &box, SpaceOrder order) -> const glm::vec3 {
 		AxiallyAlignedBoundingBox spaceBox;
 
@@ -123,9 +152,14 @@ public:
 		return (spaceBox.Max + spaceBox.Min) * 0.5f;
 	}
 
+	/**
+	 * @brief get the access order by eye position.
+	 */
 	static void getAccessOrder(const AxiallyAlignedBoundingBox &box, const glm::vec3 &eyePosition, std::vector<SpaceOrder> &accessOrder) {
 		std::vector<SpaceCompareComponent> spaceCompareComponent(accessOrder.size());
 
+		//we use the distance from box's center to eye position
+		//because some special propetry, we can do this. (need to prove)
 		for (size_t i = 0; i < spaceCompareComponent.size(); i++) {
 			spaceCompareComponent[i].SpaceOrderType = (SpaceOrder)i;
 			spaceCompareComponent[i].Distance = glm::distance(eyePosition, getSpaceCenter(box, (SpaceOrder)i));
@@ -137,6 +171,9 @@ public:
 			accessOrder[i] = spaceCompareComponent[i].SpaceOrderType;
 	}
 
+	/**
+	 * @brief read file(binary)
+	 */
 	static auto ReadFile(const std::string &fileName) -> std::vector<codebyte> {
 		std::ifstream file(fileName, std::ios::binary | std::ios::ate);
 

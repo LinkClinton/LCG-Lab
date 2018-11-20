@@ -5,19 +5,26 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+//vertex
 struct Vertex {
 	glm::vec3 Position;
 	glm::vec3 TexCoord;
 };
 
-
+//cube template
 class Cube {
 public:
+	/*
+	 * @brief get the sign
+	 */
 	static auto Sign(float value) -> float {
 		if (value < 0) return 0;
 		return 1;
 	}
 
+	/*
+	 * @brief get the vertics about cube
+	 */
 	static auto GetVertics(float width, float height, float depth) -> std::vector<Vertex> {
 		std::vector<Vertex> result(8);
 
@@ -43,6 +50,9 @@ public:
 		return result;
 	}
 
+	/*
+	 * @brief get indices
+	 */
 	static auto GetIndices() -> std::vector<unsigned int> {
 		unsigned int indices[36] = {
 			0,2,1,0,3,2,4,5,6,4,6,7,

@@ -1,6 +1,6 @@
 #include "ShaderHeader.hlsl"
 
-#define STEP_SIZE 0.009
+#define STEP_SIZE 0.003
 #define MAX_LOOP_SIZE 3000
 
 bool OutLimit(float3 texCoord)

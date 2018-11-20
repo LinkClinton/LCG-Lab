@@ -10,6 +10,7 @@ void setRaySegmentList(float depth, uint type, uint eventType, uint3 location)
     InterlockedExchange(RaySegmentListBoxTypeRWTexture[location], type, output);
     InterlockedExchange(RaySegmentListEventTypeRWTexture[location], eventType, output);*/
     
+    //set the ray segment list
     RaySegmentListDepthRWTexture[location] = depth;
     RaySegmentListBoxTypeRWTexture[location] = type;
     RaySegmentListEventTypeRWTexture[location] = eventType;
@@ -21,13 +22,14 @@ void setRaySegmentListCount(uint2 location, int value)
 
     InterlockedExchange(RaySegmentListCountRWTexture[location], value, output);*/
 
+    //set the count
     RaySegmentListCountRWTexture[location] = value;
 }
 
 void addRaySegmentList(float depth, uint type, uint eventType, uint raySegmentListCount, uint2 location)
 {
-    uint3 firstPosition = uint3(location, raySegmentListCount - 1);
-    uint3 secondPosition = uint3(location, raySegmentListCount);
+    uint3 firstPosition = uint3(location, raySegmentListCount - 1); //before position
+    uint3 secondPosition = uint3(location, raySegmentListCount); //current position
     
     //set the event
     setRaySegmentList(depth, type, eventType, secondPosition);
@@ -74,19 +76,23 @@ void addRaySegmentList(float depth, uint type, uint eventType, uint raySegmentLi
 
 float4 main(OutputData input, bool isFrontFace : SV_IsFrontFace) : SV_Target
 {
+    //get pixel location
     uint2 location = uint2(input.SVPosition.xy);
 
     uint raySegmentListCount = RaySegmentListCountRWTexture[location];
 
+    //get depth(distance from position to eye position)
     float depth = distance(input.Position.xyz, EyePos[0].xyz);
 
-    //error
+    //find error, output
     if (raySegmentListCount + 1 >= MAX_RAYSEGMENT_COUNT)
         return float4(0.0f, 1.0f, 0.0f, 1.0f);
     
+    //front face
     if (Instance[input.ID].Seting.x == 1 && isFrontFace == true)
         addRaySegmentList(depth, Instance[input.ID].Seting.y, EntryEvent, raySegmentListCount, location);
 
+    //back face
     if (Instance[input.ID].Seting.x == 0 && isFrontFace == false)
         addRaySegmentList(depth, Instance[input.ID].Seting.z, ExitEvent, raySegmentListCount, location);
 
