@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstddef>
+#include <unordered_map>
+
 template<typename T>
 struct Vector3 {
 	T X, Y, Z;
@@ -10,6 +13,20 @@ struct Vector3 {
 	template<typename T = int>
 	Vector3(T x = 0, T y = 0, T z = 0) :
 		X(x), Y(y), Z(z) {}
+
+	bool operator == (const Vector3 &vector)const {
+		return (X == vector.X) && (Y == vector.Y) && (Z == vector.Z);
+	}
+
+	struct HashFunction {
+
+		std::size_t operator()(const Vector3 &key) const {
+			return ((std::hash<int>()(key.X)
+				^ (std::hash<int>()(key.Y) << 1)) >> 1)
+				^ (std::hash<int>()(key.Z) << 1);
+		}
+
+	};
 };
 
 typedef Vector3<int> Size;

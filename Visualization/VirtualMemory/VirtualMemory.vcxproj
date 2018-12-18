@@ -117,6 +117,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BlockTable.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -126,7 +127,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AddressMap.hpp" />
-    <ClInclude Include="BlockCache.hpp" />
+    <ClInclude Include="BlockTable.hpp" />
+    <ClInclude Include="LRUCache.hpp" />
     <ClInclude Include="PageTable.hpp" />
     <ClInclude Include="Utility.hpp" />
   </ItemGroup>

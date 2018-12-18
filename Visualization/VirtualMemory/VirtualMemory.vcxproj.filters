@@ -13,9 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Structure">
+      <UniqueIdentifier>{7e73549c-c9ee-44c1-8eaa-d9233dd3c9d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BlockTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -23,14 +29,17 @@
     <ClInclude Include="Utility.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AddressMap.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PageTable.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BlockCache.hpp">
+    <ClInclude Include="BlockTable.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AddressMap.hpp">
+      <Filter>Header Files\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="LRUCache.hpp">
+      <Filter>Header Files\Structure</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
