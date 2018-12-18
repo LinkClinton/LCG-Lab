@@ -24,6 +24,9 @@
     <ClCompile Include="BlockTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PageTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utility.hpp">

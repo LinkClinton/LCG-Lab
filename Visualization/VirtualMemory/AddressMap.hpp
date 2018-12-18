@@ -9,13 +9,15 @@
 template<typename T>
 class AddressMap {
 private:
-	Size mSize;
 	std::vector<T> mAddress;
 
 	LRUCache<VirtualAddress, VirtualAddress::HashFunction> mLRUCache;
 
 	int mRowPitch;
 	int mDepthPitch;
+protected:
+	Size mSize;
+
 public:
 	AddressMap(const Size &size = Size(0, 0, 0)) {
 		mSize = size;
@@ -31,15 +33,15 @@ public:
 		mDepthPitch = mSize.X * mSize.Y;
 	}
 
-	auto getSize() -> Size {
+	auto virtual getSize() -> Size {
 		return mSize;
 	}
 
-	auto getAddressPointer() -> T* const {
+	auto virtual getAddressPointer() -> T* const {
 		return &mAddress[0];
 	}
 
-	void setAddress(const VirtualAddress &index, const T &address) {
+	void virtual setAddress(const VirtualAddress &index, const T &address) {
 		//access index for LRU
 		mLRUCache.accessElement(index);
 
@@ -47,7 +49,7 @@ public:
 		mAddress[getArrayIndex(index)] = address;
 	}
 
-	auto getAddress(const VirtualAddress &index) -> T {
+	auto virtual getAddress(const VirtualAddress &index) -> T {
 		//access index for LRU
 		mLRUCache.accessElement(index);
 
@@ -55,7 +57,7 @@ public:
 		return mAddress[getArrayIndex(index)];
 	}
 
-	auto mallocAddress() -> VirtualAddress {
+	auto virtual mallocAddress() -> VirtualAddress {
 		//malloc an address to user
 		//if we have empty memory, we will return its address
 		//else we will return the address of LRUCache's back element
@@ -70,7 +72,7 @@ public:
 		return address;
 	}
 
-	auto getArrayIndex(const VirtualAddress &index) -> int {
+	auto virtual getArrayIndex(const VirtualAddress &index) -> int {
 		assert(index.X >= 0 && index.Y >= 0 && index.Z >= 0);
 		assert(index.X < mSize.X && index.Y < mSize.Y && index.Z < mSize.Z);
 

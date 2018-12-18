@@ -119,6 +119,7 @@
   <ItemGroup>
     <ClCompile Include="BlockTable.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PageTable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Utility\Framework\Framework.vcxproj">

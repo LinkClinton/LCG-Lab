@@ -9,7 +9,7 @@ public:
 	BlockCache(const Size &size, byte* data);
 };
 
-class BlockTable : public AddressMap<BlockCache> {
+class BlockTable : public AddressMap<BlockCache*> {
 public:
 	BlockTable(const Size &size) : AddressMap(size) {}
 };
