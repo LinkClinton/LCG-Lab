@@ -8,23 +8,17 @@
 #include "AddressMap.hpp"
 #include "BlockTable.hpp"
 
-enum class PageState {
-	Mapped = 0,
-	UnMapped = 1,
-	Empty = 2
-};
-
-struct VirtualLink {
-	VirtualAddress Address;
-	PageState State;
-
-	VirtualLink(const VirtualAddress &address = VirtualAddress(),
-		PageState state = PageState::UnMapped) : Address(address), State(state) {}
-};
-
 class PageCache : public AddressMap<VirtualLink*> {
+private:
+	static Size mPageCacheSize;
 public:
-	PageCache(const Size &size = Size(0, 0, 0)) : AddressMap(size) {}
+	PageCache(const Size &size) : AddressMap(size) {}
+
+	PageCache() : PageCache(mPageCacheSize) {}
+
+	static void setPageCacheSize(const Size& size);
+
+	static auto getPageCacheSize() -> Size;
 };
 
 class PageTable : public AddressMap<PageCache*> {
@@ -33,6 +27,8 @@ private:
 	BlockTable* mEnd;
 
 	std::vector<VirtualLink*> mMapRelation;
+
+	static void deletePageCache(PageCache* &pageCache);
 public:
 	PageTable(const Size &size, PageTable* nextTable) : AddressMap(size),
 		mNext(nextTable), mEnd(nullptr), mMapRelation(size.X * size.Y * size.Z) {}
@@ -44,7 +40,7 @@ public:
 
 	void clearUpAddress(const VirtualAddress &address);
 
-	void mapAddress(const glm::vec3 &position,  BlockCache* blockCache, VirtualLink* virtualLink);
+	void mapAddress(const glm::vec3 &position, const Size &size, BlockCache* blockCache, VirtualLink* virtualLink);
 };
 
 class PageDirectory : public AddressMap<VirtualLink*> {

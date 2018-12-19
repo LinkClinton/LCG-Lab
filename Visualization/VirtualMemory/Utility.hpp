@@ -33,3 +33,33 @@ struct Vector3 {
 typedef Vector3<int> Size;
 typedef Vector3<int> VirtualAddress;
 typedef unsigned char byte;
+
+enum class PageState {
+	Mapped = 0,
+	UnMapped = 1,
+	Empty = 2
+};
+
+struct VirtualLink {
+	VirtualAddress Address;
+	PageState State;
+
+	VirtualLink(const VirtualAddress &address = VirtualAddress(),
+		PageState state = PageState::UnMapped) : Address(address), State(state) {}
+};
+
+class Utility {
+public:
+	template<typename T>
+	static auto multiple(const Vector3<T> &left, const Vector3<T> &right) -> Vector3<T> {
+		return Vector3<T>(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
+	}
+
+	template<typename T>
+	static auto multiple(const Vector3<T> &left, const glm::vec3 &right) -> Vector3<T> {
+		return Vector3<T>(
+			int(left.X * right.x),
+			int(left.Y * right.y),
+			int(left.Z * right.z));
+	}
+};
