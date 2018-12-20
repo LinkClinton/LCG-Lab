@@ -34,6 +34,8 @@ public:
 	void clearUpAddress(const VirtualAddress &address);
 
 	void mapAddress(const glm::vec3 &position, const Size &size, BlockCache* blockCache, VirtualLink* virtualLink);
+
+	auto queryAddress(const glm::vec3 &position, const Size& size, VirtualLink* virtualLink) -> BlockCache*;
 };
 
 

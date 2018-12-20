@@ -74,3 +74,8 @@ void BlockTable::mapAddress(const glm::vec3 & position, const Size & size, Block
 	//set data
 	setAddress(virtualLink->Address, blockCache);
 }
+
+auto BlockTable::queryAddress(const glm::vec3 & position, const Size & size, VirtualLink * virtualLink) -> BlockCache *
+{
+	return getAddress(virtualLink->Address);
+}

@@ -9,7 +9,7 @@ void PageDirectory::mapAddress(const glm::vec3 & position, BlockCache* blockCach
 	//compute the address
 	auto address = Utility::multiple(mSize, position);
 
-	//if position.xyz is one, the address will out of range
+	//if position.xyz is one, the address will be out of range
 	//so we need to limit the address
 	if (address.X == mSize.X) address.X = mSize.X - 1;
 	if (address.Y == mSize.Y) address.Y = mSize.Y - 1;
@@ -28,6 +28,32 @@ void PageDirectory::mapAddress(const glm::vec3 & position, BlockCache* blockCach
 
 	//go to next layer
 	mNext->mapAddress(position, mSize, blockCache, nextAddress);
+}
+
+auto PageDirectory::queryAddress(const glm::vec3 & position) -> BlockCache *
+{
+	assert(mSize.X != 0 && mSize.Y != 0 && mSize.Z != 0);
+
+	//compute the address
+	auto address = Utility::multiple(mSize, position);
+
+	//if position.xyz is one, the address will be out of range
+	//so we need to limit the address
+	if (address.X == mSize.X) address.X = mSize.X - 1;
+	if (address.Y == mSize.Y) address.Y = mSize.Y - 1;
+	if (address.Z == mSize.Z) address.Z = mSize.Z - 1;
+
+	assert(mNext != nullptr);
+
+	//get the address of next page
+	auto nextAddress = getAddress(address);
+
+	//unmapped, so we only return null
+	//about empty ? no-solution in this current version
+	if (nextAddress == nullptr || nextAddress->State != PageState::Mapped) return nullptr;
+
+	//go to next layer and query address
+	return mNext->queryAddress(position, mSize, nextAddress);
 }
 
 void PageTable::deletePageCache(PageCache *& pageCache)
@@ -90,6 +116,8 @@ void PageTable::clearUpAddress(const VirtualAddress & address)
 
 void PageTable::mapAddress(const glm::vec3 & position, const Size &size, BlockCache* blockCache, VirtualLink* virtualLink)
 {
+	assert(mSize.X != 0 && mSize.Y != 0 && mSize.Z != 0);
+
 	//get page cache
 	auto pageCache = getAddress(virtualLink->Address);
 
@@ -128,6 +156,42 @@ void PageTable::mapAddress(const glm::vec3 & position, const Size &size, BlockCa
 
 		mEnd->mapAddress(position, allSize, blockCache, nextAddress);
 	}
+}
+
+auto PageTable::queryAddress(const glm::vec3 & position, const Size & size, VirtualLink * virtualLink) -> BlockCache *
+{
+	assert(mSize.X != 0 && mSize.Y != 0 && mSize.Z != 0);
+
+	//get page cache
+	auto pageCache = getAddress(virtualLink->Address);
+
+	//compute the total size of current page level
+	//compute the address from total size of current page level
+	auto allSize = Utility::multiple(mSize, size);
+	auto address = Utility::multiple(allSize, position);
+
+	//if position.xyz is one, the address will out of range
+	//so we need to limit the address
+	if (address.X == mSize.X) address.X = mSize.X - 1;
+	if (address.Y == mSize.Y) address.Y = mSize.Y - 1;
+	if (address.Z == mSize.Z) address.Z = mSize.Z - 1;
+
+	assert(pageCache != nullptr);
+	assert((mNext != nullptr) ^ (mEnd != nullptr));
+
+	//get the address of next page
+	auto nextAddress = pageCache->getAddress(address);
+
+	//unmapped, so we only return null
+	//about empty ? no-solution in this current version
+	if (nextAddress == nullptr || nextAddress->State != PageState::Mapped) return nullptr;
+
+	//go to next layer to query address
+	if (mNext != nullptr) return mNext->queryAddress(position, allSize, nextAddress);
+	if (mEnd != nullptr) return mEnd->queryAddress(position, allSize, nextAddress);
+
+	//error 
+	assert(false); return nullptr;
 }
 
 void PageCache::setPageCacheSize(const Size & size)
