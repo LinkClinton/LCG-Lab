@@ -1,9 +1,10 @@
 #include "BlockTable.hpp"
 
-Size BlockCache::mBlockCacheSize = Size(0, 0, 0);
+Size BlockCache::mBlockCacheSize;
 
-BlockCache::BlockCache(const Size & size, byte * data) : AddressMap(size)
+BlockCache::BlockCache(const Size & size, const VirtualAddress &originEntry, byte * data) : AddressMap(size)
 {
+	mOriginEntry = originEntry;
 	memcpy(getAddressPointer(), data, size.X * size.Y * size.Z);
 }
 
@@ -23,9 +24,23 @@ void BlockTable::deleteBlockCache(BlockCache *& blockCache)
 	//for current version, we will delete all memory and set it to null
 	//another way, we will record a no-free array and set its no-free elments to null
 
-	assert(blockCache != nullptr);
+	if (blockCache == nullptr) return;
 
 	delete blockCache; blockCache = nullptr;
+}
+
+BlockTable::~BlockTable()
+{
+	//get size and array
+	size_t size = mSize.X * mSize.Y * mSize.Z;
+	auto arrayPointer = getAddressPointer();
+
+	//delete all block cache
+	for (size_t i = 0; i < size; i++) {
+		if (arrayPointer[i] == nullptr) continue;
+
+		delete arrayPointer[i]; arrayPointer[i] = nullptr;
+	}
 }
 
 void BlockTable::mallocAddress(VirtualLink * virtualLink)

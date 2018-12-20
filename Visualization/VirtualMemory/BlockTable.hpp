@@ -3,17 +3,16 @@
 #include <cassert>
 #include <vector>
 
-#include <glm\glm.hpp>
+#include <glm/glm.hpp>
 
 #include "AddressMap.hpp"
 
 class BlockCache : public AddressMap<byte> {
 private:
 	static Size mBlockCacheSize;
+	VirtualAddress mOriginEntry;
 public:
-	BlockCache(const Size &size = Size(0, 0, 0)) : AddressMap(size) {}
-
-	BlockCache(const Size &size, byte* data);
+	BlockCache(const Size &size, const VirtualAddress &OriginEntry, byte* data);
 
 	static void setBlockCacheSize(const Size &size);
 
@@ -28,6 +27,8 @@ private:
 public:
 	BlockTable(const Size &size) : AddressMap(size),
 		mMapRelation(size.X * size.Y * size.Z) {}
+
+	~BlockTable();
 
 	void mallocAddress(VirtualLink* virtualLink);
 

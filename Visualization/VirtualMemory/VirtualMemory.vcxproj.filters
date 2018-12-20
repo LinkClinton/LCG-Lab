@@ -16,6 +16,9 @@
     <Filter Include="Header Files\Structure">
       <UniqueIdentifier>{7e73549c-c9ee-44c1-8eaa-d9233dd3c9d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\TestUnit">
+      <UniqueIdentifier>{94626129-e5d1-4e90-bd8c-3e79a0e2a324}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -43,6 +46,9 @@
     </ClInclude>
     <ClInclude Include="LRUCache.hpp">
       <Filter>Header Files\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="CPUMemoryTestUnit.hpp">
+      <Filter>Header Files\TestUnit</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

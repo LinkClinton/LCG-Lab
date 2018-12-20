@@ -1,6 +1,20 @@
 #include "PageTable.hpp"
 
-Size PageCache::mPageCacheSize = Size(0, 0, 0);
+Size PageCache::mPageCacheSize;
+
+PageDirectory::~PageDirectory()
+{
+	//get size and array
+	size_t size = mSize.X * mSize.Y * mSize.Z;
+	auto arrayPointer = getAddressPointer();
+
+	//delete resource
+	for (size_t i = 0; i < size; i++) {
+		if (arrayPointer[i] == nullptr) continue;
+
+		delete arrayPointer[i]; arrayPointer[i] = nullptr;
+	}
+}
 
 void PageDirectory::mapAddress(const glm::vec3 & position, BlockCache* blockCache)
 {
@@ -62,10 +76,24 @@ void PageTable::deletePageCache(PageCache *& pageCache)
 	//for current version, we will delete all memory and set it to null
 	//another way, we will record a no-free array and set its no-free elments to null
 	
-	assert(pageCache != nullptr);
-
+	if (pageCache == nullptr) return;
+	
 	//delete 
 	delete pageCache; pageCache = nullptr;
+}
+
+PageTable::~PageTable()
+{
+	//get size and array
+	size_t size = mSize.X * mSize.Y * mSize.Z;
+	auto arrayPointer = getAddressPointer();
+
+	//delete resource
+	for (size_t i = 0; i < size; i++) {
+		if (arrayPointer[i] == nullptr) continue;
+
+		delete arrayPointer[i]; arrayPointer[i] = nullptr;
+	}
 }
 
 void PageTable::mallocAddress(VirtualLink * virtualLink)
@@ -118,19 +146,25 @@ void PageTable::mapAddress(const glm::vec3 & position, const Size &size, BlockCa
 {
 	assert(mSize.X != 0 && mSize.Y != 0 && mSize.Z != 0);
 
-	//get page cache
+	//get page cache and page cache size
 	auto pageCache = getAddress(virtualLink->Address);
+	auto pageSize = pageCache->getSize();
 
 	//compute the total size of current page level
 	//compute the address from total size of current page level
-	auto allSize = Utility::multiple(mSize, size);
+	auto allSize = Utility::multiple(pageSize, size);
 	auto address = Utility::multiple(allSize, position);
 
 	//if position.xyz is one, the address will out of range
 	//so we need to limit the address
-	if (address.X == mSize.X) address.X = mSize.X - 1;
-	if (address.Y == mSize.Y) address.Y = mSize.Y - 1;
-	if (address.Z == mSize.Z) address.Z = mSize.Z - 1;
+	if (address.X == allSize.X) address.X = allSize.X - 1;
+	if (address.Y == allSize.Y) address.Y = allSize.Y - 1;
+	if (address.Z == allSize.Z) address.Z = allSize.Z - 1;
+
+	//we can get the relate address by using real address mod size
+	address.X = address.X % pageSize.X;
+	address.Y = address.Y % pageSize.Y;
+	address.Z = address.Z % pageSize.Z;
 
 	assert(pageCache != nullptr);
 	assert((mNext != nullptr) ^ (mEnd != nullptr));
@@ -162,19 +196,25 @@ auto PageTable::queryAddress(const glm::vec3 & position, const Size & size, Virt
 {
 	assert(mSize.X != 0 && mSize.Y != 0 && mSize.Z != 0);
 
-	//get page cache
+	//get page cache and size
 	auto pageCache = getAddress(virtualLink->Address);
+	auto pageSize = pageCache->getSize();
 
 	//compute the total size of current page level
 	//compute the address from total size of current page level
-	auto allSize = Utility::multiple(mSize, size);
+	auto allSize = Utility::multiple(pageSize, size);
 	auto address = Utility::multiple(allSize, position);
 
 	//if position.xyz is one, the address will out of range
 	//so we need to limit the address
-	if (address.X == mSize.X) address.X = mSize.X - 1;
-	if (address.Y == mSize.Y) address.Y = mSize.Y - 1;
-	if (address.Z == mSize.Z) address.Z = mSize.Z - 1;
+	if (address.X == allSize.X) address.X = allSize.X - 1;
+	if (address.Y == allSize.Y) address.Y = allSize.Y - 1;
+	if (address.Z == allSize.Z) address.Z = allSize.Z - 1;
+
+	//we can get the relate address by using real address mod size
+	address.X = address.X % pageSize.X;
+	address.Y = address.Y % pageSize.Y;
+	address.Z = address.Z % pageSize.Z;
 
 	assert(pageCache != nullptr);
 	assert((mNext != nullptr) ^ (mEnd != nullptr));
