@@ -35,7 +35,7 @@ void WindowsGraphics::setRenderTarget(RenderTarget * renderTarget, DepthStencil 
 		views[i] = static_cast<WindowsUnorderedAccessUsage*>(unorderedAccessUsage[i])->mUnorderedAccessView;
 	
 	mDeviceContext->OMSetRenderTargetsAndUnorderedAccessViews(1, &renderTargetInstance,
-		depthStencilInstance, 1, views.size(), views.size() != 0 ? &views[0] : nullptr, nullptr);
+		depthStencilInstance, 1, (UINT)views.size(), views.size() != 0 ? &views[0] : nullptr, nullptr);
 }
 
 WindowsGraphics::WindowsGraphics()

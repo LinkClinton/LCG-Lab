@@ -142,7 +142,7 @@ void RenderFramework::renderRaySegmentList()
 		renderInstance(MAX_INSTANCE_PER_DRAW);
 	}
 
-	if (mInstanceData.size() != 0) renderInstance(mInstanceData.size());
+	if (mInstanceData.size() != (size_t)0) renderInstance((int)mInstanceData.size());
 }
 
 auto RenderFramework::sampleVolumeData(AxiallyAlignedBoundingBox sampleBox, int width, int height, int depth, std::vector<unsigned char>& volumeData) -> float

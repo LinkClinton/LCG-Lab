@@ -1,13 +1,8 @@
-#include "CPUMemoryTestUnit.hpp"
+#include "RenderFramework.hpp"
 
+RenderFramework renderFramework = RenderFramework("VirtualMemory", 1920, 1080);
 
 int main() {
-	//CPUMemoryTestUnit::writeTestVolumeFile("volume", Size(1000, 1000, 1000));
-
-	CPUMemoryTestUnit testUnit("volume", Size(1000, 1000, 1000));
-
-	testUnit.initialize();
-	testUnit.run(10000);
-
-	system("pause");
+	renderFramework.showWindow();
+	renderFramework.runLoop();
 }

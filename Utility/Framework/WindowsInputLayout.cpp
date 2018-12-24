@@ -49,8 +49,8 @@ void WindowsInputLayout::resetInstance(WindowsGraphics * graphics, WindowsVertex
 
 	auto shaderCompiledCode = vertexShader->getCompiledCodeBytes();
 
-	graphics->mDevice->CreateInputLayout(&mElementDesc[0], mElementDesc.size(),
-		&shaderCompiledCode[0], shaderCompiledCode.size(), &mInputLayout);
+	graphics->mDevice->CreateInputLayout(&mElementDesc[0], (UINT)mElementDesc.size(),
+		&shaderCompiledCode[0], (UINT)shaderCompiledCode.size(), &mInputLayout);
 }
 
 WindowsInputLayout::WindowsInputLayout(const std::vector<InputLayoutElement>& elements) :

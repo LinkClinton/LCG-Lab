@@ -30,6 +30,9 @@
     <ClCompile Include="PageTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RenderFramework.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utility.hpp">
@@ -49,6 +52,9 @@
     </ClInclude>
     <ClInclude Include="CPUMemoryTestUnit.hpp">
       <Filter>Header Files\TestUnit</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderFramework.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
