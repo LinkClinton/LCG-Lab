@@ -2,6 +2,7 @@
 
 #include <WindowsFramework.hpp>
 #include <Camera.hpp>
+#include <Cube.hpp>
 
 #include <glm\glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

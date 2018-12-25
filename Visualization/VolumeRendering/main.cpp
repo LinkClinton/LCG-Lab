@@ -1,6 +1,6 @@
 #include <WindowsFramework.hpp>
+#include <Cube.hpp>
 
-#include "Cube.hpp"
 #include "FileManager.hpp"
 
 #include <fstream>
@@ -89,7 +89,7 @@ public:
 	}
 
 	void buildBuffer() {
-		mVertexBuffer = mFactory->createVertexBuffer(8 * sizeof(Vertex), sizeof(Vertex));
+		mVertexBuffer = mFactory->createVertexBuffer(8 * sizeof(CubeVertex), sizeof(CubeVertex));
 		mIndexBuffer = mFactory->createIndexBuffer(36 * sizeof(unsigned int));
 		mConstantBuffer = mFactory->createConstantBuffer(sizeof(mMatrix));
 

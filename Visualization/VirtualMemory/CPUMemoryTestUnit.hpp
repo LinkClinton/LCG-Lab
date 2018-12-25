@@ -14,6 +14,9 @@
 #define BLOCK_CACHE_XYZ 10
 #define BLOCK_CACHE_SIZE BLOCK_CACHE_XYZ * BLOCK_CACHE_XYZ * BLOCK_CACHE_XYZ
 
+#undef min
+#undef max
+
 class CPUMemoryTestUnit {
 private:
 	PageDirectory* mPageDirectory;
@@ -83,14 +86,14 @@ public:
 		auto blockSize = BlockCache::getBlockCacheSize();
 
 		//get block address in the file
-		auto fileAddress = Utility::multiple(mSize, position);
+		auto fileAddress = Helper::multiple(mSize, position);
 		
 		//compute the entry position of block cache
 		auto blockEntry = VirtualAddress(
 			fileAddress.X / blockSize.X,
 			fileAddress.Y / blockSize.Y,
 			fileAddress.Z / blockSize.Z);
-		blockEntry = Utility::multiple(blockEntry, blockSize);
+		blockEntry = Helper::multiple(blockEntry, blockSize);
 
 		//static buffer for reading block cache
 		static byte buffer[BLOCK_CACHE_SIZE];
@@ -152,7 +155,7 @@ public:
 		if (blockCache == nullptr) blockCache = mapAddress(position);
 
 		//get block address in the file
-		auto fileAddress = Utility::multiple(mSize, position);
+		auto fileAddress = Helper::multiple(mSize, position);
 
 		//if position.xyz is one, the address will be out of range
 		//so we need to limit the address
@@ -172,7 +175,7 @@ public:
 
 	auto getAddressFromFile(const glm::vec3 &position) -> byte {
 		//get address
-		auto address = Utility::multiple(mSize, position);
+		auto address = Helper::multiple(mSize, position);
 
 		//if position.xyz is one, the address will be out of range
 		//so we need to limit the address

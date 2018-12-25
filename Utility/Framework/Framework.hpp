@@ -7,6 +7,7 @@
 #include "Factory.hpp"
 #include "Graphics.hpp"
 #include "SwapChain.hpp"
+#include "Event.hpp"
 
 class Framework {
 protected:
@@ -21,9 +22,15 @@ protected:
 	Graphics* mGraphics;
 	SwapChain* mSwapChain;
 
-	virtual void update(void* sender) = 0;
+	virtual void update(void* sender, float deltaTime) = 0;
 
-	virtual void render(void* sender) = 0;
+	virtual void render(void* sender, float deltaTime) = 0;
+
+	virtual void keyUp(void* sender, KeyBoardEvent* eventArg) = 0;
+
+	virtual void keyDown(void* sender, KeyBoardEvent* eventArg) = 0;
+
+	virtual void mouseMove(void* sender, MouseMoveEvent* eventArg) = 0;
 
 	Framework(const std::string &name, int width, int height) :
 		mName(name), mWidth(width), mHeight(height), mIsWindowExist(false),
@@ -35,4 +42,8 @@ public:
 	virtual void hideWindow() = 0;
 
 	virtual void runLoop() = 0;
+
+	virtual auto getDeltaTime() -> float = 0;
 };
+
+#include "Input.hpp"

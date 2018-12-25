@@ -1,7 +1,9 @@
 #pragma once
 
 #include <glm/glm.hpp>
+
 #include <unordered_map>
+#include <fstream>
 
 template<typename T>
 struct Vector3 {
@@ -48,7 +50,16 @@ struct VirtualLink {
 		PageState state = PageState::UnMapped) : Address(address), State(state) {}
 };
 
-class Utility {
+struct MatrixStructure {
+	glm::mat4 WorldTransform;
+	glm::mat4 CameraTransform;
+	glm::mat4 ProjectTransform;
+
+	MatrixStructure() : WorldTransform(1),
+		CameraTransform(1), ProjectTransform(1) {}
+};
+
+class Helper {
 public:
 	template<typename T>
 	static auto multiple(const Vector3<T> &left, const Vector3<T> &right) -> Vector3<T> {
@@ -61,5 +72,19 @@ public:
 			int(left.X * right.x),
 			int(left.Y * right.y),
 			int(left.Z * right.z));
+	}
+
+	static auto readFile(const std::string &fileName) -> std::vector<byte> {
+		std::ifstream file(fileName, std::ios::binary | std::ios::ate);
+
+		auto fileSize = (size_t)file.tellg();
+
+		std::vector<byte> fileCode(fileSize);
+
+		file.seekg(0, std::ios::beg);
+		file.read((char*)&fileCode[0], fileSize);
+		file.close();
+
+		return fileCode;
 	}
 };

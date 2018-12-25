@@ -143,7 +143,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Cube.hpp" />
     <ClInclude Include="FileManager.hpp" />
   </ItemGroup>
   <ItemGroup>

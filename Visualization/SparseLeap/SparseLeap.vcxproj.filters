@@ -12,9 +12,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Cube.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Helper.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

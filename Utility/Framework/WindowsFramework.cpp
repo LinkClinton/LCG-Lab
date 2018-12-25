@@ -5,6 +5,10 @@
 
 #ifdef _WIN32
 
+#define convert_position_to_vec2(message) glm::vec2(GET_X_LPARAM(message.lParam), GET_Y_LPARAM(message.lParam))
+
+#include <windowsx.h>
+
 LRESULT WindowsFramework::DefaultWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
@@ -20,14 +24,38 @@ LRESULT WindowsFramework::DefaultWindowProc(HWND hWnd, UINT message, WPARAM wPar
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-void WindowsFramework::update(void * sender)
+void WindowsFramework::processMessage(WindowsFramework * framework, const MSG & message)
+{
+	switch (message.message)
+	{
+	case WM_KEYUP: framework->keyUp(framework, &KeyBoardEvent(false, (KeyCode)message.wParam)); break;
+	case WM_KEYDOWN: framework->keyDown(framework, &KeyBoardEvent(true, (KeyCode)message.wParam)); break;
+	case WM_MOUSEMOVE: framework->mouseMove(framework, &MouseMoveEvent(convert_position_to_vec2(message))); break;
+	default:
+		break;
+	}
+}
+
+void WindowsFramework::update(void * sender, float deltaTime)
 {
 
 }
 
-void WindowsFramework::render(void * sender)
+void WindowsFramework::render(void * sender, float deltaTime)
 {
 	mSwapChain->present();
+}
+
+void WindowsFramework::keyUp(void * sender, KeyBoardEvent* eventArg)
+{
+}
+
+void WindowsFramework::keyDown(void * sender, KeyBoardEvent* eventArg)
+{
+}
+
+void WindowsFramework::mouseMove(void * sender, MouseMoveEvent* eventArg)
+{
 }
 
 WindowsFramework::WindowsFramework(const std::string &name, int width, int height)
@@ -98,13 +126,23 @@ void WindowsFramework::runLoop()
 			TranslateMessage(&message); 
 			DispatchMessage(&message);
 
+			processMessage(this, message);
+
 			if (message.message == WM_QUIT) mIsWindowExist = false;
 		}
 
-		update(this);
+		mDeltaTime = mTimer.getTime();
+		mTimer.start();
 
-		render(this);
+		update(this, mDeltaTime);
+
+		render(this, mDeltaTime);
 	}
+}
+
+auto WindowsFramework::getDeltaTime() -> float 
+{
+	return mDeltaTime;
 }
 
 #endif // _WIN32

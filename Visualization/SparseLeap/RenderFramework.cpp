@@ -1,6 +1,5 @@
 #include "RenderFramework.hpp"
 
-#include "Cube.hpp"
 #include "Helper.hpp"
 
 void RenderFramework::update(void * sender)
@@ -191,7 +190,7 @@ void RenderFramework::buildCamera()
 
 void RenderFramework::buildBuffer()
 {
-	mCubeVertexBuffer = mFactory->createVertexBuffer(sizeof(Vertex) * 8, sizeof(Vertex));
+	mCubeVertexBuffer = mFactory->createVertexBuffer(sizeof(CubeVertex) * 8, sizeof(CubeVertex));
 	mCubeIndexBuffer = mFactory->createIndexBuffer(sizeof(unsigned int) * 36);
 	mMatrixBuffer = mFactory->createConstantBuffer(sizeof(mMatrix));
 	mInstanceBuffer = mFactory->createConstantBuffer(sizeof(InstanceData) * MAX_INSTANCE_PER_DRAW);

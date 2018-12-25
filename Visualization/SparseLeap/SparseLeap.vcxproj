@@ -136,7 +136,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Cube.hpp" />
     <ClInclude Include="OccupancyHistogramTree.hpp" />
     <ClInclude Include="RenderFramework.hpp" />
     <ClInclude Include="Helper.hpp" />

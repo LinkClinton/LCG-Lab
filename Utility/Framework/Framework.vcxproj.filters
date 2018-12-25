@@ -30,10 +30,10 @@
     <Filter Include="Header Files\Enum">
       <UniqueIdentifier>{d33de93c-d480-4272-b823-980c44377283}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Object">
+    <Filter Include="Header Files\Extension">
       <UniqueIdentifier>{dd869f68-7f5a-4b51-8129-4e9aea57beee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Object">
+    <Filter Include="Source Files\Extension">
       <UniqueIdentifier>{50acf167-1325-4eef-85b8-493f6c735a6d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -174,13 +174,34 @@
       <Filter>Header Files\Windows</Filter>
     </ClInclude>
     <ClInclude Include="Camera.hpp">
-      <Filter>Header Files\Object</Filter>
+      <Filter>Header Files\Extension</Filter>
     </ClInclude>
     <ClInclude Include="UnorderedAccessUsage.hpp">
       <Filter>Header Files\Interface</Filter>
     </ClInclude>
     <ClInclude Include="WindowsUnorderedAccessUsage.hpp">
       <Filter>Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube.hpp">
+      <Filter>Header Files\Extension</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.hpp">
+      <Filter>Header Files\Extension</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyCode.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FpsCounter.hpp">
+      <Filter>Header Files\Extension</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -236,10 +257,22 @@
       <Filter>Source Files\Windows</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>Source Files\Object</Filter>
+      <Filter>Source Files\Extension</Filter>
     </ClCompile>
     <ClCompile Include="WindowsUnorderedAccessUsage.cpp">
       <Filter>Source Files\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Event.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FpsCounter.cpp">
+      <Filter>Source Files\Extension</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

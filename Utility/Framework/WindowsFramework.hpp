@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Framework.hpp"
+#include "Timer.hpp"
 
 #ifdef _WIN32
 
@@ -11,14 +12,24 @@ class WindowsFramework : public Framework {
 private:
 	HWND mHwnd;
 
+	Timer mTimer;
+	float mDeltaTime;
+
 	static LRESULT CALLBACK DefaultWindowProc(HWND hWnd, UINT message,
 		WPARAM wParam, LPARAM lParam);
 
-protected:
-	
-	virtual void update(void* sender)override;
+	static void processMessage(WindowsFramework* framework, const MSG &message);
 
-	virtual void render(void* sender)override;
+protected:
+	virtual void update(void* sender, float deltaTime)override;
+
+	virtual void render(void* sender, float deltaTime)override;
+
+	virtual void keyUp(void* sender, KeyBoardEvent* eventArg)override;
+
+	virtual void keyDown(void* sender, KeyBoardEvent* eventArg)override;
+
+	virtual void mouseMove(void* sender, MouseMoveEvent* eventArg)override;
 public:
 	WindowsFramework(const std::string &name, int width, int height);
 
@@ -29,6 +40,8 @@ public:
 	virtual void hideWindow()override;
 
 	virtual void runLoop()override;
+
+	virtual auto getDeltaTime() -> float override;
 };
 
 #endif // _WIN32

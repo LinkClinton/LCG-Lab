@@ -20,9 +20,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Cube.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FileManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

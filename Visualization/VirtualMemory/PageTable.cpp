@@ -21,7 +21,7 @@ void PageDirectory::mapAddress(const glm::vec3 & position, BlockCache* blockCach
 	assert(mSize.X != 0 && mSize.Y != 0 && mSize.Z != 0);
 
 	//compute the address
-	auto address = Utility::multiple(mSize, position);
+	auto address = Helper::multiple(mSize, position);
 
 	//if position.xyz is one, the address will be out of range
 	//so we need to limit the address
@@ -49,7 +49,7 @@ auto PageDirectory::queryAddress(const glm::vec3 & position) -> BlockCache *
 	assert(mSize.X != 0 && mSize.Y != 0 && mSize.Z != 0);
 
 	//compute the address
-	auto address = Utility::multiple(mSize, position);
+	auto address = Helper::multiple(mSize, position);
 
 	//if position.xyz is one, the address will be out of range
 	//so we need to limit the address
@@ -152,8 +152,8 @@ void PageTable::mapAddress(const glm::vec3 & position, const Size &size, BlockCa
 
 	//compute the total size of current page level
 	//compute the address from total size of current page level
-	auto allSize = Utility::multiple(pageSize, size);
-	auto address = Utility::multiple(allSize, position);
+	auto allSize = Helper::multiple(pageSize, size);
+	auto address = Helper::multiple(allSize, position);
 
 	//if position.xyz is one, the address will out of range
 	//so we need to limit the address
@@ -202,8 +202,8 @@ auto PageTable::queryAddress(const glm::vec3 & position, const Size & size, Virt
 
 	//compute the total size of current page level
 	//compute the address from total size of current page level
-	auto allSize = Utility::multiple(pageSize, size);
-	auto address = Utility::multiple(allSize, position);
+	auto allSize = Helper::multiple(pageSize, size);
+	auto address = Helper::multiple(allSize, position);
 
 	//if position.xyz is one, the address will out of range
 	//so we need to limit the address
