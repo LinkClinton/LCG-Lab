@@ -17,6 +17,9 @@ private:
 
 	RasterizerState* mRasterizerState;
 
+	Input* mInput;
+	bool mMouseButtonState[3];
+
 	Camera mCamera;
 	MatrixStructure mMatrixStructure;
 
@@ -24,6 +27,8 @@ private:
 	virtual void update(void* sender, float mDeltaTime)override;
 	
 	virtual void mouseMove(void* sender, MouseMoveEvent* eventArg)override;
+	virtual void mouseUp(void* sender, MouseClickEvent* eventArg)override;
+	virtual void mouseDown(void* sender, MouseClickEvent* eventArg)override;
 
 	void initializeInputStage();
 	void initializeShaderStage();

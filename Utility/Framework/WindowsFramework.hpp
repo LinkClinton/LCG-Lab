@@ -30,6 +30,10 @@ protected:
 	virtual void keyDown(void* sender, KeyBoardEvent* eventArg)override;
 
 	virtual void mouseMove(void* sender, MouseMoveEvent* eventArg)override;
+
+	virtual void mouseUp(void* sender, MouseClickEvent* eventArg)override;
+
+	virtual void mouseDown(void* sender, MouseClickEvent* eventArg)override;
 public:
 	WindowsFramework(const std::string &name, int width, int height);
 
@@ -42,6 +46,8 @@ public:
 	virtual void runLoop()override;
 
 	virtual auto getDeltaTime() -> float override;
+
+	virtual auto getHandle() -> void* override;
 };
 
 #endif // _WIN32
@@ -61,3 +67,4 @@ public:
 #include "WindowsDepthStencilState.hpp"
 #include "WindowsResourceUsage.hpp"
 #include "WindowsUnorderedAccessUsage.hpp"
+#include "WindowsInput.hpp"

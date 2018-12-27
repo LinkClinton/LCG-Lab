@@ -35,6 +35,7 @@
     <ClInclude Include="Input.hpp" />
     <ClInclude Include="KeyCode.hpp" />
     <ClInclude Include="Math.hpp" />
+    <ClInclude Include="MouseButton.hpp" />
     <ClInclude Include="PixelFormat.hpp" />
     <ClInclude Include="PrimitiveType.hpp" />
     <ClInclude Include="RasterizerState.hpp" />
@@ -63,6 +64,7 @@
     <ClInclude Include="WindowsFramework.hpp" />
     <ClInclude Include="WindowsGraphics.hpp" />
     <ClInclude Include="WindowsIndexBuffer.hpp" />
+    <ClInclude Include="WindowsInput.hpp" />
     <ClInclude Include="WindowsInputLayout.hpp" />
     <ClInclude Include="WindowsRasterizerState.hpp" />
     <ClInclude Include="WindowsRenderTarget.hpp" />
@@ -78,7 +80,6 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="FpsCounter.cpp" />
-    <ClCompile Include="Input.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="WindowsConstantBuffer.cpp" />
     <ClCompile Include="WindowsDepthStencil.cpp" />
@@ -87,6 +88,7 @@
     <ClCompile Include="WindowsFramework.cpp" />
     <ClCompile Include="WindowsGraphics.cpp" />
     <ClCompile Include="WindowsIndexBuffer.cpp" />
+    <ClCompile Include="WindowsInput.cpp" />
     <ClCompile Include="WindowsInputLayout.cpp" />
     <ClCompile Include="WindowsPixelShader.cpp" />
     <ClInclude Include="WindowsPixelShader.hpp" />

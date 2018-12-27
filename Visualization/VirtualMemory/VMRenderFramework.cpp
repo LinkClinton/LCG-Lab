@@ -40,10 +40,12 @@ void VMRenderFramework::update(void * sender, float mDeltaTime)
 	glm::vec3 moveVector = glm::vec3(0, 0, 0);
 
 	//for move vector
-	if (Input::isKeyDown(KeyCode::W) == true) moveVector = moveVector + Camera::forward();
-	if (Input::isKeyDown(KeyCode::S) == true) moveVector = moveVector + Camera::back();
-	if (Input::isKeyDown(KeyCode::A) == true) moveVector = moveVector + Camera::left();
-	if (Input::isKeyDown(KeyCode::D) == true) moveVector = moveVector + Camera::right();
+	if (mInput->isKeyDown(KeyCode::W) == true) moveVector = moveVector + Camera::forward();
+	if (mInput->isKeyDown(KeyCode::S) == true) moveVector = moveVector + Camera::back();
+	if (mInput->isKeyDown(KeyCode::A) == true) moveVector = moveVector + Camera::left();
+	if (mInput->isKeyDown(KeyCode::D) == true) moveVector = moveVector + Camera::right();
+	if (mInput->isKeyDown(KeyCode::Space) == true) moveVector = moveVector + Camera::up();
+	if (mInput->isKeyDown(KeyCode::F) == true) moveVector = moveVector + Camera::down();
 	
 	//move vector is not zero, means we input the key
 	if (glm::length(moveVector) != 0) {
@@ -51,6 +53,7 @@ void VMRenderFramework::update(void * sender, float mDeltaTime)
 
 		mCamera.walk(length.z);
 		mCamera.strafe(-length.x);
+		mCamera.fly(length.y);
 	}
 	
 	//update matrix
@@ -63,18 +66,39 @@ void VMRenderFramework::update(void * sender, float mDeltaTime)
 
 void VMRenderFramework::mouseMove(void * sender, MouseMoveEvent * eventArg)
 {
+	//button is up
+	if (mMouseButtonState[0] == false && mMouseButtonState[1] == false && mMouseButtonState[2] == false)
+		return;
+
 	//angle speed
 	static float angle = glm::pi<float>() * 0.0001f;
-	static glm::vec2 lastMousePosition = glm::vec2(-1, -1);
+	
+	auto centerPosition = glm::vec2(mWidth * 0.5f, mHeight * 0.5f);
+	auto offset = eventArg->getPosition() - centerPosition;
 
-	if (lastMousePosition != glm::vec2(-1, -1)) {
-		auto offset = eventArg->getPosition() - lastMousePosition;
-		
+	if (glm::length(offset) != 0) {
 		mCamera.rotateY(angle * offset.x);
 		mCamera.rotateRight(angle * offset.y);
 	}
 
-	lastMousePosition = eventArg->getPosition();
+	mInput->setCursorPosition(centerPosition);
+}
+
+void VMRenderFramework::mouseUp(void * sender, MouseClickEvent * eventArg)
+{
+	mMouseButtonState[(int)eventArg->getMouseButton()] = false;
+
+	mInput->unlockCursor();
+	mInput->showCursor(true);
+}
+
+void VMRenderFramework::mouseDown(void * sender, MouseClickEvent * eventArg)
+{
+	mMouseButtonState[(int)eventArg->getMouseButton()] = true;
+
+	mInput->lockCursor();
+	mInput->showCursor(false);
+	mInput->setCursorPosition(glm::vec2(mWidth * 0.5f, mHeight * 0.5f));
 }
 
 void VMRenderFramework::initializeInputStage()
@@ -150,11 +174,13 @@ void VMRenderFramework::destoryRasterizerStage()
 
 VMRenderFramework::VMRenderFramework(const std::string &name, int width, int height) : WindowsFramework(name, width, height)
 {
-
+	mInput = mFactory->createInput(this);
 }
 
 VMRenderFramework::~VMRenderFramework()
 {
+	mFactory->destoryInput(mInput);
+
 	destoryInputStage();
 	destoryShaderStage();
 	destoryRasterizerStage();

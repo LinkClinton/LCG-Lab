@@ -19,6 +19,11 @@ void Camera::strafe(float length)
 	mPosition = mPosition + mRight * length;
 }
 
+void Camera::fly(float length)
+{
+	mPosition = mPosition + up() * length;
+}
+
 void Camera::rotateRight(float angle)
 {
 	auto rotate = glm::rotate(glm::tquat<float, glm::qualifier::highp>(1, 0, 0, 0), angle, mRight);

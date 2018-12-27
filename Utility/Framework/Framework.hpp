@@ -32,6 +32,10 @@ protected:
 
 	virtual void mouseMove(void* sender, MouseMoveEvent* eventArg) = 0;
 
+	virtual void mouseUp(void* sender, MouseClickEvent* eventArg) = 0;
+
+	virtual void mouseDown(void* sender, MouseClickEvent* eventArg) = 0;
+
 	Framework(const std::string &name, int width, int height) :
 		mName(name), mWidth(width), mHeight(height), mIsWindowExist(false),
 		mGraphics(nullptr), mSwapChain(nullptr) {}
@@ -44,6 +48,8 @@ public:
 	virtual void runLoop() = 0;
 
 	virtual auto getDeltaTime() -> float = 0;
+
+	virtual auto getHandle() -> void* = 0;
 };
 
 #include "Input.hpp"

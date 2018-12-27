@@ -3,6 +3,7 @@
 #include <glm\glm.hpp>
 
 #include "KeyCode.hpp"
+#include "MouseButton.hpp"
 
 class BaseEvent {
 
@@ -28,4 +29,17 @@ public:
 	MouseMoveEvent(const glm::vec2 &position) : mPosition(position) {}
 
 	auto getPosition() -> glm::vec2;
+};
+
+class MouseClickEvent : public MouseMoveEvent {
+private:
+	MouseButton mButton;
+	bool mIsDown;
+public:
+	MouseClickEvent(const glm::vec2 &position, MouseButton button, bool isDown) :
+		MouseMoveEvent(position), mButton(button), mIsDown(isDown) {}
+
+	auto getMouseButton() -> MouseButton;
+
+	auto isDown() -> bool;
 };

@@ -4,6 +4,7 @@
 
 #include <vector>
 
+class Framework;
 class Graphics;
 class VertexBuffer;
 class IndexBuffer;
@@ -20,6 +21,7 @@ class VertexShader;
 class PixelShader;
 class RasterizerState;
 class DepthStencilState;
+class Input;
 
 enum class PixelFormat;
 
@@ -65,6 +67,8 @@ public:
 
 	virtual auto createDepthStencilState() -> DepthStencilState* = 0;
 
+	virtual auto createInput(Framework* framework) -> Input* = 0;
+
 	virtual void destoryVertexbuffer(VertexBuffer* &vertexBuffer) = 0;
 
 	virtual void destoryIndexBuffer(IndexBuffer* &indexBuffer) = 0;
@@ -92,4 +96,6 @@ public:
 	virtual void destoryRasterizerState(RasterizerState* &rasterState) = 0;
 
 	virtual void destoryDepthStencilState(DepthStencilState* &depthStencilState) = 0;
+
+	virtual void destoryInput(Input* &input) = 0;
 };

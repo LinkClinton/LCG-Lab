@@ -42,6 +42,8 @@ public:
 
 	virtual auto createDepthStencilState() -> DepthStencilState* override;
 
+	virtual auto createInput(Framework* framework) -> Input* override;
+
 	virtual void destoryVertexbuffer(VertexBuffer* &vertexBuffer)override;
 
 	virtual void destoryIndexBuffer(IndexBuffer* &indexBuffer)override;
@@ -69,6 +71,8 @@ public:
 	virtual void destoryRasterizerState(RasterizerState* &rasterizerState)override;
 
 	virtual void destoryDepthStencilState(DepthStencilState* &depthStencilState)override;
+
+	virtual void destoryInput(Input* &input)override;
 };
 
 #endif // _WIN32

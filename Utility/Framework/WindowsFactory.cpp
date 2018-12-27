@@ -95,6 +95,11 @@ auto WindowsFactory::createDepthStencilState() -> DepthStencilState *
 	return new WindowsDepthStencilState();
 }
 
+auto WindowsFactory::createInput(Framework* framework) -> Input * 
+{
+	return new WindowsInput(framework);
+}
+
 void WindowsFactory::destoryVertexbuffer(VertexBuffer *& vertexBuffer)
 {
 	if (vertexBuffer == nullptr) return;
@@ -219,6 +224,14 @@ void WindowsFactory::destoryDepthStencilState(DepthStencilState *& depthStencilS
 	delete (WindowsDepthStencilState*)depthStencilState;
 
 	depthStencilState = nullptr;
+}
+
+void WindowsFactory::destoryInput(Input *&input) {
+	if (input == nullptr) return;
+
+	delete (WindowsInput*)input;
+
+	input = nullptr;
 }
 
 #endif // _WIN32

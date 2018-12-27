@@ -22,6 +22,8 @@ public:
 
 	void strafe(float length);
 
+	void fly(float length);
+
 	void rotateRight(float angle);
 
 	void rotateY(float angle);

@@ -31,6 +31,12 @@ void WindowsFramework::processMessage(WindowsFramework * framework, const MSG & 
 	case WM_KEYUP: framework->keyUp(framework, &KeyBoardEvent(false, (KeyCode)message.wParam)); break;
 	case WM_KEYDOWN: framework->keyDown(framework, &KeyBoardEvent(true, (KeyCode)message.wParam)); break;
 	case WM_MOUSEMOVE: framework->mouseMove(framework, &MouseMoveEvent(convert_position_to_vec2(message))); break;
+	case WM_LBUTTONUP: framework->mouseUp(framework, &MouseClickEvent(convert_position_to_vec2(message), MouseButton::Left, false)); break;
+	case WM_MBUTTONUP: framework->mouseUp(framework, &MouseClickEvent(convert_position_to_vec2(message), MouseButton::Middle, false)); break;
+	case WM_RBUTTONUP: framework->mouseUp(framework, &MouseClickEvent(convert_position_to_vec2(message), MouseButton::Right, false)); break;
+	case WM_LBUTTONDOWN: framework->mouseDown(framework, &MouseClickEvent(convert_position_to_vec2(message), MouseButton::Left, true)); break;
+	case WM_MBUTTONDOWN: framework->mouseDown(framework, &MouseClickEvent(convert_position_to_vec2(message), MouseButton::Middle, true)); break;
+	case WM_RBUTTONDOWN: framework->mouseDown(framework, &MouseClickEvent(convert_position_to_vec2(message), MouseButton::Right, true)); break;
 	default:
 		break;
 	}
@@ -55,6 +61,14 @@ void WindowsFramework::keyDown(void * sender, KeyBoardEvent* eventArg)
 }
 
 void WindowsFramework::mouseMove(void * sender, MouseMoveEvent* eventArg)
+{
+}
+
+void WindowsFramework::mouseUp(void * sender, MouseClickEvent * eventArg)
+{
+}
+
+void WindowsFramework::mouseDown(void * sender, MouseClickEvent * eventArg)
 {
 }
 
@@ -143,6 +157,11 @@ void WindowsFramework::runLoop()
 auto WindowsFramework::getDeltaTime() -> float 
 {
 	return mDeltaTime;
+}
+
+auto WindowsFramework::getHandle() -> void *
+{
+	return mHwnd;
 }
 
 #endif // _WIN32
