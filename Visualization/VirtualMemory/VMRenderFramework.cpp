@@ -9,7 +9,7 @@
 void VMRenderFramework::render(void * sender, float mDeltaTime)
 {
 	float rgba[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	
+
 	mGraphics->clearState();
 	mGraphics->clearRenderTarget(mSwapChain->getRenderTarget(), rgba);
 
@@ -35,7 +35,7 @@ void VMRenderFramework::render(void * sender, float mDeltaTime)
 
 void VMRenderFramework::update(void * sender, float mDeltaTime)
 {
-	static float moveSpeed = 1.0f;
+	static float moveSpeed = 2.0f;
 
 	glm::vec3 moveVector = glm::vec3(0, 0, 0);
 
@@ -44,16 +44,37 @@ void VMRenderFramework::update(void * sender, float mDeltaTime)
 	if (Input::isKeyDown(KeyCode::S) == true) moveVector = moveVector + Camera::back();
 	if (Input::isKeyDown(KeyCode::A) == true) moveVector = moveVector + Camera::left();
 	if (Input::isKeyDown(KeyCode::D) == true) moveVector = moveVector + Camera::right();
+	
+	//move vector is not zero, means we input the key
+	if (glm::length(moveVector) != 0) {
+		auto length = glm::normalize(moveVector) * moveSpeed * mDeltaTime; //length
 
-	//move with constant speed
-	if (glm::length(moveVector) != 0) mCamera.move(glm::normalize(moveVector) * moveSpeed * mDeltaTime);
-
+		mCamera.walk(length.z);
+		mCamera.strafe(-length.x);
+	}
+	
 	//update matrix
 	mMatrixStructure.WorldTransform = glm::mat4(1);
 	mMatrixStructure.CameraTransform = mCamera.getView();
 	mMatrixStructure.ProjectTransform = mCamera.getPerspective();
 
 	mMatrixBuffer->update(&mMatrixStructure);
+}
+
+void VMRenderFramework::mouseMove(void * sender, MouseMoveEvent * eventArg)
+{
+	//angle speed
+	static float angle = glm::pi<float>() * 0.0001f;
+	static glm::vec2 lastMousePosition = glm::vec2(-1, -1);
+
+	if (lastMousePosition != glm::vec2(-1, -1)) {
+		auto offset = eventArg->getPosition() - lastMousePosition;
+		
+		mCamera.rotateY(angle * offset.x);
+		mCamera.rotateRight(angle * offset.y);
+	}
+
+	lastMousePosition = eventArg->getPosition();
 }
 
 void VMRenderFramework::initializeInputStage()
@@ -76,9 +97,9 @@ void VMRenderFramework::initializeInputStage()
 	mVertexBuffer->update(&Cube::GetVertics(1.0f, 1.0f, 1.0f)[0]);
 
 	//set camera
-	mCamera.setPosition(glm::vec3(0, 0, -3));
+	mCamera.setPosition(glm::vec3(0, 0, -5));
 	mCamera.setForward(glm::vec3(0, 0, 1));
-	mCamera.setPerspective(glm::perspectiveFov(glm::pi<float>() * 0.55f, (float)mWidth, (float)mHeight, 0.0f, 100.0f));
+	mCamera.setPerspective(glm::perspectiveFov(glm::pi<float>() * 0.1f, (float)mWidth , (float)mHeight, 1.0f, 100.0f));
 
 	mMatrixStructure.WorldTransform = glm::mat4(1);
 	mMatrixStructure.CameraTransform = mCamera.getView();

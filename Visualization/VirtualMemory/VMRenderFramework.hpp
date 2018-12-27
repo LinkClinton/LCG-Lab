@@ -23,6 +23,8 @@ private:
 	virtual void render(void* sender, float mDeltaTime)override;
 	virtual void update(void* sender, float mDeltaTime)override;
 	
+	virtual void mouseMove(void* sender, MouseMoveEvent* eventArg)override;
+
 	void initializeInputStage();
 	void initializeShaderStage();
 	void initializeRasterizerStage();
