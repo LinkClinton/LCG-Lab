@@ -1,5 +1,7 @@
 #pragma pack_matrix(row_major) 
 
+#include "SharedMacro.hpp"
+
 struct InputVertex
 {
     float3 mPosition : POSITION;
@@ -19,3 +21,10 @@ cbuffer MatrixBuffer : register(b0)
     matrix CameraTransform;
     matrix ProjectTransform;
 }
+
+Texture3D<int4> DirectoryCacheTexture : register(t0);
+Texture3D<int4> PageCacheTexture : register(t1);
+Texture3D<float> BlockCacheTexture : register(t2);
+
+RWTexture3D<int> BlockCacheUsageStateRWTexture : register(u1);
+RWTexture3D<int> BlockCacheMissHashTableRWTexture : register(u2);

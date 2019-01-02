@@ -132,6 +132,7 @@
     <ClCompile Include="BlockTable.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PageTable.cpp" />
+    <ClCompile Include="VirtualMemoryManager.cpp" />
     <ClCompile Include="VMRenderFramework.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +146,8 @@
     <ClInclude Include="LRUCache.hpp" />
     <ClInclude Include="PageTable.hpp" />
     <ClInclude Include="CPUMemoryTestUnit.hpp" />
+    <ClInclude Include="SharedMacro.hpp" />
+    <ClInclude Include="VirtualMemoryManager.hpp" />
     <ClInclude Include="VMRenderFramework.hpp" />
     <ClInclude Include="Helper.hpp" />
   </ItemGroup>

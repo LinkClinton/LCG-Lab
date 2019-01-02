@@ -5,6 +5,8 @@
 
 #include "Helper.hpp"
 
+#include "SharedMacro.hpp"
+
 class VMRenderFramework : public WindowsFramework {
 private:
 	InputLayout* mInputLayout;

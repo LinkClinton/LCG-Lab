@@ -5,7 +5,6 @@
 
 #include <Cube.hpp>
 
-
 void VMRenderFramework::render(void * sender, float mDeltaTime)
 {
 	float rgba[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -44,8 +43,8 @@ void VMRenderFramework::update(void * sender, float mDeltaTime)
 	if (mInput->isKeyDown(KeyCode::S) == true) moveVector = moveVector + Camera::back();
 	if (mInput->isKeyDown(KeyCode::A) == true) moveVector = moveVector + Camera::left();
 	if (mInput->isKeyDown(KeyCode::D) == true) moveVector = moveVector + Camera::right();
-	if (mInput->isKeyDown(KeyCode::Space) == true) moveVector = moveVector + Camera::up();
 	if (mInput->isKeyDown(KeyCode::F) == true) moveVector = moveVector + Camera::down();
+	if (mInput->isKeyDown(KeyCode::Space) == true) moveVector = moveVector + Camera::up();
 	
 	//move vector is not zero, means we input the key
 	if (glm::length(moveVector) != 0) {
