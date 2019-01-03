@@ -48,6 +48,8 @@ public:
 		case PixelFormat::R8Unknown:
 		case PixelFormat::R8Uint:
 			return 1;
+		case PixelFormat::R32G32Uint:
+			return 8;
 		default:
 			std::runtime_error("The pixel format is not supported.");
 		}
@@ -76,6 +78,8 @@ public:
 			return DXGI_FORMAT::DXGI_FORMAT_R8_UINT;
 		case PixelFormat::R32Uint:
 			return DXGI_FORMAT::DXGI_FORMAT_R32_UINT;
+		case PixelFormat::R32G32Uint:
+			return DXGI_FORMAT::DXGI_FORMAT_R32G32_UINT;
 		default:
 			std::runtime_error("The pixel format is not supported.");
 		}

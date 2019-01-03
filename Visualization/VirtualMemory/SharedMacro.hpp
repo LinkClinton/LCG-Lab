@@ -34,7 +34,7 @@
 
 //DIRECTORY_SIZE_XYZ :
 //the directory size
-//the max texture size we can render is equal DIRECTORY_SIZE_XYZ * PAGE_SIZE_XYZ * BLOCK_SIZE
+//the max texture size we can render is equal DIRECTORY_SIZE_XYZ * PAGE_SIZE_XYZ * BLOCK_SIZE_XZY
 #define DIRECTORY_SIZE_XYZ 16
 //MULTIRESOLUTION_COUNT :
 //the multi-resolution count(in other words, the directory count)

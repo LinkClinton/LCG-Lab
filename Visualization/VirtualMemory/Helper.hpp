@@ -12,10 +12,11 @@ struct Vector3 {
 	Vector3(T x, T y, T z) :
 		X(x), Y(y), Z(z) {}
 
+	Vector3(T xyz) : Vector3(xyz, xyz, xyz) {}
+
 	template<typename T = int>
 	Vector3(T x = (int)0, T y = (int)0, T z = (int)0) :
 		X(x), Y(y), Z(z) {}
-
 
 	bool operator == (const Vector3 &vector)const {
 		return (X == vector.X) && (Y == vector.Y) && (Z == vector.Z);
