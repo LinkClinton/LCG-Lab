@@ -52,4 +52,19 @@ public:
 	virtual auto getHandle() -> void* = 0;
 };
 
+#include "InputLayout.hpp"
+#include "RenderTarget.hpp"
+#include "DepthStencil.hpp"
+#include "SwapChain.hpp"
+#include "ConstantBuffer.hpp"
+#include "VertexBuffer.hpp"
+#include "IndexBuffer.hpp"
+#include "Texture2D.hpp"
+#include "Texture3D.hpp"
+#include "VertexShader.hpp"
+#include "PixelShader.hpp"
+#include "RasterizerState.hpp"
+#include "DepthStencilState.hpp"
+#include "ResourceUsage.hpp"
+#include "UnorderedAccessUsage.hpp"
 #include "Input.hpp"

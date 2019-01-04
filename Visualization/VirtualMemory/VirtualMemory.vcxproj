@@ -130,6 +130,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BlockTable.cpp" />
+    <ClCompile Include="GPUBlockTable.cpp" />
+    <ClCompile Include="GPUPageTable.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PageTable.cpp" />
     <ClCompile Include="VirtualMemoryManager.cpp" />
@@ -143,6 +145,8 @@
   <ItemGroup>
     <ClInclude Include="AddressMap.hpp" />
     <ClInclude Include="BlockTable.hpp" />
+    <ClInclude Include="GPUBlockTable.hpp" />
+    <ClInclude Include="GPUPageTable.hpp" />
     <ClInclude Include="LRUCache.hpp" />
     <ClInclude Include="PageTable.hpp" />
     <ClInclude Include="CPUMemoryTestUnit.hpp" />

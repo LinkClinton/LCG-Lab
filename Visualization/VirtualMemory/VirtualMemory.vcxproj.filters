@@ -19,15 +19,15 @@
     <Filter Include="Header Files\TestUnit">
       <UniqueIdentifier>{94626129-e5d1-4e90-bd8c-3e79a0e2a324}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Table">
+      <UniqueIdentifier>{dacf1e1b-1984-4d1c-b75f-c2049cc834bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Table">
+      <UniqueIdentifier>{71554bd8-0c72-4666-b8e7-110dd83cee25}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BlockTable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PageTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VMRenderFramework.cpp">
@@ -36,14 +36,20 @@
     <ClCompile Include="VirtualMemoryManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BlockTable.cpp">
+      <Filter>Source Files\Table</Filter>
+    </ClCompile>
+    <ClCompile Include="PageTable.cpp">
+      <Filter>Source Files\Table</Filter>
+    </ClCompile>
+    <ClCompile Include="GPUBlockTable.cpp">
+      <Filter>Source Files\Table</Filter>
+    </ClCompile>
+    <ClCompile Include="GPUPageTable.cpp">
+      <Filter>Source Files\Table</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PageTable.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BlockTable.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AddressMap.hpp">
       <Filter>Header Files\Structure</Filter>
     </ClInclude>
@@ -64,6 +70,18 @@
     </ClInclude>
     <ClInclude Include="VirtualMemoryManager.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockTable.hpp">
+      <Filter>Header Files\Table</Filter>
+    </ClInclude>
+    <ClInclude Include="PageTable.hpp">
+      <Filter>Header Files\Table</Filter>
+    </ClInclude>
+    <ClInclude Include="GPUBlockTable.hpp">
+      <Filter>Header Files\Table</Filter>
+    </ClInclude>
+    <ClInclude Include="GPUPageTable.hpp">
+      <Filter>Header Files\Table</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

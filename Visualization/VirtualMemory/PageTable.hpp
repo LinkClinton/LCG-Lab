@@ -26,9 +26,9 @@ private:
 	PageTable* mNext;
 	BlockTable* mEnd;
 
-	std::vector<VirtualLink*> mMapRelation;
-
 	static void deletePageCache(PageCache* &pageCache);
+protected:
+	std::vector<VirtualLink*> mMapRelation;
 public:
 	PageTable(const Size &size, PageTable* nextTable) : AddressMap(size),
 		mNext(nextTable), mEnd(nullptr), mMapRelation(size.X * size.Y * size.Z) {}
@@ -38,13 +38,13 @@ public:
 
 	~PageTable();
 
-	void mallocAddress(VirtualLink* virtualLink);
+	virtual void mallocAddress(VirtualLink* virtualLink);
 
-	void clearUpAddress(const VirtualAddress &address);
+	virtual void clearUpAddress(const VirtualAddress &address);
 
-	void mapAddress(const glm::vec3 &position, const Size &size, BlockCache* blockCache, VirtualLink* virtualLink);
+	virtual void mapAddress(const glm::vec3 &position, const Size &size, BlockCache* blockCache, VirtualLink* virtualLink);
 
-	auto queryAddress(const glm::vec3 &position, const Size & size, VirtualLink* virtualLink) -> BlockCache*;
+	virtual auto queryAddress(const glm::vec3 &position, const Size & size, VirtualLink* virtualLink) -> BlockCache*;
 };
 
 class PageDirectory : public AddressMap<VirtualLink*> {

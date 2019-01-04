@@ -10,7 +10,7 @@
 class BlockCache : public AddressMap<byte> {
 private:
 	static Size mBlockCacheSize;
-	VirtualAddress mOriginEntry;
+	VirtualAddress mOriginEntry; //for debug
 public:
 	BlockCache(const Size &size, const VirtualAddress &OriginEntry, byte* data);
 
@@ -21,22 +21,20 @@ public:
 
 class BlockTable : public AddressMap<BlockCache*> {
 private:
-	std::vector<VirtualLink*> mMapRelation;
-
 	static void deleteBlockCache(BlockCache* &blockCache);
+protected:
+	std::vector<VirtualLink*> mMapRelation;
 public:
 	BlockTable(const Size &size) : AddressMap(size),
 		mMapRelation(size.X * size.Y * size.Z) {}
 
 	~BlockTable();
 
-	void mallocAddress(VirtualLink* virtualLink);
+	virtual void mallocAddress(VirtualLink* virtualLink);
 
-	void clearUpAddress(const VirtualAddress &address);
+	virtual void clearUpAddress(const VirtualAddress &address);
 
-	void mapAddress(const glm::vec3 &position, const Size &size, BlockCache* blockCache, VirtualLink* virtualLink);
+	virtual void mapAddress(const glm::vec3 &position, const Size &size, BlockCache* blockCache, VirtualLink* virtualLink);
 
-	auto queryAddress(const glm::vec3 &position, const Size& size, VirtualLink* virtualLink) -> BlockCache*;
+	virtual auto queryAddress(const glm::vec3 &position, const Size& size, VirtualLink* virtualLink) -> BlockCache*;
 };
-
-
