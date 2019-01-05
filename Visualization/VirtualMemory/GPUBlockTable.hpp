@@ -4,12 +4,20 @@
 
 #include <Framework.hpp>
 
+class GPUHelper {
+public:
+	static void modifyVirtualLinkToTexture(VirtualLink* virtualLink, Texture3D* texture);
+};
+
 class GPUBlockTable : public BlockTable {
 private:
 	Graphics* mGraphics;
 	Factory* mFactory;
 
 	Texture3D* mBlockTableTexture;
+	Texture3D* mFromTexture;
+
+	friend class GPUPageTable;
 public:
 	GPUBlockTable(Factory* factory, Graphics* graphics, const Size &size);
 

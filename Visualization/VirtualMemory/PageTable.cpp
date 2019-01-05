@@ -35,7 +35,7 @@ void PageDirectory::mapAddress(const glm::vec3 & position, BlockCache* blockCach
 	auto nextAddress = getAddress(address);
 
 	//if address is null, we create and set it
-	if (nextAddress == nullptr) setAddress(address, nextAddress = new VirtualLink());
+	if (nextAddress == nullptr) setAddress(address, nextAddress = new VirtualLink(VirtualAddress(), address, PageState::UnMapped));
 
 	//if we do not map this page, we do it
 	if (nextAddress->State == PageState::UnMapped) mNext->mallocAddress(nextAddress);
@@ -161,6 +161,10 @@ void PageTable::mapAddress(const glm::vec3 & position, const Size &size, BlockCa
 	if (address.Y == allSize.Y) address.Y = allSize.Y - 1;
 	if (address.Z == allSize.Z) address.Z = allSize.Z - 1;
 
+	//from address for virtual link
+	//from address means the real address in the page table
+	auto fromAddress = address;
+
 	//we can get the relate address by using real address mod size
 	address.X = address.X % pageSize.X;
 	address.Y = address.Y % pageSize.Y;
@@ -173,7 +177,7 @@ void PageTable::mapAddress(const glm::vec3 & position, const Size &size, BlockCa
 	auto nextAddress = pageCache->getAddress(address);
 
 	//if address is null, we create and set it
-	if (nextAddress == nullptr) pageCache->setAddress(address, nextAddress = new VirtualLink());
+	if (nextAddress == nullptr) pageCache->setAddress(address, nextAddress = new VirtualLink(VirtualAddress(), fromAddress, PageState::UnMapped));
 
 	//to next page, the end is null
 	if (mNext != nullptr) {

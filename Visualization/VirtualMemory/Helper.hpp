@@ -45,10 +45,12 @@ enum class PageState {
 
 struct VirtualLink {
 	VirtualAddress Address;
+	VirtualAddress FromAddress;
 	PageState State;
 
 	VirtualLink(const VirtualAddress &address = VirtualAddress(),
-		PageState state = PageState::UnMapped) : Address(address), State(state) {}
+		const VirtualAddress &fromAddress = VirtualAddress(),
+		PageState state = PageState::UnMapped) : Address(address), FromAddress(fromAddress), State(state) {}
 };
 
 struct MatrixStructure {

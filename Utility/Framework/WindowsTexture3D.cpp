@@ -32,4 +32,17 @@ void WindowsTexture3D::update(void * data)
 	static_cast<WindowsGraphics*>(mGraphics)->mDeviceContext->UpdateSubresource(mTexture3D, 0, nullptr, data, mRowPitch, mDepthPitch);
 }
 
+void WindowsTexture3D::update(void * data, int left, int top, int front, int right, int bottom, int back)
+{
+	D3D11_BOX box;
+	box.left = left;
+	box.top = top;
+	box.front = front;
+	box.right = right;
+	box.bottom = bottom;
+	box.back = back;
+
+	static_cast<WindowsGraphics*>(mGraphics)->mDeviceContext->UpdateSubresource(mTexture3D, 0, &box, data, mRowPitch, mDepthPitch);
+}
+
 #endif // _WIN32

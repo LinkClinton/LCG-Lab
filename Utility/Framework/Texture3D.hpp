@@ -37,7 +37,8 @@ public:
 	}
 
 	auto getDepth() -> int const {
-		return mDepth;
+		return mDepth; 
 	}
 
+	virtual void update(void* data, int left, int top, int front, int right, int bottom, int back) = 0;
 };

@@ -11,6 +11,7 @@ private:
 	Factory* mFactory;
 
 	Texture3D* mPageTableTexture;
+	Texture3D* mFromTexture;
 public:
 	GPUPageTable(Factory* factory, Graphics* graphics, const Size &size, GPUPageTable* nextTable);
 
