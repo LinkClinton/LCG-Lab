@@ -72,9 +72,17 @@ public:
 	template<typename T>
 	static auto multiple(const Vector3<T> &left, const glm::vec3 &right) -> Vector3<T> {
 		return Vector3<T>(
-			int(left.X * right.x),
-			int(left.Y * right.y),
-			int(left.Z * right.z));
+			T(left.X * right.x),
+			T(left.Y * right.y),
+			T(left.Z * right.z));
+	}
+
+	template<typename T>
+	static auto add(const Vector3<T> &left, const Vector3<T> &right) -> Vector3<T> {
+		return Vector3<T>(
+			left.X + right.X,
+			left.Y + right.Y,
+			left.Z + right.Z);
 	}
 
 	static auto readFile(const std::string &fileName) -> std::vector<byte> {

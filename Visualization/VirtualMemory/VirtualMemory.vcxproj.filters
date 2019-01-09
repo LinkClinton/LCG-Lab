@@ -19,10 +19,10 @@
     <Filter Include="Header Files\TestUnit">
       <UniqueIdentifier>{94626129-e5d1-4e90-bd8c-3e79a0e2a324}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Table">
+    <Filter Include="Header Files\Memory">
       <UniqueIdentifier>{dacf1e1b-1984-4d1c-b75f-c2049cc834bb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Table">
+    <Filter Include="Source Files\Memory">
       <UniqueIdentifier>{71554bd8-0c72-4666-b8e7-110dd83cee25}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -37,16 +37,22 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BlockTable.cpp">
-      <Filter>Source Files\Table</Filter>
+      <Filter>Source Files\Memory</Filter>
     </ClCompile>
     <ClCompile Include="PageTable.cpp">
-      <Filter>Source Files\Table</Filter>
+      <Filter>Source Files\Memory</Filter>
     </ClCompile>
     <ClCompile Include="GPUBlockTable.cpp">
-      <Filter>Source Files\Table</Filter>
+      <Filter>Source Files\Memory</Filter>
     </ClCompile>
     <ClCompile Include="GPUPageTable.cpp">
-      <Filter>Source Files\Table</Filter>
+      <Filter>Source Files\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="PageDirectory.cpp">
+      <Filter>Source Files\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="GPUPageDirectory.cpp">
+      <Filter>Source Files\Memory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -72,16 +78,22 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BlockTable.hpp">
-      <Filter>Header Files\Table</Filter>
+      <Filter>Header Files\Memory</Filter>
     </ClInclude>
     <ClInclude Include="PageTable.hpp">
-      <Filter>Header Files\Table</Filter>
+      <Filter>Header Files\Memory</Filter>
     </ClInclude>
     <ClInclude Include="GPUBlockTable.hpp">
-      <Filter>Header Files\Table</Filter>
+      <Filter>Header Files\Memory</Filter>
     </ClInclude>
     <ClInclude Include="GPUPageTable.hpp">
-      <Filter>Header Files\Table</Filter>
+      <Filter>Header Files\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="PageDirectory.hpp">
+      <Filter>Header Files\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="GPUPageDirectory.hpp">
+      <Filter>Header Files\Memory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

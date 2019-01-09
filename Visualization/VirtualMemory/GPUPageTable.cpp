@@ -3,22 +3,24 @@
 #include "SharedMacro.hpp"
 
 GPUPageTable::GPUPageTable(Factory * factory, Graphics * graphics, const Size & size, GPUPageTable * nextTable)
-	: PageTable(size, nextTable), mFactory(factory), mGraphics(graphics)
+	: PageTable(size, nextTable), mFactory(factory), mGraphics(graphics), mFromTexture(nullptr)
 {
-	int pageTextureSize = PAGE_COUNT_XYZ * PAGE_SIZE_XYZ;
+	//texture size is equal the table size * block size
+	auto textureSize = Helper::multiple(mSize, PageCache::getPageCacheSize());
 
-	mPageTableTexture = mFactory->createTexture3D(pageTextureSize, pageTextureSize, pageTextureSize, PixelFormat::R8G8B8A8Unknown);
+	mPageTableTexture = mFactory->createTexture3D(textureSize.X, textureSize.Y, textureSize.Z, PixelFormat::R8G8B8A8Unknown);
 
 	assert(nextTable->mFromTexture == nullptr);
 	nextTable->mFromTexture = mPageTableTexture;
 }
 
 GPUPageTable::GPUPageTable(Factory * factory, Graphics * graphics, const Size & size, GPUBlockTable * endTable)
-	: PageTable(size, endTable), mFactory(factory), mGraphics(graphics)
+	: PageTable(size, endTable), mFactory(factory), mGraphics(graphics), mFromTexture(nullptr)
 {
-	int pageTextureSize = PAGE_COUNT_XYZ * PAGE_SIZE_XYZ;
+	//texture size is equal the table size * block size
+	auto textureSize = Helper::multiple(mSize, PageCache::getPageCacheSize());
 
-	mPageTableTexture = mFactory->createTexture3D(pageTextureSize, pageTextureSize, pageTextureSize, PixelFormat::R8G8B8A8Unknown);
+	mPageTableTexture = mFactory->createTexture3D(textureSize.X, textureSize.Y, textureSize.Z, PixelFormat::R8G8B8A8Unknown);
 
 	assert(endTable->mFromTexture == nullptr);
 	endTable->mFromTexture = mPageTableTexture;

@@ -81,6 +81,10 @@
     <IncludePath>$(SolutionDir)ThirdParty;$(SolutionDir)Utility\Framework;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(ProjectDir)\$(Platform)\$(Configuration)\</OutDir>
+    <IncludePath>$(SolutionDir)ThirdParty;$(SolutionDir)Utility\Framework;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -95,6 +99,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Manifest>
       <EnableDpiAwareness>true</EnableDpiAwareness>
@@ -122,6 +127,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -131,8 +137,10 @@
   <ItemGroup>
     <ClCompile Include="BlockTable.cpp" />
     <ClCompile Include="GPUBlockTable.cpp" />
+    <ClCompile Include="GPUPageDirectory.cpp" />
     <ClCompile Include="GPUPageTable.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PageDirectory.cpp" />
     <ClCompile Include="PageTable.cpp" />
     <ClCompile Include="VirtualMemoryManager.cpp" />
     <ClCompile Include="VMRenderFramework.cpp" />
@@ -146,8 +154,10 @@
     <ClInclude Include="AddressMap.hpp" />
     <ClInclude Include="BlockTable.hpp" />
     <ClInclude Include="GPUBlockTable.hpp" />
+    <ClInclude Include="GPUPageDirectory.hpp" />
     <ClInclude Include="GPUPageTable.hpp" />
     <ClInclude Include="LRUCache.hpp" />
+    <ClInclude Include="PageDirectory.hpp" />
     <ClInclude Include="PageTable.hpp" />
     <ClInclude Include="CPUMemoryTestUnit.hpp" />
     <ClInclude Include="SharedMacro.hpp" />
@@ -163,8 +173,8 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="RayCastVertexShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -173,8 +183,8 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <CopyFileToFolders Include="ShaderInclude.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>

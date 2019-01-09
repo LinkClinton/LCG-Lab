@@ -7,9 +7,9 @@
 
 #include <glm/glm.hpp>
 
-#include "Utility.hpp"
 #include "PageTable.hpp"
 #include "BlockTable.hpp"
+#include "PageDirectory.hpp"
 
 #define BLOCK_CACHE_XYZ 10
 #define BLOCK_CACHE_SIZE BLOCK_CACHE_XYZ * BLOCK_CACHE_XYZ * BLOCK_CACHE_XYZ
@@ -30,9 +30,13 @@ public:
 	CPUMemoryTestUnit(const std::string &volumeName, const Size &size) {
 		std::ios::sync_with_stdio(false);
 		
+		std::vector<Size> resolutionSize;
+
+		resolutionSize.push_back(Size(10, 10, 10));
+
 		mBlockTable = new BlockTable(Size(5, 5, 5));
 		mPageTable = new PageTable(Size(5, 5, 5), mBlockTable);
-		mPageDirectory = new PageDirectory(Size(10, 10, 10), mPageTable);
+		mPageDirectory = new PageDirectory(resolutionSize, mPageTable);
 
 		mVolumeName = volumeName;
 		mSize = size;
@@ -142,14 +146,14 @@ public:
 		BlockCache* result = nullptr;
 
 		//map data
-		mPageDirectory->mapAddress(position, result = new BlockCache(BlockCache::getBlockCacheSize(), blockEntry, buffer));
+		mPageDirectory->mapAddress(0, position, result = new BlockCache(BlockCache::getBlockCacheSize(), blockEntry, buffer));
 
 		return result;
 	}
 
 	auto getAddress(const glm::vec3 &position) -> byte {
 		//query block cache
-		auto blockCache = mPageDirectory->queryAddress(position);
+		auto blockCache = mPageDirectory->queryAddress(0, position);
 		auto blockSize = BlockCache::getBlockCacheSize();
 
 		if (blockCache == nullptr) blockCache = mapAddress(position);

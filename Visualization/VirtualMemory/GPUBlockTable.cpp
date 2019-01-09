@@ -3,14 +3,12 @@
 #include "SharedMacro.hpp"
 
 GPUBlockTable::GPUBlockTable(Factory * factory, Graphics * graphics, const Size & size) :
-	BlockTable(size), mFactory(factory), mGraphics(graphics)
+	BlockTable(size), mFactory(factory), mGraphics(graphics), mFromTexture(nullptr)
 {
-	//initialize texture(block cache) for gpu virtual memory
-	int blockTextureSize = BLOCK_COUNT_XYZ * BLOCK_SIZE_XYZ;
-	int pageTextureSize = PAGE_COUNT_XYZ * PAGE_SIZE_XYZ;
+	//texture size is equal the table size * block size
+	auto textureSize = Helper::multiple(mSize, BlockCache::getBlockCacheSize());
 
-	mBlockTableTexture = mFactory->createTexture3D(blockTextureSize, blockTextureSize, blockTextureSize, PixelFormat::R8Unknown);
-	mFromTexture = nullptr;
+	mBlockTableTexture = mFactory->createTexture3D(textureSize.X, textureSize.Y, textureSize.Z, PixelFormat::R8Unknown);
 }
 
 GPUBlockTable::~GPUBlockTable()

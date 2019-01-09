@@ -47,17 +47,4 @@ public:
 	virtual auto queryAddress(const glm::vec3 &position, const Size & size, VirtualLink* virtualLink) -> BlockCache*;
 };
 
-class PageDirectory : public AddressMap<VirtualLink*> {
-private:
-	PageTable* mNext;
-public:
-	PageDirectory(const Size &size, PageTable* nextTable) : AddressMap(size),
-		mNext(nextTable) {}
-
-	~PageDirectory();
-
-	void mapAddress(const glm::vec3 &position, BlockCache* blockCache);
-
-	auto queryAddress(const glm::vec3 &position) -> BlockCache*;
-};
 

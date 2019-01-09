@@ -19,7 +19,7 @@ void VirtualMemoryManager::mapAddressToGPU(BlockCache * block, int resolutionLev
 
 void VirtualMemoryManager::initialize(const std::string &fileName, const std::vector<glm::vec3> &resolution)
 {
-	//initialize the virutal memroy resource(CPU and GPU)
+	/*//initialize the virutal memroy resource(CPU and GPU)
 
 	//expand size of CPU virtual memory
 	//if the size of CPU and GPU are same, it can not work well
@@ -93,12 +93,12 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 	mBlockCacheUsage = mFactory->createResourceUsage(mBlockCacheTexture, mBlockCacheTexture->getPixelFormat());
 
 	mBlockCacheUsageStateUsage = mFactory->createUnorderedAccessUsage(mBlockCacheUsageStateTexture, mBlockCacheUsageStateTexture->getPixelFormat());
-	mBlockCacheMissArrayUsage = mFactory->createUnorderedAccessUsage(mBlockCacheMissArrayTexture, mBlockCacheMissArrayTexture->getPixelFormat());
+	mBlockCacheMissArrayUsage = mFactory->createUnorderedAccessUsage(mBlockCacheMissArrayTexture, mBlockCacheMissArrayTexture->getPixelFormat());*/
 }
 
 void VirtualMemoryManager::mapAddress(int resolutionLevel, int blockID) 
 {
-	//for each cache miss, we will test if the block in the CPU virtual memory
+	/*//for each cache miss, we will test if the block in the CPU virtual memory
 	//if it is not in the memory, we will load it from disk
 	//if it is in the memory, we will upload it to GPU virtual memory
 
@@ -143,7 +143,7 @@ void VirtualMemoryManager::mapAddress(int resolutionLevel, int blockID)
 	}
 
 	//now, we need upload the block to GPU virtual memory
-	mapAddressToGPU(blockCache, resolutionLevel, blockCenterPosition);
+	mapAddressToGPU(blockCache, resolutionLevel, blockCenterPosition);*/
 }
 
 auto VirtualMemoryManager::loadBlock(int resolutionLevel, const VirtualAddress & blockAddress) -> BlockCache *

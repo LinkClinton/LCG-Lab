@@ -2,6 +2,7 @@
 
 #include "BlockTable.hpp"
 #include "PageTable.hpp"
+#include "PageDirectory.hpp"
 #include "SharedMacro.hpp"
 
 #include <WindowsFramework.hpp>
@@ -19,7 +20,7 @@ private:
 	Size mFileSize;
 
 	//cpu resource
-	PageDirectory* mDirectoryCache[MULTIRESOLUTION_COUNT];
+	PageDirectory* mDirectoryCache;
 	PageTable* mPageCacheTable;
 	BlockTable* mBlockCacheTable;
 

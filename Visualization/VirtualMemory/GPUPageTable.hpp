@@ -12,6 +12,8 @@ private:
 
 	Texture3D* mPageTableTexture;
 	Texture3D* mFromTexture;
+
+	friend class GPUPageDirectory;
 public:
 	GPUPageTable(Factory* factory, Graphics* graphics, const Size &size, GPUPageTable* nextTable);
 
