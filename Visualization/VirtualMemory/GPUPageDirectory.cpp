@@ -6,6 +6,7 @@ GPUPageDirectory::GPUPageDirectory(Factory * factory, Graphics * graphics, const
 {
 	//texture size is equal the mSize
 	mPageDirectoryTexture = mFactory->createTexture3D(mSize.X, mSize.Y, mSize.Z, PixelFormat::R8G8B8A8Unknown);
+	mTextureUsage = mFactory->createResourceUsage(mPageDirectoryTexture, mPageDirectoryTexture->getPixelFormat());
 
 	assert(nextTable->mFromTexture == nullptr);
 	nextTable->mFromTexture = mPageDirectoryTexture;
@@ -13,6 +14,7 @@ GPUPageDirectory::GPUPageDirectory(Factory * factory, Graphics * graphics, const
 
 GPUPageDirectory::~GPUPageDirectory()
 {
+	mFactory->destoryResourceUsage(mTextureUsage);
 	mFactory->destoryTexture3D(mPageDirectoryTexture);
 }
 
@@ -28,4 +30,14 @@ auto GPUPageDirectory::queryAddress(int resolution, const glm::vec3 & position) 
 	//do not need override
 	//because all operation will finish in the in the next table
 	return PageDirectory::queryAddress(resolution, position);
+}
+
+auto GPUPageDirectory::getTexture() -> Texture3D *
+{
+	return mPageDirectoryTexture;
+}
+
+auto GPUPageDirectory::getTextureUsage() -> ResourceUsage *
+{
+	return mTextureUsage;
 }

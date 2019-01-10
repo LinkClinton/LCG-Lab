@@ -1,11 +1,14 @@
 #pragma once
 
-#include "BlockTable.hpp"
 #include "PageTable.hpp"
+#include "BlockTable.hpp"
 #include "PageDirectory.hpp"
+#include "GPUPageTable.hpp"
+#include "GPUBlockTable.hpp"
+#include "GPUPageDirectory.hpp"
 #include "SharedMacro.hpp"
 
-#include <WindowsFramework.hpp>
+#include <Framework.hpp>
 #include <fstream>
 #include <vector>
 
@@ -19,35 +22,33 @@ private:
 	std::ifstream mFile;
 	Size mFileSize;
 
-	//cpu resource
+	//CPU resource
 	PageDirectory* mDirectoryCache;
 	PageTable* mPageCacheTable;
 	BlockTable* mBlockCacheTable;
 
-	//gpu resource
-	Texture3D* mDirectoryCacheTexture;
-	Texture3D* mPageCacheTexture;
-	Texture3D* mBlockCacheTexture;
+	//GPU resource
+	GPUPageDirectory* mGPUDirectoryCache;
+	GPUPageTable* mGPUPageCacheTable;
+	GPUBlockTable* mGPUBlockCacheTable;
+
+	//for cache
 	Texture3D* mBlockCacheUsageStateTexture;
 	Texture3D* mBlockCacheMissArrayTexture;
-
-	ResourceUsage* mDirectoryCacheUsage;
-	ResourceUsage* mPageCacheUsage;
-	ResourceUsage* mBlockCacheUsage;
 
 	UnorderedAccessUsage* mBlockCacheUsageStateUsage;
 	UnorderedAccessUsage* mBlockCacheMissArrayUsage;
 
 	void analyseFile(const std::string &fileName);
 
-	void mapAddressToGPU(BlockCache* block, int resolutionLevel, const glm::vec3 &position);
+	void mapAddressToGPU(int resolution, const glm::vec3 &position, BlockCache* block);
 public:
 	VirtualMemoryManager(Factory* factory, Graphics* graphics, int width, int height) :
 		mFactory(factory), mGraphics(graphics), mResolutionWidth(width), mResolutionHeight(height) {}
 
 	void initialize(const std::string &fileName, const std::vector<glm::vec3> &resolutions);
 
-	void mapAddress(int resolutionLevel, int blockID);
+	void mapAddress(int resolution, int blockID);
 
-	auto loadBlock(int resolutionLevel, const VirtualAddress &blockAddress) -> BlockCache*;
+	auto loadBlock(int resolution, const VirtualAddress &blockAddress) -> BlockCache*;
 };

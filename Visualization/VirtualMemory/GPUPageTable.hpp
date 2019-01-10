@@ -13,6 +13,8 @@ private:
 	Texture3D* mPageTableTexture;
 	Texture3D* mFromTexture;
 
+	ResourceUsage* mTextureUsage;
+
 	friend class GPUPageDirectory;
 public:
 	GPUPageTable(Factory* factory, Graphics* graphics, const Size &size, GPUPageTable* nextTable);
@@ -28,4 +30,8 @@ public:
 	virtual void mapAddress(const glm::vec3 &position, const Size &size, BlockCache* blockCache, VirtualLink* virtualLink)override;
 
 	virtual auto queryAddress(const glm::vec3 &position, const Size & size, VirtualLink* virtualLink)->BlockCache* override;
+
+	auto getTexture() -> Texture3D*;
+
+	auto getTextureUsage() -> ResourceUsage*;
 };

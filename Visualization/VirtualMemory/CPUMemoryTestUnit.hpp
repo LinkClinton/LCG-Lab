@@ -34,8 +34,8 @@ public:
 
 		resolutionSize.push_back(Size(10, 10, 10));
 
-		mBlockTable = new BlockTable(Size(5, 5, 5));
-		mPageTable = new PageTable(Size(5, 5, 5), mBlockTable);
+		mBlockTable = new BlockTable(5);
+		mPageTable = new PageTable(1, mBlockTable);
 		mPageDirectory = new PageDirectory(resolutionSize, mPageTable);
 
 		mVolumeName = volumeName;
@@ -62,6 +62,7 @@ public:
 
 		//random engine
 		std::default_random_engine random;
+		
 		std::uniform_real_distribution<double> randomRange(0, 1);
 
 		//start test

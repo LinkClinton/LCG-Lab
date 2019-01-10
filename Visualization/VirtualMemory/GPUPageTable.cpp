@@ -9,6 +9,7 @@ GPUPageTable::GPUPageTable(Factory * factory, Graphics * graphics, const Size & 
 	auto textureSize = Helper::multiple(mSize, PageCache::getPageCacheSize());
 
 	mPageTableTexture = mFactory->createTexture3D(textureSize.X, textureSize.Y, textureSize.Z, PixelFormat::R8G8B8A8Unknown);
+	mTextureUsage = mFactory->createResourceUsage(mPageTableTexture, mPageTableTexture->getPixelFormat());
 
 	assert(nextTable->mFromTexture == nullptr);
 	nextTable->mFromTexture = mPageTableTexture;
@@ -21,6 +22,7 @@ GPUPageTable::GPUPageTable(Factory * factory, Graphics * graphics, const Size & 
 	auto textureSize = Helper::multiple(mSize, PageCache::getPageCacheSize());
 
 	mPageTableTexture = mFactory->createTexture3D(textureSize.X, textureSize.Y, textureSize.Z, PixelFormat::R8G8B8A8Unknown);
+	mTextureUsage = mFactory->createResourceUsage(mPageTableTexture, mPageTableTexture->getPixelFormat());
 
 	assert(endTable->mFromTexture == nullptr);
 	endTable->mFromTexture = mPageTableTexture;
@@ -28,6 +30,7 @@ GPUPageTable::GPUPageTable(Factory * factory, Graphics * graphics, const Size & 
 
 GPUPageTable::~GPUPageTable()
 {
+	mFactory->destoryResourceUsage(mTextureUsage);
 	mFactory->destoryTexture3D(mPageTableTexture);
 }
 
@@ -63,4 +66,14 @@ auto GPUPageTable::queryAddress(const glm::vec3 & position, const Size & size, V
 {
 	//do not override
 	return PageTable::queryAddress(position, size, virtualLink);
+}
+
+auto GPUPageTable::getTexture() -> Texture3D *
+{
+	return mPageTableTexture;
+}
+
+auto GPUPageTable::getTextureUsage() -> ResourceUsage *
+{
+	return mTextureUsage;
 }

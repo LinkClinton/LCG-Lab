@@ -11,6 +11,8 @@ private:
 	Factory* mFactory;
 
 	Texture3D* mPageDirectoryTexture;
+
+	ResourceUsage* mTextureUsage;
 public:
 	GPUPageDirectory(Factory* factory, Graphics* graphics, const std::vector<Size> &resolutionSize, GPUPageTable* nextTable);
 
@@ -19,4 +21,8 @@ public:
 	virtual void mapAddress(int resolution, const glm::vec3 &position, BlockCache* blockCache);
 
 	virtual auto queryAddress(int resolution, const glm::vec3 &position)->BlockCache*;
+
+	auto getTexture() -> Texture3D*;
+
+	auto getTextureUsage() -> ResourceUsage*;
 };

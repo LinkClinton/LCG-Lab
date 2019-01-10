@@ -18,4 +18,6 @@ public:
 	virtual void mapAddress(int resolution, const glm::vec3 &position, BlockCache* blockCache);
 
 	virtual auto queryAddress(int resolution, const glm::vec3 &position) -> BlockCache*;
+
+	auto getResolutionSize(int resolution) -> Size;
 };

@@ -110,3 +110,8 @@ auto PageDirectory::queryAddress(int resolution, const glm::vec3 & position) -> 
 	//go to next layer and query address
 	return mNext->queryAddress(position, mSize, nextAddress);
 }
+
+auto PageDirectory::getResolutionSize(int resolution) -> Size
+{
+	return mResolutionSize[resolution];
+}

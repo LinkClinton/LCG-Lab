@@ -58,7 +58,7 @@ void PageTable::clearUpAddress(const VirtualAddress & address)
 	//and clear the page cache at "address"
 	//we do not need to clear the relation between this page and next page at "address"
 	//because the mapped cache in this page at "address" will never be accessed
-	//and when we need free virtual address in the next page, the LRU system will catch this "miss address"
+	//and when we need free virtual address in the next page, the LRU system will catch this "missed address"
 	//Note: this operation do not tigger the LRU system
 
 	//get array index

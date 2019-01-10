@@ -9,10 +9,12 @@ GPUBlockTable::GPUBlockTable(Factory * factory, Graphics * graphics, const Size 
 	auto textureSize = Helper::multiple(mSize, BlockCache::getBlockCacheSize());
 
 	mBlockTableTexture = mFactory->createTexture3D(textureSize.X, textureSize.Y, textureSize.Z, PixelFormat::R8Unknown);
+	mTextureUsage = mFactory->createResourceUsage(mBlockTableTexture, mBlockTableTexture->getPixelFormat());
 }
 
 GPUBlockTable::~GPUBlockTable()
 {
+	mFactory->destoryResourceUsage(mTextureUsage);
 	mFactory->destoryTexture3D(mBlockTableTexture);
 }
 
@@ -35,6 +37,8 @@ void GPUBlockTable::clearUpAddress(const VirtualAddress & address)
 	BlockTable::clearUpAddress(address);
 
 	//now, the virtual link is reset, we need upload it to the texture
+	//and we do not need to clear the block cache data in the texture
+	//because the data will be covered with new data when the block cache is used
 	if (virtualLink != nullptr) GPUHelper::modifyVirtualLinkToTexture(virtualLink, mFromTexture);
 }
 
@@ -61,6 +65,16 @@ auto GPUBlockTable::queryAddress(const glm::vec3 & position, const Size & size, 
 {
 	//do not override
 	return BlockTable::queryAddress(position, size, virtualLink);
+}
+
+auto GPUBlockTable::getTexture() -> Texture3D *
+{
+	return mBlockTableTexture;
+}
+
+auto GPUBlockTable::getTextureUsage() -> ResourceUsage *
+{
+	return mTextureUsage;
 }
 
 void GPUHelper::modifyVirtualLinkToTexture(VirtualLink * virtualLink, Texture3D * texture)
