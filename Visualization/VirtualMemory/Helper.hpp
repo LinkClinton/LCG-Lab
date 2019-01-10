@@ -38,8 +38,8 @@ typedef Vector3<int> VirtualAddress;
 typedef unsigned char byte;
 
 enum class PageState {
-	Mapped = 0,
-	UnMapped = 1,
+	Mapped = 1,
+	UnMapped = 0,
 	Empty = 2
 };
 

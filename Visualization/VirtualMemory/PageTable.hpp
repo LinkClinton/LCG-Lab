@@ -10,11 +10,15 @@
 
 class PageCache : public AddressMap<VirtualLink*> {
 private:
+	std::vector<VirtualLink> mMemoryPool;
+
 	static Size mPageCacheSize;
 public:
-	PageCache(const Size &size) : AddressMap(size) {}
+	PageCache(const Size &size);
 
 	PageCache() : PageCache(mPageCacheSize) {}
+
+	void clearUp();
 
 	static void setPageCacheSize(const Size& size);
 
@@ -23,6 +27,8 @@ public:
 
 class PageTable : public AddressMap<PageCache*> {
 private:
+	std::vector<PageCache> mMemoryPool;
+
 	PageTable* mNext;
 	BlockTable* mEnd;
 
@@ -30,11 +36,9 @@ private:
 protected:
 	std::vector<VirtualLink*> mMapRelation;
 public:
-	PageTable(const Size &size, PageTable* nextTable) : AddressMap(size),
-		mNext(nextTable), mEnd(nullptr), mMapRelation(size.X * size.Y * size.Z) {}
+	PageTable(const Size &size, PageTable* nextTable);
 
-	PageTable(const Size &size, BlockTable* endTable) : AddressMap(size),
-		mNext(nullptr), mEnd(endTable), mMapRelation(size.X * size.Y * size.Z) {}
+	PageTable(const Size &size, BlockTable* endTable);
 
 	~PageTable();
 

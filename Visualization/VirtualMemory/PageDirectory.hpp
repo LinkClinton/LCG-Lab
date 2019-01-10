@@ -4,6 +4,8 @@
 
 class PageDirectory : public AddressMap<VirtualLink*> {
 private:
+	std::vector<VirtualLink> mMemoryPool;
+
 	PageTable* mNext;
 
 	static auto allocateMemory(const std::vector<Size> &resolutionSize)->Size;

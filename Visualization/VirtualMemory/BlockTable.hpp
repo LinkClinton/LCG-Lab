@@ -10,9 +10,12 @@
 class BlockCache : public AddressMap<byte> {
 private:
 	static Size mBlockCacheSize;
-	VirtualAddress mOriginEntry; //for debug
 public:
-	BlockCache(const Size &size, const VirtualAddress &OriginEntry, byte* data);
+	BlockCache(const Size &size, byte* data);
+
+	BlockCache(const Size &size);
+
+	BlockCache() : BlockCache(mBlockCacheSize) {}
 
 	static void setBlockCacheSize(const Size &size);
 
@@ -21,12 +24,13 @@ public:
 
 class BlockTable : public AddressMap<BlockCache*> {
 private:
+	std::vector<BlockCache> mMemoryPool;
+
 	static void deleteBlockCache(BlockCache* &blockCache);
 protected:
 	std::vector<VirtualLink*> mMapRelation;
 public:
-	BlockTable(const Size &size) : AddressMap(size),
-		mMapRelation(size.X * size.Y * size.Z) {}
+	BlockTable(const Size &size);
 
 	~BlockTable();
 

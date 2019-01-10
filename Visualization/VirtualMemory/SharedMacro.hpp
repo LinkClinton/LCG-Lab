@@ -44,8 +44,8 @@
 #ifndef __cplusplus
 
 //Page State for HLSL
-#define MAPPED 0
-#define UNMAPPED 1
+#define MAPPED 1
+#define UNMAPPED 0
 #define EMPTY 2
 
 #endif // !__cplusplus

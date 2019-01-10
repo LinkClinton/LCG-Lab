@@ -39,18 +39,20 @@ PageDirectory::PageDirectory(const std::vector<Size>& resolutionSize, PageTable 
 
 		xLocation = xLocation + mResolutionSize[i].X;
 	}
+
+	//compute the pool size and get address pointer
+	auto memorySize = mSize.X * mSize.Y * mSize.Z;
+	auto arrayPointer = getAddressPointer();
+
+	//allocate memory(we do not change the size, so we can keep the address of vector)
+	mMemoryPool.resize(memorySize);
+
+	//get the address of virtual link
+	for (int i = 0; i < memorySize; i++) arrayPointer[i] = &mMemoryPool[i];
 }
 
 PageDirectory::~PageDirectory()
 {
-	size_t size = mSize.X * mSize.Y * mSize.Z;
-	auto arrayPointer = getAddressPointer();
-
-	for (size_t i = 0; i < size; i++) {
-		if (arrayPointer[i] == nullptr) continue;
-
-		delete arrayPointer[i]; arrayPointer[i] = nullptr;
-	}
 }
 
 void PageDirectory::mapAddress(int resolution, const glm::vec3 & position, BlockCache * blockCache)
@@ -73,9 +75,10 @@ void PageDirectory::mapAddress(int resolution, const glm::vec3 & position, Block
 	//get the address of next page
 	auto nextAddress = getAddress(address);
 
-	//if address is null, we create and set it
-	if (nextAddress == nullptr) setAddress(address, nextAddress = new VirtualLink(VirtualAddress(), address, PageState::UnMapped));
-
+	//we use static memory allocation, so we do not set the address when memory are allocated
+	//now set virtual link's from address to address
+	nextAddress->FromAddress = address;
+	
 	//if address is null, we create and set it
 	if (nextAddress->State == PageState::UnMapped) mNext->mallocAddress(nextAddress);
 
@@ -105,7 +108,7 @@ auto PageDirectory::queryAddress(int resolution, const glm::vec3 & position) -> 
 
 	//unmapped, so we only return null
 	//about empty ? no-solution in this current version
-	if (nextAddress == nullptr || nextAddress->State != PageState::Mapped) return nullptr;
+	if (nextAddress->State != PageState::Mapped) return nullptr;
 
 	//go to next layer and query address
 	return mNext->queryAddress(position, mSize, nextAddress);

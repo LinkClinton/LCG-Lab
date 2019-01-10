@@ -28,14 +28,17 @@ private:
 	Size mSize;
 public:
 	CPUMemoryTestUnit(const std::string &volumeName, const Size &size) {
+		PageCache::setPageCacheSize(10);
+		BlockCache::setBlockCacheSize(10);
+
 		std::ios::sync_with_stdio(false);
 		
 		std::vector<Size> resolutionSize;
 
-		resolutionSize.push_back(Size(10, 10, 10));
+		resolutionSize.push_back(10);
 
 		mBlockTable = new BlockTable(5);
-		mPageTable = new PageTable(1, mBlockTable);
+		mPageTable = new PageTable(5, mBlockTable);
 		mPageDirectory = new PageDirectory(resolutionSize, mPageTable);
 
 		mVolumeName = volumeName;
@@ -52,16 +55,11 @@ public:
 		mVolumeFile.close();
 	}
 
-	void initialize() {
-		PageCache::setPageCacheSize(Size(10, 10, 10));
-		BlockCache::setBlockCacheSize(Size(10, 10, 10));
-	}
-
 	void run(int testCase) {
 		int rightCase = 0;
 
 		//random engine
-		std::default_random_engine random;
+		std::default_random_engine random((unsigned int)time(0));
 		
 		std::uniform_real_distribution<double> randomRange(0, 1);
 
@@ -102,7 +100,7 @@ public:
 
 		//static buffer for reading block cache
 		static byte buffer[BLOCK_CACHE_SIZE];
-	
+
 		int rowPitch = mSize.X;
 		int depthPitch = mSize.X * mSize.Y;
 		int bufferPosition = 0;
@@ -144,12 +142,12 @@ public:
 				bufferPosition += blockSize.X * (blockEntry.Y + blockSize.Y - endPositionRange.Y);
 		}
 
-		BlockCache* result = nullptr;
+		auto blockCache = BlockCache(BlockCache::getBlockCacheSize(), buffer);
 
 		//map data
-		mPageDirectory->mapAddress(0, position, result = new BlockCache(BlockCache::getBlockCacheSize(), blockEntry, buffer));
+		mPageDirectory->mapAddress(0, position, &blockCache);
 
-		return result;
+		return mPageDirectory->queryAddress(0, position);
 	}
 
 	auto getAddress(const glm::vec3 &position) -> byte {

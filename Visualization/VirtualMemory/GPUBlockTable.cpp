@@ -58,7 +58,8 @@ void GPUBlockTable::mapAddress(const glm::vec3 & position, const Size & size, Bl
 	
 	//CPU version
 	//set virtual empty block cache, because the block cache only need to upload to texture(GPU memory)
-	setAddress(virtualLink->Address, new BlockCache(Size(0, 0, 0), VirtualAddress(0, 0, 0), nullptr));
+	//so we only set itself to trigger the LRU system 
+	setAddress(virtualLink->Address, getAddress(virtualLink->Address));
 }
 
 auto GPUBlockTable::queryAddress(const glm::vec3 & position, const Size & size, VirtualLink * virtualLink) -> BlockCache * 

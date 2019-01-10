@@ -2,10 +2,14 @@
 
 Size BlockCache::mBlockCacheSize;
 
-BlockCache::BlockCache(const Size & size, const VirtualAddress &originEntry, byte * data) : AddressMap(size)
+BlockCache::BlockCache(const Size & size, byte * data) : AddressMap(size)
 {
-	mOriginEntry = originEntry;
 	memcpy(getAddressPointer(), data, size.X * size.Y * size.Z);
+}
+
+BlockCache::BlockCache(const Size & size) : AddressMap(size)
+{
+	memset(getAddressPointer(), 0, size.X * size.Y * size.Z);
 }
 
 void BlockCache::setBlockCacheSize(const Size & size)
@@ -20,27 +24,27 @@ auto BlockCache::getBlockCacheSize() -> Size
 
 void BlockTable::deleteBlockCache(BlockCache *& blockCache)
 {
-	//delete the block cache, we have two different way
-	//for current version, we will delete all memory and set it to null
-	//another way, we will record a no-free array and set its no-free elments to null
-
-	if (blockCache == nullptr) return;
-
-	delete blockCache; blockCache = nullptr;
+	//for block, we do not need to clear the block cache data
+	//because the data will be covered with new data
 }
+
+BlockTable::BlockTable(const Size & size) : AddressMap(size),
+	mMapRelation(size.X * size.Y * size.Z) 
+{
+	//compute the pool size and get address pointer
+	auto memorySize = mSize.X * mSize.Y * mSize.Z;
+	auto arrayPointer = getAddressPointer();
+
+	//allocate memory(we do not change the size, so we can keep the address of vector)
+	mMemoryPool.resize(memorySize);
+
+	//get the address of virtual link
+	for (int i = 0; i < memorySize; i++) arrayPointer[i] = &mMemoryPool[i];
+}
+
 
 BlockTable::~BlockTable()
 {
-	//get size and array
-	size_t size = mSize.X * mSize.Y * mSize.Z;
-	auto arrayPointer = getAddressPointer();
-
-	//delete all block cache
-	for (size_t i = 0; i < size; i++) {
-		if (arrayPointer[i] == nullptr) continue;
-
-		delete arrayPointer[i]; arrayPointer[i] = nullptr;
-	}
 }
 
 void BlockTable::mallocAddress(VirtualLink * virtualLink)
@@ -86,8 +90,12 @@ void BlockTable::mapAddress(const glm::vec3 & position, const Size & size, Block
 	assert(blockCache != nullptr);
 	assert(blockCache->getSize() == BlockCache::getBlockCacheSize());
 
-	//set data
-	setAddress(virtualLink->Address, blockCache);
+	//get address and block size
+	auto address = getAddress(virtualLink->Address);
+	auto blockSize = BlockCache::getBlockCacheSize();
+	
+	//copy data
+	memcpy(address->getAddressPointer(), blockCache->getAddressPointer(), blockSize.X * blockSize.Y * blockSize.Z);
 }
 
 auto BlockTable::queryAddress(const glm::vec3 & position, const Size & size, VirtualLink * virtualLink) -> BlockCache *

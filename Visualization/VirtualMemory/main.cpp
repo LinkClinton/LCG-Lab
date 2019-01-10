@@ -6,8 +6,7 @@
 CPUMemoryTestUnit testUnit("volume", 1000);
 
 int main() {
-	testUnit.initialize();
-	testUnit.run(100);
+	testUnit.run(100000);
 	system("pause");
 	//renderFramework.initialize();
 	//renderFramework.showWindow();

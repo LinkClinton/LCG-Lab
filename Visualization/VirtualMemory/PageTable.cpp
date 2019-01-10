@@ -4,28 +4,44 @@ Size PageCache::mPageCacheSize;
 
 void PageTable::deletePageCache(PageCache *& pageCache)
 {
-	//delete the page cache, we have two different way
-	//for current version, we will delete all memory and set it to null
-	//another way, we will record a no-free array and set its no-free elments to null
-	
-	if (pageCache == nullptr) return;
-	
-	//delete 
-	delete pageCache; pageCache = nullptr;
+	//we need to clear up the page cache data
+	//and clear up the relation between virtual link in the page cache and the "mMapRelation" in the next table
+	//if we do not clear up the relation, when we allocate an address who's "mMapRelation" is in the page cache need to clear up
+	//the wrong virtual link was cleared, see "PageTable::clearUpAddress"
+	//it does not effect the right of system but performance(we need map the data again, even if the data in the cache)
+	pageCache->clearUp();
+}
+
+PageTable::PageTable(const Size &size, PageTable* nextTable) : AddressMap(size),
+	mNext(nextTable), mEnd(nullptr), mMapRelation(size.X * size.Y * size.Z) 
+{
+	//compute the pool size and get address pointer
+	auto memorySize = mSize.X * mSize.Y * mSize.Z;
+	auto arrayPointer = getAddressPointer();
+
+	//allocate memory(we do not change the size, so we can keep the address of vector)
+	mMemoryPool.resize(memorySize);
+
+	//get the address of virtual link
+	for (int i = 0; i < memorySize; i++) arrayPointer[i] = &mMemoryPool[i];
+}
+
+PageTable::PageTable(const Size &size, BlockTable* endTable) : AddressMap(size),
+	mNext(nullptr), mEnd(endTable), mMapRelation(size.X * size.Y * size.Z) 
+{
+	//compute the pool size and get address pointer
+	auto memorySize = mSize.X * mSize.Y * mSize.Z;
+	auto arrayPointer = getAddressPointer();
+
+	//allocate memory(we do not change the size, so we can keep the address of vector)
+	mMemoryPool.resize(memorySize);
+
+	//get the address of virtual link
+	for (int i = 0; i < memorySize; i++) arrayPointer[i] = &mMemoryPool[i];
 }
 
 PageTable::~PageTable()
 {
-	//get size and array
-	size_t size = mSize.X * mSize.Y * mSize.Z;
-	auto arrayPointer = getAddressPointer();
-
-	//delete resource
-	for (size_t i = 0; i < size; i++) {
-		if (arrayPointer[i] == nullptr) continue;
-
-		delete arrayPointer[i]; arrayPointer[i] = nullptr;
-	}
 }
 
 void PageTable::mallocAddress(VirtualLink * virtualLink)
@@ -45,11 +61,6 @@ void PageTable::mallocAddress(VirtualLink * virtualLink)
 	//set the address to virtual link
 	virtualLink->Address = address;
 	virtualLink->State = PageState::Mapped;
-
-	//if the cache is null, we create it with default size
-	//default size: mPageCacheSize(static)
-	if (getAddressPointer()[arrayIndex] == nullptr)
-		getAddressPointer()[arrayIndex] = new PageCache();
 }
 
 void PageTable::clearUpAddress(const VirtualAddress & address)
@@ -76,8 +87,6 @@ void PageTable::clearUpAddress(const VirtualAddress & address)
 
 void PageTable::mapAddress(const glm::vec3 & position, const Size &size, BlockCache* blockCache, VirtualLink* virtualLink)
 {
-	assert(mSize.X != 0 && mSize.Y != 0 && mSize.Z != 0);
-
 	//get page cache and page cache size
 	auto pageCache = getAddress(virtualLink->Address);
 	auto pageSize = pageCache->getSize();
@@ -102,14 +111,14 @@ void PageTable::mapAddress(const glm::vec3 & position, const Size &size, BlockCa
 	address.Y = address.Y % pageSize.Y;
 	address.Z = address.Z % pageSize.Z;
 
-	assert(pageCache != nullptr);
 	assert((mNext != nullptr) ^ (mEnd != nullptr));
 
 	//get the address of next page
 	auto nextAddress = pageCache->getAddress(address);
 
-	//if address is null, we create and set it
-	if (nextAddress == nullptr) pageCache->setAddress(address, nextAddress = new VirtualLink(VirtualAddress(), fromAddress, PageState::UnMapped));
+	//we use static memory allocation, so we do not set the address when memory are allocated
+	//now set virtual link's from address to address
+	nextAddress->FromAddress = fromAddress;
 
 	//to next page, the end is null
 	if (mNext != nullptr) {
@@ -130,8 +139,6 @@ void PageTable::mapAddress(const glm::vec3 & position, const Size &size, BlockCa
 
 auto PageTable::queryAddress(const glm::vec3 & position, const Size & size, VirtualLink * virtualLink) -> BlockCache *
 {
-	assert(mSize.X != 0 && mSize.Y != 0 && mSize.Z != 0);
-
 	//get page cache and size
 	auto pageCache = getAddress(virtualLink->Address);
 	auto pageSize = pageCache->getSize();
@@ -152,7 +159,6 @@ auto PageTable::queryAddress(const glm::vec3 & position, const Size & size, Virt
 	address.Y = address.Y % pageSize.Y;
 	address.Z = address.Z % pageSize.Z;
 
-	assert(pageCache != nullptr);
 	assert((mNext != nullptr) ^ (mEnd != nullptr));
 
 	//get the address of next page
@@ -160,7 +166,7 @@ auto PageTable::queryAddress(const glm::vec3 & position, const Size & size, Virt
 
 	//unmapped, so we only return null
 	//about empty ? no-solution in this current version
-	if (nextAddress == nullptr || nextAddress->State != PageState::Mapped) return nullptr;
+	if (nextAddress->State != PageState::Mapped) return nullptr;
 
 	//go to next layer to query address
 	if (mNext != nullptr) return mNext->queryAddress(position, allSize, nextAddress);
@@ -168,6 +174,24 @@ auto PageTable::queryAddress(const glm::vec3 & position, const Size & size, Virt
 
 	//error 
 	assert(false); return nullptr;
+}
+
+PageCache::PageCache(const Size & size) : AddressMap(size)
+{
+	//compute the pool size and get address pointer
+	auto memorySize = mSize.X * mSize.Y * mSize.Z;
+	auto arrayPointer = getAddressPointer();
+
+	//allocate memory(we do not change the size, so we can keep the address of vector)
+	mMemoryPool.resize(memorySize);
+
+	//get the address of virtual link
+	for (int i = 0; i < memorySize; i++) arrayPointer[i] = &mMemoryPool[i];
+}
+
+void PageCache::clearUp()
+{
+	memset(&mMemoryPool[0], 0, sizeof(VirtualLink) * mMemoryPool.size());
 }
 
 void PageCache::setPageCacheSize(const Size & size)
