@@ -15,6 +15,8 @@ private:
 
 	ResourceUsage* mTextureUsage;
 
+	static std::vector<byte> mPageCacheClearMemory;
+
 	friend class GPUPageDirectory;
 public:
 	GPUPageTable(Factory* factory, Graphics* graphics, const Size &size, GPUPageTable* nextTable);

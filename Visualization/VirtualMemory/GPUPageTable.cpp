@@ -1,6 +1,6 @@
 #include "GPUPageTable.hpp"
 
-#include "SharedMacro.hpp"
+std::vector<byte> GPUPageTable::mPageCacheClearMemory;
 
 GPUPageTable::GPUPageTable(Factory * factory, Graphics * graphics, const Size & size, GPUPageTable * nextTable)
 	: PageTable(size, nextTable), mFactory(factory), mGraphics(graphics), mFromTexture(nullptr)
@@ -51,6 +51,19 @@ void GPUPageTable::clearUpAddress(const VirtualAddress & address)
 	auto virtualLink = mMapRelation[getArrayIndex(address)];
 
 	PageTable::clearUpAddress(address);
+	
+	//clear page cache(GPU version, texture)
+	auto size = PageCache::getPageCacheSize();
+	auto startRange = Helper::multiple(size, address);
+	auto textureSize = size.X * size.Y * size.Z * Utility::ComputePixelFomratBytes(mPageTableTexture->getPixelFormat());
+	
+	//reset the clear memory(all zero)
+	if (mPageCacheClearMemory.size() != (size_t)textureSize) mPageCacheClearMemory.resize(textureSize);
+
+	//update memory to texture
+	mPageTableTexture->update(&mPageCacheClearMemory[0],
+		startRange.X, startRange.Y, startRange.Z,
+		startRange.X + size.X, startRange.Y + size.Y, startRange.Z + size.Z);
 
 	//now, the virtual link is reset, we need upload it to the texture
 	if (virtualLink != nullptr) GPUHelper::modifyVirtualLinkToTexture(virtualLink, mFromTexture);
