@@ -95,6 +95,9 @@
     <ClInclude Include="GPUPageDirectory.hpp">
       <Filter>Header Files\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="DataCache.hpp">
+      <Filter>Header Files\Structure</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="RayCastVertexShader.hlsl">

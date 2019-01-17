@@ -21,6 +21,12 @@ void VMRenderFramework::render(void * sender, float mDeltaTime)
 
 	mGraphics->setConstantBuffer(mMatrixBuffer, 0);
 
+	mGraphics->setResourceUsage(mVirtualMemoryManager->getPageDirectory()->getTextureUsage(), 0);
+	mGraphics->setResourceUsage(mVirtualMemoryManager->getPageTable()->getTextureUsage(), 1);
+	mGraphics->setResourceUsage(mVirtualMemoryManager->getBlockTable()->getTextureUsage(), 2);
+
+	mGraphics->setUnorderedAccessUsage(mVirtualMemoryManager->getUnorderedAccessUsage());
+
 	mGraphics->setPrimitiveType(PrimitiveType::TriangleList);
 	mGraphics->setRasterizerState(mRasterizerState);
 
@@ -174,11 +180,22 @@ void VMRenderFramework::destoryRasterizerStage()
 VMRenderFramework::VMRenderFramework(const std::string &name, int width, int height) : WindowsFramework(name, width, height)
 {
 	mInput = mFactory->createInput(this);
+	
+	mVirtualMemoryManager = new VirtualMemoryManager(mFactory, mGraphics, mWidth, mHeight);
+
+	//set multi-resolution
+	std::vector<glm::vec3> multiResolution;
+	multiResolution.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
+
+	mVirtualMemoryManager->initialize("volume", multiResolution);
 }
 
 VMRenderFramework::~VMRenderFramework()
 {
 	mFactory->destoryInput(mInput);
+
+	mVirtualMemoryManager->finalize();
+	delete mVirtualMemoryManager;
 
 	destoryInputStage();
 	destoryShaderStage();

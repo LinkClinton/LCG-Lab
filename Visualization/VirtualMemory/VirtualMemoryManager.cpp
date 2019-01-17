@@ -7,7 +7,8 @@ void VirtualMemoryManager::analyseFile(const std::string & fileName)
 	//to do:
 
 	mFile.sync_with_stdio(false);
-	mFile.open(fileName, std::ios::binary);
+	//mFile.open(fileName, std::ios::binary);
+	mFileSize = Size(1000, 1000, 1000);
 }
 
 void VirtualMemoryManager::mapAddressToGPU(int resolution, const glm::vec3 & position, BlockCache * block)
@@ -82,6 +83,23 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 	mBlockCacheMissArrayUsage = mFactory->createUnorderedAccessUsage(mBlockCacheMissArrayTexture, mBlockCacheMissArrayTexture->getPixelFormat());
 }
 
+void VirtualMemoryManager::finalize() 
+{
+	delete mDirectoryCache;
+	delete mPageCacheTable;
+	delete mBlockCacheTable;
+
+	delete mGPUDirectoryCache;
+	delete mGPUPageCacheTable;
+	delete mGPUBlockCacheTable;
+
+	mFactory->destoryTexture3D(mBlockCacheUsageStateTexture);
+	mFactory->destoryTexture3D(mBlockCacheMissArrayTexture);
+
+	mFactory->destoryUnorderedAccessUsage(mBlockCacheUsageStateUsage);
+	mFactory->destoryUnorderedAccessUsage(mBlockCacheMissArrayUsage);
+}
+
 void VirtualMemoryManager::mapAddress(int resolution, int blockID) 
 {
 	//for each cache miss, we will test if the block in the CPU virtual memory
@@ -136,4 +154,29 @@ auto VirtualMemoryManager::loadBlock(int resolution, const VirtualAddress & bloc
 {
 	//to do:
 	return nullptr;
+}
+
+auto VirtualMemoryManager::getPageDirectory() -> GPUPageDirectory *
+{
+	return mGPUDirectoryCache;
+}
+
+auto VirtualMemoryManager::getPageTable() -> GPUPageTable *
+{
+	return mGPUPageCacheTable;
+}
+
+auto VirtualMemoryManager::getBlockTable() -> GPUBlockTable *
+{
+	return mGPUBlockCacheTable;
+}
+
+auto VirtualMemoryManager::getUnorderedAccessUsage() -> std::vector<UnorderedAccessUsage *>
+{
+	std::vector<UnorderedAccessUsage*> result(2);
+
+	result[0] = mBlockCacheUsageStateUsage;
+	result[1] = mBlockCacheMissArrayUsage;
+
+	return result;
 }

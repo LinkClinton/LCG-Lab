@@ -4,8 +4,8 @@
 #include <Camera.hpp>
 
 #include "Helper.hpp"
-
 #include "SharedMacro.hpp"
+#include "VirtualMemoryManager.hpp"
 
 class VMRenderFramework : public WindowsFramework {
 private:
@@ -24,6 +24,8 @@ private:
 
 	Camera mCamera;
 	MatrixStructure mMatrixStructure;
+
+	VirtualMemoryManager* mVirtualMemoryManager;
 
 	virtual void render(void* sender, float mDeltaTime)override;
 	virtual void update(void* sender, float mDeltaTime)override;

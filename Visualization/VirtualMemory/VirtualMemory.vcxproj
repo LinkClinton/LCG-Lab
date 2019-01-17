@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="AddressMap.hpp" />
     <ClInclude Include="BlockTable.hpp" />
+    <ClInclude Include="DataCache.hpp" />
     <ClInclude Include="GPUBlockTable.hpp" />
     <ClInclude Include="GPUPageDirectory.hpp" />
     <ClInclude Include="GPUPageTable.hpp" />

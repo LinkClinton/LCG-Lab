@@ -52,7 +52,7 @@ void GPUBlockTable::mapAddress(const glm::vec3 & position, const Size & size, Bl
 	auto startRange = Helper::multiple(blockSize, virtualLink->Address);
 
 	//update block cache
-	mBlockTableTexture->update(blockCache->getAddressPointer(),
+	mBlockTableTexture->update(blockCache->getDataPointer(),
 		startRange.X, startRange.Y, startRange.Z,
 		startRange.X + blockSize.X, startRange.Y + blockSize.Y, startRange.Z + blockSize.Z);
 	

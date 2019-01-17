@@ -48,7 +48,17 @@ public:
 
 	void initialize(const std::string &fileName, const std::vector<glm::vec3> &resolutions);
 
+	void finalize();
+
 	void mapAddress(int resolution, int blockID);
 
 	auto loadBlock(int resolution, const VirtualAddress &blockAddress) -> BlockCache*;
+
+	auto getPageDirectory() -> GPUPageDirectory*;
+
+	auto getPageTable() -> GPUPageTable*;
+
+	auto getBlockTable() -> GPUBlockTable*;
+
+	auto getUnorderedAccessUsage() -> std::vector<UnorderedAccessUsage*>;
 };

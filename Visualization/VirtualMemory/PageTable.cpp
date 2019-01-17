@@ -176,11 +176,11 @@ auto PageTable::queryAddress(const glm::vec3 & position, const Size & size, Virt
 	assert(false); return nullptr;
 }
 
-PageCache::PageCache(const Size & size) : AddressMap(size)
+PageCache::PageCache(const Size & size) : DataCache(size)
 {
 	//compute the pool size and get address pointer
 	auto memorySize = mSize.X * mSize.Y * mSize.Z;
-	auto arrayPointer = getAddressPointer();
+	auto arrayPointer = getDataPointer();
 
 	//allocate memory(we do not change the size, so we can keep the address of vector)
 	mMemoryPool.resize(memorySize);

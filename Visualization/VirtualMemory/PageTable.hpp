@@ -5,10 +5,11 @@
 
 #include <glm/glm.hpp>
 
+#include "DataCache.hpp"
 #include "AddressMap.hpp"
 #include "BlockTable.hpp"
 
-class PageCache : public AddressMap<VirtualLink*> {
+class PageCache : public DataCache<VirtualLink*> {
 private:
 	std::vector<VirtualLink> mMemoryPool;
 

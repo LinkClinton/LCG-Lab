@@ -2,14 +2,14 @@
 
 Size BlockCache::mBlockCacheSize;
 
-BlockCache::BlockCache(const Size & size, byte * data) : AddressMap(size)
+BlockCache::BlockCache(const Size & size, byte * data) : DataCache(size)
 {
-	memcpy(getAddressPointer(), data, size.X * size.Y * size.Z);
+	memcpy(getDataPointer(), data, size.X * size.Y * size.Z);
 }
 
-BlockCache::BlockCache(const Size & size) : AddressMap(size)
+BlockCache::BlockCache(const Size & size) : DataCache(size)
 {
-	memset(getAddressPointer(), 0, size.X * size.Y * size.Z);
+	memset(getDataPointer(), 0, size.X * size.Y * size.Z);
 }
 
 void BlockCache::setBlockCacheSize(const Size & size)
@@ -95,7 +95,7 @@ void BlockTable::mapAddress(const glm::vec3 & position, const Size & size, Block
 	auto blockSize = BlockCache::getBlockCacheSize();
 	
 	//copy data
-	memcpy(address->getAddressPointer(), blockCache->getAddressPointer(), blockSize.X * blockSize.Y * blockSize.Z);
+	memcpy(address->getDataPointer(), blockCache->getDataPointer(), blockSize.X * blockSize.Y * blockSize.Z);
 }
 
 auto BlockTable::queryAddress(const glm::vec3 & position, const Size & size, VirtualLink * virtualLink) -> BlockCache *

@@ -27,4 +27,4 @@ Texture3D<int4> PageCacheTexture : register(t1);
 Texture3D<float> BlockCacheTexture : register(t2);
 
 RWTexture3D<int> BlockCacheUsageStateRWTexture : register(u1);
-RWTexture3D<int2> BlockCacheMissHashTableRWTexture : register(u2);
+RWTexture3D<int2> BlockCacheMissArrayRWTexture : register(u2);

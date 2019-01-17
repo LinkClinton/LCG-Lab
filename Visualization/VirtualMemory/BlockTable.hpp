@@ -5,9 +5,10 @@
 
 #include <glm/glm.hpp>
 
+#include "DataCache.hpp"
 #include "AddressMap.hpp"
 
-class BlockCache : public AddressMap<byte> {
+class BlockCache : public DataCache<byte> {
 private:
 	static Size mBlockCacheSize;
 public:

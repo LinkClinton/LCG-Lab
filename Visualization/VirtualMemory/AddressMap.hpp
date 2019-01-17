@@ -29,7 +29,7 @@ public:
 				for (int z = 0; z < mSize.Z; z++)
 					mLRUCache.addElement(VirtualAddress(x, y, z));
 
-		mRowPitch = mSize.Y;
+		mRowPitch = mSize.X;
 		mDepthPitch = mSize.X * mSize.Y;
 	}
 
