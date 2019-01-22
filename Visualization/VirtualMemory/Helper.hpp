@@ -57,9 +57,10 @@ struct MatrixStructure {
 	glm::mat4 WorldTransform;
 	glm::mat4 CameraTransform;
 	glm::mat4 ProjectTransform;
+	glm::mat4 EyePosition;
 
 	MatrixStructure() : WorldTransform(1),
-		CameraTransform(1), ProjectTransform(1) {}
+		CameraTransform(1), ProjectTransform(1), EyePosition(0) {}
 };
 
 class Helper {

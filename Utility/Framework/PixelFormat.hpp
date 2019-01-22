@@ -2,6 +2,7 @@
 
 enum class PixelFormat : int {
 	R8G8B8A8Unknown,
+	R8G8B8A8Uint,
 	R8Uint,
 	R8Unknown,
 	D32Float,

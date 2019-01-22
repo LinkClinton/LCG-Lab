@@ -8,7 +8,7 @@ GPUPageTable::GPUPageTable(Factory * factory, Graphics * graphics, const Size & 
 	//texture size is equal the table size * block size
 	auto textureSize = Helper::multiple(mSize, PageCache::getPageCacheSize());
 
-	mPageTableTexture = mFactory->createTexture3D(textureSize.X, textureSize.Y, textureSize.Z, PixelFormat::R8G8B8A8Unknown);
+	mPageTableTexture = mFactory->createTexture3D(textureSize.X, textureSize.Y, textureSize.Z, PixelFormat::R8G8B8A8Uint);
 	mTextureUsage = mFactory->createResourceUsage(mPageTableTexture, mPageTableTexture->getPixelFormat());
 
 	assert(nextTable->mFromTexture == nullptr);
@@ -21,7 +21,7 @@ GPUPageTable::GPUPageTable(Factory * factory, Graphics * graphics, const Size & 
 	//texture size is equal the table size * block size
 	auto textureSize = Helper::multiple(mSize, PageCache::getPageCacheSize());
 
-	mPageTableTexture = mFactory->createTexture3D(textureSize.X, textureSize.Y, textureSize.Z, PixelFormat::R8G8B8A8Unknown);
+	mPageTableTexture = mFactory->createTexture3D(textureSize.X, textureSize.Y, textureSize.Z, PixelFormat::R8G8B8A8Uint);
 	mTextureUsage = mFactory->createResourceUsage(mPageTableTexture, mPageTableTexture->getPixelFormat());
 
 	assert(endTable->mFromTexture == nullptr);

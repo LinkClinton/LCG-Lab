@@ -36,6 +36,9 @@ private:
 	Texture3D* mBlockCacheUsageStateTexture;
 	Texture3D* mBlockCacheMissArrayTexture;
 
+	ConstantBuffer* mMultiResolutionSizeBuffer;
+	ConstantBuffer* mMultiResolutionBaseBuffer;
+
 	UnorderedAccessUsage* mBlockCacheUsageStateUsage;
 	UnorderedAccessUsage* mBlockCacheMissArrayUsage;
 
@@ -59,6 +62,10 @@ public:
 	auto getPageTable() -> GPUPageTable*;
 
 	auto getBlockTable() -> GPUBlockTable*;
+
+	auto getMultiResolutionSizeBuffer() -> ConstantBuffer*;
+
+	auto getMultiResolutionBaseBuffer() -> ConstantBuffer*;
 
 	auto getUnorderedAccessUsage() -> std::vector<UnorderedAccessUsage*>;
 };

@@ -8,9 +8,13 @@
 void VMRenderFramework::render(void * sender, float mDeltaTime)
 {
 	float rgba[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	unsigned int uavClear[4] = { 0, 0, 0, 0 };
+	auto unorderedAccessUsage = mVirtualMemoryManager->getUnorderedAccessUsage();
 
 	mGraphics->clearState();
 	mGraphics->clearRenderTarget(mSwapChain->getRenderTarget(), rgba);
+	mGraphics->clearUnorderedAccessUsageUint(unorderedAccessUsage[0], uavClear);
+	mGraphics->clearUnorderedAccessUsageUint(unorderedAccessUsage[1], uavClear);
 
 	mGraphics->setInputLayout(mInputLayout);
 	mGraphics->setIndexBuffer(mIndexBuffer);
@@ -20,12 +24,14 @@ void VMRenderFramework::render(void * sender, float mDeltaTime)
 	mGraphics->setPixelShader(mPixelShader);
 
 	mGraphics->setConstantBuffer(mMatrixBuffer, 0);
+	mGraphics->setConstantBuffer(mVirtualMemoryManager->getMultiResolutionSizeBuffer(), 1);
+	mGraphics->setConstantBuffer(mVirtualMemoryManager->getMultiResolutionBaseBuffer(), 2);
 
 	mGraphics->setResourceUsage(mVirtualMemoryManager->getPageDirectory()->getTextureUsage(), 0);
 	mGraphics->setResourceUsage(mVirtualMemoryManager->getPageTable()->getTextureUsage(), 1);
 	mGraphics->setResourceUsage(mVirtualMemoryManager->getBlockTable()->getTextureUsage(), 2);
 
-	mGraphics->setUnorderedAccessUsage(mVirtualMemoryManager->getUnorderedAccessUsage());
+	mGraphics->setUnorderedAccessUsage(unorderedAccessUsage);
 
 	mGraphics->setPrimitiveType(PrimitiveType::TriangleList);
 	mGraphics->setRasterizerState(mRasterizerState);
@@ -65,6 +71,7 @@ void VMRenderFramework::update(void * sender, float mDeltaTime)
 	mMatrixStructure.WorldTransform = glm::mat4(1);
 	mMatrixStructure.CameraTransform = mCamera.getView();
 	mMatrixStructure.ProjectTransform = mCamera.getPerspective();
+	mMatrixStructure.EyePosition[0] = glm::vec4(mCamera.getPosition(), 0.0f);
 
 	mMatrixBuffer->update(&mMatrixStructure);
 }

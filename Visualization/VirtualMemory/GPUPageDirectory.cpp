@@ -5,7 +5,7 @@ GPUPageDirectory::GPUPageDirectory(Factory * factory, Graphics * graphics, const
 	: PageDirectory(resolutionSize, nextTable), mFactory(factory), mGraphics(graphics)
 {
 	//texture size is equal the mSize
-	mPageDirectoryTexture = mFactory->createTexture3D(mSize.X, mSize.Y, mSize.Z, PixelFormat::R8G8B8A8Unknown);
+	mPageDirectoryTexture = mFactory->createTexture3D(mSize.X, mSize.Y, mSize.Z, PixelFormat::R8G8B8A8Uint);
 	mTextureUsage = mFactory->createResourceUsage(mPageDirectoryTexture, mPageDirectoryTexture->getPixelFormat());
 
 	assert(nextTable->mFromTexture == nullptr);

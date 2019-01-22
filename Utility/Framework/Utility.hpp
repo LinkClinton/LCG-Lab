@@ -39,6 +39,7 @@ public:
 		switch (pixelFormat)
 		{
 		case PixelFormat::R8G8B8A8Unknown:
+		case PixelFormat::R8G8B8A8Uint:
 		case PixelFormat::D32Float:
 		case PixelFormat::R32Float:
 		case PixelFormat::R32Uint:
@@ -64,6 +65,8 @@ public:
 		{
 		case PixelFormat::R8G8B8A8Unknown:
 			return DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
+		case PixelFormat::R8G8B8A8Uint:
+			return DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UINT;
 		case PixelFormat::R8Unknown:
 			return DXGI_FORMAT::DXGI_FORMAT_R8_UNORM;
 		case PixelFormat::D32Float:

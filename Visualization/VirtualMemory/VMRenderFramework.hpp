@@ -19,6 +19,8 @@ private:
 
 	RasterizerState* mRasterizerState;
 
+	
+
 	Input* mInput;
 	bool mMouseButtonState[3];
 

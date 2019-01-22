@@ -39,6 +39,9 @@
 //MULTIRESOLUTION_COUNT :
 //the multi-resolution count(in other words, the directory count)
 #define MULTIRESOLUTION_COUNT 1
+//MAX_MULTIRESOLUTION_COUNT
+//the max multi-resolution count(in other words, the directory count)
+#define MAX_MULTIRESOLUTION_COUNT 8
 
 //for HLSL
 #ifndef __cplusplus
