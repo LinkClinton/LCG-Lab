@@ -10,8 +10,8 @@ protected:
 	PixelFormat mPixelFormat;
 	BindUsage mBindUsage;
 
-	ShaderResource(Graphics* graphics, int size, PixelFormat pixelFormat, BindUsage bindUsage) : 
-		Resource(graphics, size), mPixelFormat(pixelFormat), mBindUsage(bindUsage) {}
+	ShaderResource(Graphics* graphics, int size, PixelFormat pixelFormat, BindUsage bindUsage, HeapType heapType) : 
+		Resource(graphics, size, heapType), mPixelFormat(pixelFormat), mBindUsage(bindUsage) {}
 
 public:
 	auto getPixelFormat() -> PixelFormat const {

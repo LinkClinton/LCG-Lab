@@ -5,8 +5,8 @@
 
 #ifdef _WIN32
 
-WindowsIndexBuffer::WindowsIndexBuffer(Graphics * graphics, int size) :
-	IndexBuffer(graphics, size)
+WindowsIndexBuffer::WindowsIndexBuffer(Graphics * graphics, int size, HeapType heapType) :
+	IndexBuffer(graphics, size, heapType)
 {
 	D3D11_BUFFER_DESC desc;
 
@@ -15,7 +15,7 @@ WindowsIndexBuffer::WindowsIndexBuffer(Graphics * graphics, int size) :
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = sizeof(unsigned int);
-	desc.Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT;
+	desc.Usage = Utility::ConvertHeapType(heapType);
 	
 	static_cast<WindowsGraphics*>(mGraphics)->mDevice->CreateBuffer(&desc, nullptr, &mBuffer);
 }

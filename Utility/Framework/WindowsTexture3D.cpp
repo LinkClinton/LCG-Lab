@@ -4,17 +4,17 @@
 #ifdef _WIN32
 
 WindowsTexture3D::WindowsTexture3D(Graphics * graphics, int width, int height, int depth, PixelFormat pixelFormat,
-	BindUsage bindUsage) : Texture3D(graphics, width, height, depth, pixelFormat, bindUsage)
+	BindUsage bindUsage, HeapType heapType) : Texture3D(graphics, width, height, depth, pixelFormat, bindUsage, heapType)
 {
 	D3D11_TEXTURE3D_DESC desc;
 
 	desc.BindFlags = Utility::ConvertBindUsage(mBindUsage) | D3D11_BIND_FLAG::D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_FLAG::D3D11_BIND_UNORDERED_ACCESS;
 	desc.CPUAccessFlags = 0;
-	desc.Format = (DXGI_FORMAT)Utility::ConvertPixelFormat(pixelFormat);
+	desc.Format = Utility::ConvertPixelFormat(pixelFormat);
 	desc.Height = mHeight;
 	desc.MipLevels = 1;
 	desc.MiscFlags = 0;
-	desc.Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT;
+	desc.Usage = Utility::ConvertHeapType(heapType);
 	desc.Width = mWidth;
 	desc.Depth = mDepth;
 

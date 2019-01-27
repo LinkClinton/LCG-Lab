@@ -14,7 +14,7 @@ private:
 
 	friend class WindowsGraphics;
 public:
-	WindowsConstantBuffer(Graphics* graphics, int size);
+	WindowsConstantBuffer(Graphics* graphics, int size, HeapType heapType);
 
 	~WindowsConstantBuffer();
 

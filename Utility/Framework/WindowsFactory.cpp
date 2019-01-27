@@ -10,29 +10,29 @@ WindowsFactory::WindowsFactory(Graphics * graphics) :
 
 }
 
-auto WindowsFactory::createVertexBuffer(int size, int stride) -> VertexBuffer *
+auto WindowsFactory::createVertexBuffer(int size, int stride, HeapType heapType) -> VertexBuffer *
 {
-	return new WindowsVertexBuffer(mGraphics, size, stride);
+	return new WindowsVertexBuffer(mGraphics, size, stride, heapType);
 }
 
-auto WindowsFactory::createIndexBuffer(int size) -> IndexBuffer *
+auto WindowsFactory::createIndexBuffer(int size, HeapType heapType) -> IndexBuffer *
 {
-	return new WindowsIndexBuffer(mGraphics, size);
+	return new WindowsIndexBuffer(mGraphics, size, heapType);
 }
 
-auto WindowsFactory::createConstantBuffer(int size) -> ConstantBuffer *
+auto WindowsFactory::createConstantBuffer(int size, HeapType heapType) -> ConstantBuffer *
 {
-	return new WindowsConstantBuffer(mGraphics, size);
+	return new WindowsConstantBuffer(mGraphics, size, heapType);
 }
 
-auto WindowsFactory::createTexture2D(int width, int height, PixelFormat pixelFormat, BindUsage bindUsage) -> Texture2D *
+auto WindowsFactory::createTexture2D(int width, int height, PixelFormat pixelFormat, BindUsage bindUsage, HeapType heapType) -> Texture2D *
 {
-	return new WindowsTexture2D(mGraphics, width, height, pixelFormat, bindUsage);
+	return new WindowsTexture2D(mGraphics, width, height, pixelFormat, bindUsage, heapType);
 }
 
-auto WindowsFactory::createTexture3D(int width, int height, int depth, PixelFormat pixelFormat, BindUsage bindUsage) -> Texture3D *
+auto WindowsFactory::createTexture3D(int width, int height, int depth, PixelFormat pixelFormat, BindUsage bindUsage, HeapType heapType) -> Texture3D *
 {
-	return new WindowsTexture3D(mGraphics, width, height, depth, pixelFormat, bindUsage);
+	return new WindowsTexture3D(mGraphics, width, height, depth, pixelFormat, bindUsage, heapType);
 }
 
 auto WindowsFactory::createInputLayout() -> InputLayout *

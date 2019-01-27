@@ -91,8 +91,21 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 	int blockCacheMissArraySizeZ = BLOCK_HASH_TABLE_ARRAY_SIZE;
 
 	//create texture 3d and resource usage
-	mBlockCacheUsageStateTexture = mFactory->createTexture3D(blockCacheUsageStateSize, blockCacheUsageStateSize, blockCacheUsageStateSize, PixelFormat::R8Unknown);
-	mBlockCacheMissArrayTexture = mFactory->createTexture3D(blockCacheMissArraySizeX, blockCacheMissArraySizeY, blockCacheMissArraySizeZ, PixelFormat::R32Uint);
+	mBlockCacheUsageStateTexture = mFactory->createTexture3D(
+		blockCacheUsageStateSize, 
+		blockCacheUsageStateSize, 
+		blockCacheUsageStateSize, 
+		PixelFormat::R8Unknown,
+		BindUsage::NoneUsage,
+		HeapType::Default);
+
+	mBlockCacheMissArrayTexture = mFactory->createTexture3D(
+		blockCacheMissArraySizeX,
+		blockCacheMissArraySizeY,
+		blockCacheMissArraySizeZ,
+		PixelFormat::R32Uint,
+		BindUsage::NoneUsage,
+		HeapType::Default);
 
 	mBlockCacheUsageStateUsage = mFactory->createUnorderedAccessUsage(mBlockCacheUsageStateTexture, mBlockCacheUsageStateTexture->getPixelFormat());
 	mBlockCacheMissArrayUsage = mFactory->createUnorderedAccessUsage(mBlockCacheMissArrayTexture, mBlockCacheMissArrayTexture->getPixelFormat());

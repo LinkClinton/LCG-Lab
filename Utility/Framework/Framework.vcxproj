@@ -31,6 +31,7 @@
     <ClInclude Include="Factory.hpp" />
     <ClInclude Include="FillMode.hpp" />
     <ClInclude Include="FpsCounter.hpp" />
+    <ClInclude Include="HeapType.hpp" />
     <ClInclude Include="IndexBuffer.hpp" />
     <ClInclude Include="Input.hpp" />
     <ClInclude Include="KeyCode.hpp" />

@@ -3,8 +3,8 @@
 
 #ifdef _WIN32
 
-WindowsTexture2D::WindowsTexture2D(Graphics * graphics, int width, int height, PixelFormat pixelFormat, BindUsage bindUsage) :
-	Texture2D(graphics, width, height, pixelFormat, bindUsage)
+WindowsTexture2D::WindowsTexture2D(Graphics * graphics, int width, int height, PixelFormat pixelFormat, BindUsage bindUsage, HeapType heapType) :
+	Texture2D(graphics, width, height, pixelFormat, bindUsage, heapType)
 {
 	D3D11_TEXTURE2D_DESC desc;
 
@@ -17,7 +17,7 @@ WindowsTexture2D::WindowsTexture2D(Graphics * graphics, int width, int height, P
 	desc.MiscFlags = 0;
 	desc.SampleDesc.Count = 1;
 	desc.SampleDesc.Quality = 0;
-	desc.Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT;
+	desc.Usage = Utility::ConvertHeapType(heapType);
 	desc.Width = mWidth;
 
 	static_cast<WindowsGraphics*>(mGraphics)->mDevice->CreateTexture2D(&desc, nullptr,

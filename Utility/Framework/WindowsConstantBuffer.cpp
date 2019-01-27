@@ -5,8 +5,8 @@
 
 #ifdef _WIN32
 
-WindowsConstantBuffer::WindowsConstantBuffer(Graphics * graphics, int size) :
-	ConstantBuffer(graphics, size)
+WindowsConstantBuffer::WindowsConstantBuffer(Graphics * graphics, int size, HeapType heapType) :
+	ConstantBuffer(graphics, size, heapType)
 {
 	D3D11_BUFFER_DESC desc;
 
@@ -15,7 +15,7 @@ WindowsConstantBuffer::WindowsConstantBuffer(Graphics * graphics, int size) :
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = mSize;
-	desc.Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT;
+	desc.Usage = Utility::ConvertHeapType(heapType);
 
 	static_cast<WindowsGraphics*>(mGraphics)->mDevice->CreateBuffer(&desc, nullptr, &mBuffer);
 }

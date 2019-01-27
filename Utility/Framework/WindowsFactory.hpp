@@ -8,15 +8,17 @@ class WindowsFactory : public Factory {
 public:
 	WindowsFactory(Graphics* graphics);
 
-	virtual auto createVertexBuffer(int size, int stride) -> VertexBuffer* override;
+	virtual auto createVertexBuffer(int size, int stride, HeapType heapType = HeapType::Default)->VertexBuffer* override;
 
-	virtual auto createIndexBuffer(int size) -> IndexBuffer* override;
+	virtual auto createIndexBuffer(int size, HeapType heapType = HeapType::Default)->IndexBuffer* override;
 
-	virtual auto createConstantBuffer(int size) -> ConstantBuffer* override;
+	virtual auto createConstantBuffer(int size, HeapType heapType = HeapType::Default)->ConstantBuffer* override;
 
-	virtual auto createTexture2D(int width, int height, PixelFormat pixelFormat, BindUsage bindUsage = BindUsage::NoneUsage) -> Texture2D* override;
+	virtual auto createTexture2D(int width, int height, PixelFormat pixelFormat, BindUsage bindUsage = BindUsage::NoneUsage,
+		HeapType heapType = HeapType::Default)->Texture2D* override;
 
-	virtual auto createTexture3D(int width, int height, int depth, PixelFormat pixelFormat, BindUsage bindUsage = BindUsage::NoneUsage) -> Texture3D* override;
+	virtual auto createTexture3D(int width, int height, int depth, PixelFormat pixelFormat, BindUsage bindUsage = BindUsage::NoneUsage,
+		HeapType heapType = HeapType::Default)->Texture3D * override;
 	
 	virtual auto createInputLayout() -> InputLayout* override;
 

@@ -16,7 +16,7 @@ private:
 	friend class WindowsResourceUsage;
 	friend class WindowsUnorderedAccessUsage;
 public:
-	WindowsTexture2D(Graphics* graphics, int width, int height, PixelFormat pixelFormat, BindUsage bindUsage);
+	WindowsTexture2D(Graphics* graphics, int width, int height, PixelFormat pixelFormat, BindUsage bindUsage, HeapType heapType);
 
 	~WindowsTexture2D();
 

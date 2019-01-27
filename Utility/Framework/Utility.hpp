@@ -8,6 +8,7 @@
 #include "CullMode.hpp"
 #include "ComparisonMode.hpp"
 #include "BindUsage.hpp"
+#include "HeapType.hpp"
 
 #ifdef _WIN32
 
@@ -172,6 +173,24 @@ public:
 		};
 
 		return (D3D11_BIND_FLAG)0;
+	}
+
+	static auto ConvertHeapType(HeapType heapType) -> D3D11_USAGE {
+		switch (heapType)
+		{
+		case HeapType::Default:
+			return D3D11_USAGE::D3D11_USAGE_DEFAULT;
+		case HeapType::Immutable:
+			return D3D11_USAGE::D3D11_USAGE_IMMUTABLE;
+		case HeapType::Dynamic:
+			return D3D11_USAGE::D3D11_USAGE_DYNAMIC;
+		case HeapType::Staging:
+			return D3D11_USAGE::D3D11_USAGE_STAGING;
+		default:
+			std::runtime_error("The heap type is not support.");
+		}
+
+		return D3D11_USAGE::D3D11_USAGE_DEFAULT;
 	}
 #endif // _WIN32
 

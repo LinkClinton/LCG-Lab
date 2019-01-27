@@ -33,15 +33,17 @@ protected:
 		mGraphics(graphics) {}
 
 public:
-	virtual auto createVertexBuffer(int size, int stride) -> VertexBuffer* = 0;
+	virtual auto createVertexBuffer(int size, int stride, HeapType heapType = HeapType::Default) -> VertexBuffer* = 0;
 
-	virtual auto createIndexBuffer(int size) -> IndexBuffer* = 0;
+	virtual auto createIndexBuffer(int size, HeapType heapType = HeapType::Default) -> IndexBuffer* = 0;
 
-	virtual auto createConstantBuffer(int size) -> ConstantBuffer* = 0;
+	virtual auto createConstantBuffer(int size, HeapType heapType = HeapType::Default) -> ConstantBuffer* = 0;
 
-	virtual auto createTexture2D(int width, int height, PixelFormat pixelFormat, BindUsage bindUsage = BindUsage::NoneUsage) -> Texture2D* = 0;
+	virtual auto createTexture2D(int width, int height, PixelFormat pixelFormat, BindUsage bindUsage = BindUsage::NoneUsage,
+		HeapType heapType = HeapType::Default) -> Texture2D* = 0;
 
-	virtual auto createTexture3D(int width, int height, int depth, PixelFormat pixelFormat, BindUsage bindUsage = BindUsage::NoneUsage) -> Texture3D * = 0;
+	virtual auto createTexture3D(int width, int height, int depth, PixelFormat pixelFormat, BindUsage bindUsage = BindUsage::NoneUsage,
+		HeapType heapType = HeapType::Default) -> Texture3D * = 0;
 
 	virtual auto createInputLayout() -> InputLayout* = 0;
 

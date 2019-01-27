@@ -209,6 +209,9 @@
     <ClInclude Include="MouseButton.hpp">
       <Filter>Header Files\Enum</Filter>
     </ClInclude>
+    <ClInclude Include="HeapType.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowsVertexShader.cpp">
