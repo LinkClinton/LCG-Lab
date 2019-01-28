@@ -4,6 +4,6 @@
 
 class ConstantBuffer : public ShaderBuffer {
 protected:
-	ConstantBuffer(Graphics* graphics, int size, HeapType heapType) :
-		ShaderBuffer(graphics, size, heapType) {}
+	ConstantBuffer(Graphics* graphics, int size, const ResourceInfo &info) :
+		ShaderBuffer(graphics, size, info) {}
 };

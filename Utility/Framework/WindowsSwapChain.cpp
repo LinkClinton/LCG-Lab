@@ -12,7 +12,7 @@ WindowsSwapChain::WindowsSwapChain(Graphics * graphics, void * outputTarget, int
 	DXGI_SWAP_CHAIN_DESC swapDesc;
 
 	swapDesc.BufferCount = 1;
-	swapDesc.BufferDesc.Format = (DXGI_FORMAT)Utility::ConvertPixelFormat(mPixelFormat);
+	swapDesc.BufferDesc.Format = (DXGI_FORMAT)Utility::convertPixelFormat(mPixelFormat);
 	swapDesc.BufferDesc.Height = mHeight;
 	swapDesc.BufferDesc.Width = mWidth;
 	swapDesc.BufferDesc.RefreshRate.Denominator = 1;
@@ -37,16 +37,16 @@ WindowsSwapChain::WindowsSwapChain(Graphics * graphics, void * outputTarget, int
 
 	factory->CreateSwapChain(static_cast<WindowsGraphics*>(graphics)->mDevice, &swapDesc, &mSwapChain);
 
-	Utility::Dispose(device);
-	Utility::Dispose(adapter);
-	Utility::Dispose(factory);
+	Utility::dispose(device);
+	Utility::dispose(adapter);
+	Utility::dispose(factory);
 
 	mRenderTarget = new WindowsRenderTarget(graphics, this);
 }
 
 WindowsSwapChain::~WindowsSwapChain()
 {
-	Utility::Dispose(mSwapChain);
+	Utility::dispose(mSwapChain);
 	Utility::Delete(mRenderTarget);
 }
 

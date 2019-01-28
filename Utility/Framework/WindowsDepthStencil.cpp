@@ -12,7 +12,7 @@ WindowsDepthStencil::WindowsDepthStencil(Graphics * graphics, Texture2D * textur
 	D3D11_DEPTH_STENCIL_VIEW_DESC desc;
 
 	desc.Flags = 0;
-	desc.Format = (DXGI_FORMAT)Utility::ConvertPixelFormat(mPixelFormat);
+	desc.Format = (DXGI_FORMAT)Utility::convertPixelFormat(mPixelFormat);
 	desc.Texture2D.MipSlice = 0;
 	desc.ViewDimension = D3D11_DSV_DIMENSION::D3D11_DSV_DIMENSION_TEXTURE2D;
 
@@ -22,7 +22,7 @@ WindowsDepthStencil::WindowsDepthStencil(Graphics * graphics, Texture2D * textur
 
 WindowsDepthStencil::~WindowsDepthStencil()
 {
-	Utility::Dispose(mDepthStencil);
+	Utility::dispose(mDepthStencil);
 }
 
 #endif // _WIN32

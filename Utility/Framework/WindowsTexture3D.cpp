@@ -4,17 +4,17 @@
 #ifdef _WIN32
 
 WindowsTexture3D::WindowsTexture3D(Graphics * graphics, int width, int height, int depth, PixelFormat pixelFormat,
-	BindUsage bindUsage, HeapType heapType) : Texture3D(graphics, width, height, depth, pixelFormat, bindUsage, heapType)
+	const ResourceInfo &info) : Texture3D(graphics, width, height, depth, pixelFormat, info)
 {
 	D3D11_TEXTURE3D_DESC desc;
 
-	desc.BindFlags = Utility::ConvertBindUsage(mBindUsage) | D3D11_BIND_FLAG::D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_FLAG::D3D11_BIND_UNORDERED_ACCESS;
-	desc.CPUAccessFlags = 0;
-	desc.Format = Utility::ConvertPixelFormat(pixelFormat);
+	desc.BindFlags = Utility::convertBindUsage(mResourceInfo.BindUsage);
+	desc.CPUAccessFlags = Utility::convertCpuAccessFlag(mResourceInfo.CpuAccessFlag);
+	desc.Format = Utility::convertPixelFormat(mPixelFormat);
 	desc.Height = mHeight;
 	desc.MipLevels = 1;
 	desc.MiscFlags = 0;
-	desc.Usage = Utility::ConvertHeapType(heapType);
+	desc.Usage = Utility::convertHeapType(mResourceInfo.HeapType);
 	desc.Width = mWidth;
 	desc.Depth = mDepth;
 
@@ -24,7 +24,7 @@ WindowsTexture3D::WindowsTexture3D(Graphics * graphics, int width, int height, i
 
 WindowsTexture3D::~WindowsTexture3D()
 {
-	Utility::Dispose(mTexture3D);
+	Utility::dispose(mTexture3D);
 }
 
 void WindowsTexture3D::update(void * data)

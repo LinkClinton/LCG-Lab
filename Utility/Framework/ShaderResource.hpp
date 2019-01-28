@@ -8,17 +8,12 @@
 class ShaderResource : public Resource {
 protected:
 	PixelFormat mPixelFormat;
-	BindUsage mBindUsage;
-
-	ShaderResource(Graphics* graphics, int size, PixelFormat pixelFormat, BindUsage bindUsage, HeapType heapType) : 
-		Resource(graphics, size, heapType), mPixelFormat(pixelFormat), mBindUsage(bindUsage) {}
+	
+	ShaderResource(Graphics* graphics, int size, PixelFormat pixelFormat, const ResourceInfo &info) : 
+		Resource(graphics, size, info), mPixelFormat(pixelFormat) {}
 
 public:
 	auto getPixelFormat() -> PixelFormat const {
 		return mPixelFormat;
-	}
-
-	auto getBindUsage() -> BindUsage const {
-		return mBindUsage;
 	}
 };

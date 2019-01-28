@@ -45,7 +45,7 @@ void WindowsInputLayout::resetInstance(WindowsGraphics * graphics, WindowsVertex
 		mElementDesc[i] = inputDesc;
 	}
 
-	Utility::Dispose(mInputLayout);
+	Utility::dispose(mInputLayout);
 
 	auto shaderCompiledCode = vertexShader->getCompiledCodeBytes();
 
@@ -64,7 +64,7 @@ WindowsInputLayout::WindowsInputLayout(const std::vector<InputLayoutElement>& el
 
 WindowsInputLayout::~WindowsInputLayout()
 {
-	Utility::Dispose(mInputLayout);
+	Utility::dispose(mInputLayout);
 }
 
 void WindowsInputLayout::addElement(const InputLayoutElement & element)

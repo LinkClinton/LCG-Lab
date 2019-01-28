@@ -58,8 +58,8 @@ WindowsGraphics::WindowsGraphics()
 
 WindowsGraphics::~WindowsGraphics()
 {
-	Utility::Dispose(mDevice);
-	Utility::Dispose(mDeviceContext);
+	Utility::dispose(mDevice);
+	Utility::dispose(mDeviceContext);
 }
 
 void WindowsGraphics::clearState()
@@ -195,7 +195,7 @@ void WindowsGraphics::setRasterizerState(RasterizerState * rasterizerState)
 {
 	auto windowsRasterizerState = static_cast<WindowsRasterizerState*>(rasterizerState);
 
-	Utility::Dispose(windowsRasterizerState->mRasterizerState);
+	Utility::dispose(windowsRasterizerState->mRasterizerState);
 
 	mDevice->CreateRasterizerState(&windowsRasterizerState->mRasterizerDesc, &windowsRasterizerState->mRasterizerState);
 
@@ -206,7 +206,7 @@ void WindowsGraphics::setDepthStencilState(DepthStencilState * depthStencilState
 {
 	auto windowsDepthStencilState = static_cast<WindowsDepthStencilState*>(depthStencilState);
 
-	Utility::Dispose(windowsDepthStencilState->mDepthStencilState);
+	Utility::dispose(windowsDepthStencilState->mDepthStencilState);
 
 	mDevice->CreateDepthStencilState(&windowsDepthStencilState->mDepthStencilDesc, &windowsDepthStencilState->mDepthStencilState);
 	
@@ -215,7 +215,7 @@ void WindowsGraphics::setDepthStencilState(DepthStencilState * depthStencilState
 
 void WindowsGraphics::setPrimitiveType(PrimitiveType primitiveType)
 {
-	mDeviceContext->IASetPrimitiveTopology((D3D11_PRIMITIVE_TOPOLOGY)Utility::ConvertPrimitiveType(primitiveType));
+	mDeviceContext->IASetPrimitiveTopology((D3D11_PRIMITIVE_TOPOLOGY)Utility::convertPrimitiveType(primitiveType));
 }
 
 void WindowsGraphics::drawIndexed(int indexCount, int startIndexLocation, int baseVertexLocation)

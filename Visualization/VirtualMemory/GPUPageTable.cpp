@@ -8,7 +8,7 @@ GPUPageTable::GPUPageTable(Factory * factory, Graphics * graphics, const Size & 
 	//texture size is equal the table size * block size
 	auto textureSize = Helper::multiple(mSize, PageCache::getPageCacheSize());
 
-	mPageTableTexture = mFactory->createTexture3D(textureSize.X, textureSize.Y, textureSize.Z, PixelFormat::R8G8B8A8Uint);
+	mPageTableTexture = mFactory->createTexture3D(textureSize.X, textureSize.Y, textureSize.Z, PixelFormat::R8G8B8A8Uint, ResourceInfo::ShaderResource());
 	mTextureUsage = mFactory->createResourceUsage(mPageTableTexture, mPageTableTexture->getPixelFormat());
 
 	assert(nextTable->mFromTexture == nullptr);
@@ -21,7 +21,7 @@ GPUPageTable::GPUPageTable(Factory * factory, Graphics * graphics, const Size & 
 	//texture size is equal the table size * block size
 	auto textureSize = Helper::multiple(mSize, PageCache::getPageCacheSize());
 
-	mPageTableTexture = mFactory->createTexture3D(textureSize.X, textureSize.Y, textureSize.Z, PixelFormat::R8G8B8A8Uint);
+	mPageTableTexture = mFactory->createTexture3D(textureSize.X, textureSize.Y, textureSize.Z, PixelFormat::R8G8B8A8Uint, ResourceInfo::ShaderResource());
 	mTextureUsage = mFactory->createResourceUsage(mPageTableTexture, mPageTableTexture->getPixelFormat());
 
 	assert(endTable->mFromTexture == nullptr);
@@ -55,7 +55,7 @@ void GPUPageTable::clearUpAddress(const VirtualAddress & address)
 	//clear page cache(GPU version, texture)
 	auto size = PageCache::getPageCacheSize();
 	auto startRange = Helper::multiple(size, address);
-	auto textureSize = size.X * size.Y * size.Z * Utility::ComputePixelFomratBytes(mPageTableTexture->getPixelFormat());
+	auto textureSize = size.X * size.Y * size.Z * Utility::computePixelFomratBytes(mPageTableTexture->getPixelFormat());
 	
 	//reset the clear memory(all zero)
 	if (mPageCacheClearMemory.size() != (size_t)textureSize) mPageCacheClearMemory.resize(textureSize);

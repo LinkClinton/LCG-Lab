@@ -12,7 +12,7 @@ WindowsUnorderedAccessUsage::WindowsUnorderedAccessUsage(Graphics * graphics, Te
 {
 	D3D11_UNORDERED_ACCESS_VIEW_DESC viewDesc;
 
-	viewDesc.Format = Utility::ConvertPixelFormat(mPixelFormat);
+	viewDesc.Format = Utility::convertPixelFormat(mPixelFormat);
 	viewDesc.Texture2D.MipSlice = 0;
 	viewDesc.ViewDimension = D3D11_UAV_DIMENSION::D3D11_UAV_DIMENSION_TEXTURE2D;
 
@@ -26,7 +26,7 @@ WindowsUnorderedAccessUsage::WindowsUnorderedAccessUsage(Graphics * graphics, Te
 {
 	D3D11_UNORDERED_ACCESS_VIEW_DESC viewDesc;
 
-	viewDesc.Format = Utility::ConvertPixelFormat(mPixelFormat);
+	viewDesc.Format = Utility::convertPixelFormat(mPixelFormat);
 	viewDesc.Texture3D.MipSlice = 0;
 	viewDesc.Texture3D.FirstWSlice = 0;
 	viewDesc.Texture3D.WSize = texture3D->getDepth();
@@ -39,7 +39,7 @@ WindowsUnorderedAccessUsage::WindowsUnorderedAccessUsage(Graphics * graphics, Te
 
 WindowsUnorderedAccessUsage::~WindowsUnorderedAccessUsage()
 {
-	Utility::Dispose(mUnorderedAccessView);
+	Utility::dispose(mUnorderedAccessView);
 }
 
 #endif // _WIN32

@@ -5,24 +5,26 @@
 
 #ifdef _WIN32
 
-WindowsVertexBuffer::WindowsVertexBuffer(Graphics * graphics, int size, int stride, HeapType heapType) :
-	VertexBuffer(graphics, size, stride, heapType)
+WindowsVertexBuffer::WindowsVertexBuffer(Graphics * graphics, int size, int stride, const ResourceInfo &info) :
+	VertexBuffer(graphics, size, stride, info)
 {
 	D3D11_BUFFER_DESC desc;
 
-	desc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_VERTEX_BUFFER;
+	assert(Utility::hasBindUsage(mResourceInfo.BindUsage, BindUsage::VertexBufferUsage) == true);
+
+	desc.BindFlags = Utility::convertBindUsage(mResourceInfo.BindUsage);
 	desc.ByteWidth = mSize;
-	desc.CPUAccessFlags = 0;
+	desc.CPUAccessFlags = Utility::convertCpuAccessFlag(mResourceInfo.CpuAccessFlag);
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = mStride;
-	desc.Usage = Utility::ConvertHeapType(heapType);
+	desc.Usage = Utility::convertHeapType(mResourceInfo.HeapType);
 
 	static_cast<WindowsGraphics*>(mGraphics)->mDevice->CreateBuffer(&desc, nullptr, &mBuffer);
 }
 
 WindowsVertexBuffer::~WindowsVertexBuffer()
 {
-	Utility::Dispose(mBuffer);
+	Utility::dispose(mBuffer);
 }
 
 void WindowsVertexBuffer::update(void * data)

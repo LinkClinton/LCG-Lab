@@ -2,18 +2,18 @@
 
 class Graphics;
 
-#include "HeapType.hpp"
+#include "ResourceInfo.hpp"
 
 class Resource {
 protected:
 	int mSize;
 
-	HeapType mHeapType;
-
+	ResourceInfo mResourceInfo;
+	
 	Graphics* mGraphics;
 
-	Resource(Graphics* graphics, int size, HeapType heapType) : 
-		mGraphics(graphics), mSize(size), mHeapType(heapType) {}
+	Resource(Graphics* graphics, int size, const ResourceInfo &info) : 
+		mGraphics(graphics), mSize(size), mResourceInfo(info) {}
 public:
 	virtual void update(void* data) = 0;
 
@@ -21,7 +21,7 @@ public:
 		return mSize;
 	}
 
-	auto getHeapType() -> HeapType const {
-		return mHeapType;
+	auto getInfo() -> ResourceInfo const {
+		return mResourceInfo;
 	}
 };

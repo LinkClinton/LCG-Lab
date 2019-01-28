@@ -17,7 +17,7 @@ WindowsDepthStencilState::WindowsDepthStencilState()
 	mDepthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
 
 	mDepthStencilDesc.DepthEnable = mDepthEnable;
-	mDepthStencilDesc.DepthFunc = Utility::ConvertComparisonMode(mComparisonMode);
+	mDepthStencilDesc.DepthFunc = Utility::convertComparisonMode(mComparisonMode);
 	mDepthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ALL;
 	mDepthStencilDesc.StencilEnable = false;
 	mDepthStencilDesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
@@ -28,7 +28,7 @@ WindowsDepthStencilState::WindowsDepthStencilState()
 
 WindowsDepthStencilState::~WindowsDepthStencilState()
 {
-	Utility::Dispose(mDepthStencilState);
+	Utility::dispose(mDepthStencilState);
 }
 
 void WindowsDepthStencilState::setDepthEnable(bool enable)
@@ -42,7 +42,7 @@ void WindowsDepthStencilState::setComparisonMode(ComparisonMode compairsonMode)
 {
 	mComparisonMode = compairsonMode;
 
-	mDepthStencilDesc.DepthFunc = Utility::ConvertComparisonMode(mComparisonMode);
+	mDepthStencilDesc.DepthFunc = Utility::convertComparisonMode(mComparisonMode);
 }
 
 #endif // _WIN32

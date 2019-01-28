@@ -31,8 +31,8 @@ WindowsVertexShader::WindowsVertexShader(Graphics * graphics, const std::vector<
 		for (size_t i = 0; i < resultBlob->GetBufferSize(); i++)
 			mCompiledCodeBytes.push_back(((codebyte*)resultBlob->GetBufferPointer())[i]);
 
-		Utility::Dispose(resultBlob);
-		Utility::Dispose(errorBlob);
+		Utility::dispose(resultBlob);
+		Utility::dispose(errorBlob);
 	}
 	else {
 		static_cast<WindowsGraphics*>(graphics)->mDevice->CreateVertexShader(&codeBytes[0], codeBytes.size(), nullptr,
@@ -44,7 +44,7 @@ WindowsVertexShader::WindowsVertexShader(Graphics * graphics, const std::vector<
 
 WindowsVertexShader::~WindowsVertexShader()
 {
-	Utility::Dispose(mVertexShader);
+	Utility::dispose(mVertexShader);
 }
 
 #endif // _WIN32

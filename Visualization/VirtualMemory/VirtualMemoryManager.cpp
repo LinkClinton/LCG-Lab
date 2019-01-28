@@ -69,8 +69,8 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 	mDirectoryCache = new PageDirectory(multiResolutionSize, mPageCacheTable);
 
 	//create buffer for resolution
-	mMultiResolutionSizeBuffer = mFactory->createConstantBuffer(sizeof(Size) * MAX_MULTIRESOLUTION_COUNT);
-	mMultiResolutionBaseBuffer = mFactory->createConstantBuffer(sizeof(VirtualAddress) * MAX_MULTIRESOLUTION_COUNT);
+	mMultiResolutionSizeBuffer = mFactory->createConstantBuffer(sizeof(Size) * MAX_MULTIRESOLUTION_COUNT, ResourceInfo::ConstantBuffer());
+	mMultiResolutionBaseBuffer = mFactory->createConstantBuffer(sizeof(VirtualAddress) * MAX_MULTIRESOLUTION_COUNT, ResourceInfo::ConstantBuffer());
 	mMultiResolutionSizeBuffer->update(&multiResolutionSize[0]);
 	mMultiResolutionBaseBuffer->update(&multiResolutionBase[0]);
 
@@ -96,16 +96,14 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 		blockCacheUsageStateSize, 
 		blockCacheUsageStateSize, 
 		PixelFormat::R8Unknown,
-		BindUsage::NoneUsage,
-		HeapType::Default);
+		ResourceInfo::UnorderedAccess());
 
 	mBlockCacheMissArrayTexture = mFactory->createTexture3D(
 		blockCacheMissArraySizeX,
 		blockCacheMissArraySizeY,
 		blockCacheMissArraySizeZ,
 		PixelFormat::R32Uint,
-		BindUsage::NoneUsage,
-		HeapType::Default);
+		ResourceInfo::UnorderedAccess());
 
 	mBlockCacheUsageStateUsage = mFactory->createUnorderedAccessUsage(mBlockCacheUsageStateTexture, mBlockCacheUsageStateTexture->getPixelFormat());
 	mBlockCacheMissArrayUsage = mFactory->createUnorderedAccessUsage(mBlockCacheMissArrayTexture, mBlockCacheMissArrayTexture->getPixelFormat());

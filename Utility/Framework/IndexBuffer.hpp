@@ -4,6 +4,6 @@
 
 class IndexBuffer : public ShaderBuffer {
 protected:
-	IndexBuffer(Graphics* graphics, int size, HeapType heapType) :
-		ShaderBuffer(graphics, size, heapType) {}
+	IndexBuffer(Graphics* graphics, int size, const ResourceInfo &info) :
+		ShaderBuffer(graphics, size, info) {}
 };

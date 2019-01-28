@@ -12,7 +12,7 @@ WindowsResourceUsage::WindowsResourceUsage(Graphics* graphics, Texture2D * textu
 {
 	D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc;
 
-	viewDesc.Format = Utility::ConvertPixelFormat(mPixelFormat);
+	viewDesc.Format = Utility::convertPixelFormat(mPixelFormat);
 	viewDesc.Texture2D.MipLevels = 1;
 	viewDesc.Texture2D.MostDetailedMip = 0;
 	viewDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
@@ -28,7 +28,7 @@ WindowsResourceUsage::WindowsResourceUsage(Graphics * graphics, Texture3D * text
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc;
 
-	viewDesc.Format = Utility::ConvertPixelFormat(mPixelFormat);
+	viewDesc.Format = Utility::convertPixelFormat(mPixelFormat);
 	viewDesc.Texture3D.MipLevels = 1;
 	viewDesc.Texture3D.MostDetailedMip = 0;
 	viewDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE3D;
@@ -40,7 +40,7 @@ WindowsResourceUsage::WindowsResourceUsage(Graphics * graphics, Texture3D * text
 
 WindowsResourceUsage::~WindowsResourceUsage()
 {
-	Utility::Dispose(mShaderResourceView);
+	Utility::dispose(mShaderResourceView);
 }
 
 #endif // _WIN32

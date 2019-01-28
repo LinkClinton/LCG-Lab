@@ -14,7 +14,7 @@ private:
 
 	friend class WindowsGraphics;
 public:
-	WindowsIndexBuffer(Graphics* graphics, int size, HeapType heapType);
+	WindowsIndexBuffer(Graphics* graphics, int size, const ResourceInfo &info);
 
 	~WindowsIndexBuffer();
 

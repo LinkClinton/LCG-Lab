@@ -23,6 +23,7 @@
     <ClInclude Include="Camera.hpp" />
     <ClInclude Include="ComparisonMode.hpp" />
     <ClInclude Include="ConstantBuffer.hpp" />
+    <ClInclude Include="CpuAccessFlag.hpp" />
     <ClInclude Include="Cube.hpp" />
     <ClInclude Include="CullMode.hpp" />
     <ClInclude Include="DepthStencil.hpp" />
@@ -41,6 +42,7 @@
     <ClInclude Include="PrimitiveType.hpp" />
     <ClInclude Include="RasterizerState.hpp" />
     <ClInclude Include="RenderTarget.hpp" />
+    <ClInclude Include="ResourceInfo.hpp" />
     <ClInclude Include="ShaderBuffer.hpp" />
     <ClInclude Include="Framework.hpp" />
     <ClInclude Include="Graphics.hpp" />

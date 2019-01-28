@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdexcept>
+#include <cassert>
 
 #include "PixelFormat.hpp"
 #include "PrimitiveType.hpp"
@@ -9,6 +10,7 @@
 #include "ComparisonMode.hpp"
 #include "BindUsage.hpp"
 #include "HeapType.hpp"
+#include "CpuAccessFlag.hpp"
 
 #ifdef _WIN32
 
@@ -21,7 +23,7 @@ typedef unsigned char codebyte;
 class Utility {
 public:
 	template<typename T>
-	static void Dispose(T &object) {
+	static void dispose(T &object) {
 		if (object != nullptr)
 			object->Release();
 
@@ -36,7 +38,7 @@ public:
 		object = nullptr;
 	}
 
-	static auto ComputePixelFomratBytes(PixelFormat pixelFormat) -> int {
+	static auto computePixelFomratBytes(PixelFormat pixelFormat) -> int {
 		switch (pixelFormat)
 		{
 		case PixelFormat::R8G8B8A8Unknown:
@@ -59,9 +61,19 @@ public:
 		return 0;
 	}
 
+	static bool hasBindUsage(BindUsage usage, BindUsage requirement) {
+		if ((int(usage) & int(requirement)) != 0) return true;
+		return false;
+	}
+
+	static bool hasCpuAccessFlag(CpuAccessFlag flag, CpuAccessFlag requirement) {
+		if ((int(flag) & int(requirement)) != 0) return true;
+		return false;
+	}
+
 #ifdef _WIN32
 
-	static auto ConvertPixelFormat(PixelFormat pixelFormat) -> DXGI_FORMAT {
+	static auto convertPixelFormat(PixelFormat pixelFormat) -> DXGI_FORMAT {
 		switch (pixelFormat)
 		{
 		case PixelFormat::R8G8B8A8Unknown:
@@ -91,7 +103,7 @@ public:
 		return DXGI_FORMAT::DXGI_FORMAT_UNKNOWN;
 	}
 
-	static auto ConvertPrimitiveType(PrimitiveType primitiveType) -> D3D11_PRIMITIVE_TOPOLOGY {
+	static auto convertPrimitiveType(PrimitiveType primitiveType) -> D3D11_PRIMITIVE_TOPOLOGY {
 		switch (primitiveType)
 		{
 		case PrimitiveType::TriangleList:
@@ -103,7 +115,7 @@ public:
 		return D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	}
 
-	static auto ConvertFillMode(FillMode fillMode) -> D3D11_FILL_MODE {
+	static auto convertFillMode(FillMode fillMode) -> D3D11_FILL_MODE {
 		switch (fillMode)
 		{
 		case FillMode::Wireframe:
@@ -117,7 +129,7 @@ public:
 		return D3D11_FILL_MODE::D3D11_FILL_SOLID;
 	}
 
-	static auto ConvertCullMode(CullMode cullMode) -> D3D11_CULL_MODE {
+	static auto convertCullMode(CullMode cullMode) -> D3D11_CULL_MODE {
 		switch (cullMode)
 		{
 		case CullMode::None:
@@ -133,7 +145,7 @@ public:
 		return D3D11_CULL_MODE::D3D11_CULL_NONE;
 	}
 
-	static auto ConvertComparisonMode(ComparisonMode comparisonMode) -> D3D11_COMPARISON_FUNC {
+	static auto convertComparisonMode(ComparisonMode comparisonMode) -> D3D11_COMPARISON_FUNC {
 		switch (comparisonMode)
 		{
 		case ComparisonMode::Never:
@@ -159,23 +171,36 @@ public:
 		return D3D11_COMPARISON_FUNC::D3D11_COMPARISON_NEVER;
 	}
 
-	static auto ConvertBindUsage(BindUsage bindUsage) -> D3D11_BIND_FLAG {
-		switch (bindUsage)
-		{
-		case BindUsage::NoneUsage:
-			return (D3D11_BIND_FLAG)0;
-		case BindUsage::DepthStencilUsage:
-			return D3D11_BIND_FLAG::D3D11_BIND_DEPTH_STENCIL;
-		case BindUsage::RenderTargetUsage:
-			return D3D11_BIND_FLAG::D3D11_BIND_RENDER_TARGET;
-		default:
-			std::runtime_error("The bind usage is not supported.");
+	static auto convertBindUsage(BindUsage bindUsage) -> D3D11_BIND_FLAG {
+		static BindUsage bindUsagePool[] = {
+			BindUsage::VertexBufferUsage, BindUsage::IndexBufferUsage,
+			BindUsage::ConstantBufferUsage, BindUsage::ShaderResourceUsage,
+			BindUsage::StreamOutputUsage, BindUsage::RenderTargetUsage,
+			BindUsage::DepthStencilUsage, BindUsage::UnorderedAccessUsage,
+			BindUsage::DecoderUsage, BindUsage::VideoEncoderUsage
 		};
 
-		return (D3D11_BIND_FLAG)0;
+		static D3D11_BIND_FLAG bindFlagPool[] = {
+			D3D11_BIND_VERTEX_BUFFER, D3D11_BIND_INDEX_BUFFER,
+			D3D11_BIND_CONSTANT_BUFFER, D3D11_BIND_SHADER_RESOURCE,
+			D3D11_BIND_STREAM_OUTPUT, D3D11_BIND_RENDER_TARGET,
+			D3D11_BIND_DEPTH_STENCIL, D3D11_BIND_UNORDERED_ACCESS,
+			D3D11_BIND_DECODER, D3D11_BIND_VIDEO_ENCODER
+		};
+
+		D3D11_BIND_FLAG result = (D3D11_BIND_FLAG)0;
+
+		auto arraySize = sizeof(bindUsagePool) / sizeof(BindUsage);
+
+		for (size_t i = 0; i < arraySize; i++) {
+			if (hasBindUsage(bindUsage, bindUsagePool[i]) == true)
+				result = D3D11_BIND_FLAG(result | bindFlagPool[i]);
+		}
+
+		return result;
 	}
 
-	static auto ConvertHeapType(HeapType heapType) -> D3D11_USAGE {
+	static auto convertHeapType(HeapType heapType) -> D3D11_USAGE {
 		switch (heapType)
 		{
 		case HeapType::Default:
@@ -191,6 +216,15 @@ public:
 		}
 
 		return D3D11_USAGE::D3D11_USAGE_DEFAULT;
+	}
+
+	static auto convertCpuAccessFlag(CpuAccessFlag cpuAccess) -> D3D11_CPU_ACCESS_FLAG {
+		D3D11_CPU_ACCESS_FLAG result = (D3D11_CPU_ACCESS_FLAG)0;
+
+		if (hasCpuAccessFlag(cpuAccess, CpuAccessFlag::Read)) result = D3D11_CPU_ACCESS_FLAG(result | D3D11_CPU_ACCESS_READ);
+		if (hasCpuAccessFlag(cpuAccess, CpuAccessFlag::Write)) result = D3D11_CPU_ACCESS_FLAG(result | D3D11_CPU_ACCESS_WRITE);
+
+		return result;
 	}
 #endif // _WIN32
 

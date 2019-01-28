@@ -17,13 +17,13 @@ WindowsRenderTarget::WindowsRenderTarget(Graphics * graphics, SwapChain * swapCh
 
 	D3D11_RENDER_TARGET_VIEW_DESC desc;
 
-	desc.Format = (DXGI_FORMAT)Utility::ConvertPixelFormat(mPixelFormat);
+	desc.Format = (DXGI_FORMAT)Utility::convertPixelFormat(mPixelFormat);
 	desc.Texture2D.MipSlice = 0;
 	desc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2D;
 
 	static_cast<WindowsGraphics*>(graphics)->mDevice->CreateRenderTargetView(backBuffer, &desc, &mRenderTarget);
 
-	Utility::Dispose(backBuffer);
+	Utility::dispose(backBuffer);
 }
 
 WindowsRenderTarget::WindowsRenderTarget(Graphics * graphics, Texture2D * texture2D, PixelFormat pixelFormat)
@@ -31,7 +31,7 @@ WindowsRenderTarget::WindowsRenderTarget(Graphics * graphics, Texture2D * textur
 {
 	D3D11_RENDER_TARGET_VIEW_DESC desc;
 
-	desc.Format = (DXGI_FORMAT)Utility::ConvertPixelFormat(mPixelFormat);
+	desc.Format = (DXGI_FORMAT)Utility::convertPixelFormat(mPixelFormat);
 	desc.Texture2D.MipSlice = 0;
 	desc.ViewDimension = D3D11_RTV_DIMENSION::D3D11_RTV_DIMENSION_TEXTURE2D;
 
@@ -43,7 +43,7 @@ WindowsRenderTarget::WindowsRenderTarget(Graphics * graphics, Texture2D * textur
 
 WindowsRenderTarget::~WindowsRenderTarget()
 {
-	Utility::Dispose(mRenderTarget);
+	Utility::dispose(mRenderTarget);
 }
 
 #endif // _WIN32

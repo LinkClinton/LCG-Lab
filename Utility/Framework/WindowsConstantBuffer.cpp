@@ -5,24 +5,26 @@
 
 #ifdef _WIN32
 
-WindowsConstantBuffer::WindowsConstantBuffer(Graphics * graphics, int size, HeapType heapType) :
-	ConstantBuffer(graphics, size, heapType)
+WindowsConstantBuffer::WindowsConstantBuffer(Graphics * graphics, int size, const ResourceInfo &info) :
+	ConstantBuffer(graphics, size, info)
 {
 	D3D11_BUFFER_DESC desc;
 
-	desc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_CONSTANT_BUFFER;
+	assert(Utility::hasBindUsage(mResourceInfo.BindUsage, BindUsage::ConstantBufferUsage) == true);
+
+	desc.BindFlags = Utility::convertBindUsage(mResourceInfo.BindUsage);
 	desc.ByteWidth = mSize;
-	desc.CPUAccessFlags = 0;
+	desc.CPUAccessFlags = Utility::convertCpuAccessFlag(mResourceInfo.CpuAccessFlag);
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = mSize;
-	desc.Usage = Utility::ConvertHeapType(heapType);
+	desc.Usage = Utility::convertHeapType(mResourceInfo.HeapType);
 
 	static_cast<WindowsGraphics*>(mGraphics)->mDevice->CreateBuffer(&desc, nullptr, &mBuffer);
 }
 
 WindowsConstantBuffer::~WindowsConstantBuffer()
 {
-	Utility::Dispose(mBuffer);
+	Utility::dispose(mBuffer);
 }
 
 void WindowsConstantBuffer::update(void * data)

@@ -4,6 +4,6 @@
 
 class ShaderBuffer : public Resource{
 protected:
-	ShaderBuffer(Graphics* graphics, int size, HeapType heapType) : 
-		Resource(graphics, size, heapType) {}
+	ShaderBuffer(Graphics* graphics, int size, const ResourceInfo &info) :
+		Resource(graphics, size, info) {}
 };

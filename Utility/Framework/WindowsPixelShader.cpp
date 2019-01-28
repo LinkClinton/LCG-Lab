@@ -28,8 +28,8 @@ WindowsPixelShader::WindowsPixelShader(Graphics * graphics, const std::vector<co
 		for (size_t i = 0; i < resultBlob->GetBufferSize(); i++)
 			mCompiledCodeBytes.push_back(((codebyte*)resultBlob->GetBufferPointer())[i]);
 
-		Utility::Dispose(errorBlob);
-		Utility::Dispose(resultBlob);
+		Utility::dispose(errorBlob);
+		Utility::dispose(resultBlob);
 	}
 	else {
 		static_cast<WindowsGraphics*>(graphics)->mDevice->CreatePixelShader(&mCodeBytes[0], mCodeBytes.size(), nullptr,
@@ -41,7 +41,7 @@ WindowsPixelShader::WindowsPixelShader(Graphics * graphics, const std::vector<co
 
 WindowsPixelShader::~WindowsPixelShader()
 {
-	Utility::Dispose(mPixelShader);
+	Utility::dispose(mPixelShader);
 }
 
 #endif // _WIN32

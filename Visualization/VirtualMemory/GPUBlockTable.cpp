@@ -8,7 +8,7 @@ GPUBlockTable::GPUBlockTable(Factory * factory, Graphics * graphics, const Size 
 	//texture size is equal the table size * block size
 	auto textureSize = Helper::multiple(mSize, BlockCache::getBlockCacheSize());
 
-	mBlockTableTexture = mFactory->createTexture3D(textureSize.X, textureSize.Y, textureSize.Z, PixelFormat::R8Unknown);
+	mBlockTableTexture = mFactory->createTexture3D(textureSize.X, textureSize.Y, textureSize.Z, PixelFormat::R8Unknown, ResourceInfo::ShaderResource());
 	mTextureUsage = mFactory->createResourceUsage(mBlockTableTexture, mBlockTableTexture->getPixelFormat());
 }
 

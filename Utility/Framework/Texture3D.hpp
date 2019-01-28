@@ -16,15 +16,15 @@ protected:
 	int mRowPitch;
 	int mDepthPitch;
 
-	Texture3D(Graphics* graphics, int width, int height, int depth, PixelFormat pixelFormat, BindUsage bindUsage, HeapType heapType) :
-		ShaderResource(graphics, width * height * depth * Utility::ComputePixelFomratBytes(pixelFormat), pixelFormat, bindUsage, heapType) {
+	Texture3D(Graphics* graphics, int width, int height, int depth, PixelFormat pixelFormat, const ResourceInfo &info) :
+		ShaderResource(graphics, width * height * depth * Utility::computePixelFomratBytes(pixelFormat), pixelFormat, info) {
 
 		mWidth = width;
 		mHeight = height;
 		mDepth = depth;
 
-		mRowPitch = mWidth * Utility::ComputePixelFomratBytes(pixelFormat);
-		mDepthPitch = mWidth * mHeight * Utility::ComputePixelFomratBytes(pixelFormat);
+		mRowPitch = mWidth * Utility::computePixelFomratBytes(pixelFormat);
+		mDepthPitch = mWidth * mHeight * Utility::computePixelFomratBytes(pixelFormat);
 	}
 
 public:

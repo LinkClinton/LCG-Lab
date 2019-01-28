@@ -14,7 +14,7 @@ private:
 	friend class WindowsResourceUsage;
 	friend class WindowsUnorderedAccessUsage;
 public:
-	WindowsTexture3D(Graphics* graphics, int width, int height, int depth, PixelFormat pixelFormat, BindUsage bindUsage, HeapType heapType);
+	WindowsTexture3D(Graphics* graphics, int width, int height, int depth, PixelFormat pixelFormat, const ResourceInfo &info);
 
 	~WindowsTexture3D();
 

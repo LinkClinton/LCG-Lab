@@ -5,24 +5,26 @@
 
 #ifdef _WIN32
 
-WindowsIndexBuffer::WindowsIndexBuffer(Graphics * graphics, int size, HeapType heapType) :
-	IndexBuffer(graphics, size, heapType)
+WindowsIndexBuffer::WindowsIndexBuffer(Graphics * graphics, int size, const ResourceInfo &info) :
+	IndexBuffer(graphics, size, info)
 {
 	D3D11_BUFFER_DESC desc;
 
-	desc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_INDEX_BUFFER;
+	assert(Utility::hasBindUsage(mResourceInfo.BindUsage, BindUsage::IndexBufferUsage) == true);
+
+	desc.BindFlags = Utility::convertBindUsage(mResourceInfo.BindUsage);
 	desc.ByteWidth = mSize;
-	desc.CPUAccessFlags = 0;
+	desc.CPUAccessFlags = Utility::convertCpuAccessFlag(mResourceInfo.CpuAccessFlag);
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = sizeof(unsigned int);
-	desc.Usage = Utility::ConvertHeapType(heapType);
+	desc.Usage = Utility::convertHeapType(mResourceInfo.HeapType);
 	
 	static_cast<WindowsGraphics*>(mGraphics)->mDevice->CreateBuffer(&desc, nullptr, &mBuffer);
 }
 
 WindowsIndexBuffer::~WindowsIndexBuffer()
 {
-	Utility::Dispose(mBuffer);
+	Utility::dispose(mBuffer);
 }
 
 void WindowsIndexBuffer::update(void * data)

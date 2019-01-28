@@ -6,8 +6,8 @@
 
 WindowsRasterizerState::WindowsRasterizerState()
 {
-	mRasterizerDesc.FillMode = (D3D11_FILL_MODE)Utility::ConvertFillMode(mFillMode);
-	mRasterizerDesc.CullMode = (D3D11_CULL_MODE)Utility::ConvertCullMode(mCullMode);
+	mRasterizerDesc.FillMode = (D3D11_FILL_MODE)Utility::convertFillMode(mFillMode);
+	mRasterizerDesc.CullMode = (D3D11_CULL_MODE)Utility::convertCullMode(mCullMode);
 	mRasterizerDesc.FrontCounterClockwise = false;
 	mRasterizerDesc.DepthBias = 0;
 	mRasterizerDesc.SlopeScaledDepthBias = 0.0f;
@@ -21,21 +21,21 @@ WindowsRasterizerState::WindowsRasterizerState()
 
 WindowsRasterizerState::~WindowsRasterizerState()
 {
-	Utility::Dispose(mRasterizerState);
+	Utility::dispose(mRasterizerState);
 }
 
 void WindowsRasterizerState::setFillMode(FillMode fillMode)
 {
 	mFillMode = fillMode;
 
-	mRasterizerDesc.FillMode = (D3D11_FILL_MODE)Utility::ConvertFillMode(mFillMode);
+	mRasterizerDesc.FillMode = (D3D11_FILL_MODE)Utility::convertFillMode(mFillMode);
 }
 
 void WindowsRasterizerState::setCullMode(CullMode cullMode)
 {
 	mCullMode = cullMode;
 
-	mRasterizerDesc.CullMode = (D3D11_CULL_MODE)Utility::ConvertCullMode(mCullMode);
+	mRasterizerDesc.CullMode = (D3D11_CULL_MODE)Utility::convertCullMode(mCullMode);
 }
 
 #endif // _WIN32

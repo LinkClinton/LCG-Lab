@@ -14,7 +14,7 @@ private:
 
 	friend class WindowsGraphics;
 public:
-	WindowsVertexBuffer(Graphics* graphics, int size, int stride, HeapType heapType);
+	WindowsVertexBuffer(Graphics* graphics, int size, int stride, const ResourceInfo &info);
 
 	~WindowsVertexBuffer();
 

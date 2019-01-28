@@ -122,11 +122,11 @@ void VMRenderFramework::initializeInputStage()
 	mInputLayout->addElement(InputLayoutElement("TEXCOORD", sizeof(glm::vec3), 0));
 
 	//initialize the vertex and index buffer
-	mIndexBuffer = mFactory->createIndexBuffer(36 * sizeof(unsigned int));
-	mVertexBuffer = mFactory->createVertexBuffer(8 * sizeof(CubeVertex), sizeof(CubeVertex));
+	mIndexBuffer = mFactory->createIndexBuffer(36 * sizeof(unsigned int), ResourceInfo::IndexBuffer());
+	mVertexBuffer = mFactory->createVertexBuffer(8 * sizeof(CubeVertex), sizeof(CubeVertex), ResourceInfo::VertexBuffer());
 
 	//initialize the matrix buffer
-	mMatrixBuffer = mFactory->createConstantBuffer(sizeof(MatrixStructure));
+	mMatrixBuffer = mFactory->createConstantBuffer(sizeof(MatrixStructure), ResourceInfo::ConstantBuffer());
 
 	//update cube's data
 	mIndexBuffer->update(&Cube::GetIndices()[0]);

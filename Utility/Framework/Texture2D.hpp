@@ -12,12 +12,12 @@ protected:
 	int mHeight;
 	int mRowPitch;
 	
-	Texture2D(Graphics* graphics, int width, int height, PixelFormat pixelFormat, BindUsage bindUsage, HeapType heapType) :
-		ShaderResource(graphics, width * height * Utility::ComputePixelFomratBytes(pixelFormat), pixelFormat, bindUsage, heapType) {
+	Texture2D(Graphics* graphics, int width, int height, PixelFormat pixelFormat, const ResourceInfo &info) :
+		ShaderResource(graphics, width * height * Utility::computePixelFomratBytes(pixelFormat), pixelFormat, info) {
 
 		mWidth = width;
 		mHeight = height;
-		mRowPitch = mWidth * Utility::ComputePixelFomratBytes(pixelFormat);
+		mRowPitch = mWidth * Utility::computePixelFomratBytes(pixelFormat);
 	}
 
 public:
