@@ -25,6 +25,9 @@
     <Filter Include="Source Files\Memory">
       <UniqueIdentifier>{71554bd8-0c72-4666-b8e7-110dd83cee25}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Structure">
+      <UniqueIdentifier>{bc564e15-6c83-4097-9da2-7c8ed3694363}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -53,6 +56,9 @@
     </ClCompile>
     <ClCompile Include="GPUPageDirectory.cpp">
       <Filter>Source Files\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedTexture3D.cpp">
+      <Filter>Source Files\Structure</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -96,6 +102,9 @@
       <Filter>Header Files\Memory</Filter>
     </ClInclude>
     <ClInclude Include="DataCache.hpp">
+      <Filter>Header Files\Structure</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedTexture3D.hpp">
       <Filter>Header Files\Structure</Filter>
     </ClInclude>
   </ItemGroup>

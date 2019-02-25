@@ -45,4 +45,24 @@ void WindowsTexture3D::update(void * data, int left, int top, int front, int rig
 	static_cast<WindowsGraphics*>(mGraphics)->mDeviceContext->UpdateSubresource(mTexture3D, 0, &box, data, mRowPitch, mDepthPitch);
 }
 
+void WindowsTexture3D::copy(Texture3D * source)
+{
+	static_cast<WindowsGraphics*>(mGraphics)->mDeviceContext->CopyResource(mTexture3D, static_cast<WindowsTexture3D*>(source)->mTexture3D);
+}
+
+auto WindowsTexture3D::map() -> void * 
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	static_cast<WindowsGraphics*>(mGraphics)->mDeviceContext->Map(mTexture3D, 0,
+		D3D11_MAP::D3D11_MAP_READ_WRITE, 0, &mappedResource);
+
+	return mappedResource.pData;
+}
+
+void WindowsTexture3D::unmap()
+{
+	static_cast<WindowsGraphics*>(mGraphics)->mDeviceContext->Unmap(mTexture3D, 0);
+}
+
 #endif // _WIN32

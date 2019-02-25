@@ -21,6 +21,12 @@ public:
 	virtual void update(void* data)override;
 
 	virtual void update(void* data, int left, int top, int front, int right, int bottom, int back)override;
+
+	virtual void copy(Texture3D* source)override;
+
+	virtual auto map() -> void* override;
+
+	virtual void unmap()override;
 };
 
 #endif // _WIN32

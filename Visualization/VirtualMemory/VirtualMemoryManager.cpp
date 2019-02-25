@@ -81,7 +81,7 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 
 	//for current version, we use one byte to store a block state(it is simple, may be changed in next version) 
 	//and we do not use hash to avoid the same block problem(will be solved in next version)
-	//and we report resolution level and block id for cache miss(will be one block id for next version)
+	//and we report one unsigned int as block id and resolution level
 	//for block cache miss texture, we need compute the x and y size and make sure it can cover the render target
 	//so the x and y size is equal "ceil(mResolutionSize / BLOCK_HASH_TABLE_PIXEL_TILE_SIZE_XY)"
 	//and the z size means the array size(0 for count)
@@ -91,22 +91,33 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 	int blockCacheMissArraySizeZ = BLOCK_HASH_TABLE_ARRAY_SIZE;
 
 	//create texture 3d and resource usage
-	mBlockCacheUsageStateTexture = mFactory->createTexture3D(
+	mBlockCacheUsageStateTexture = new SharedTexture3D(
 		blockCacheUsageStateSize, 
 		blockCacheUsageStateSize, 
 		blockCacheUsageStateSize, 
 		PixelFormat::R8Unknown,
-		ResourceInfo::UnorderedAccess());
-
-	mBlockCacheMissArrayTexture = mFactory->createTexture3D(
+		ResourceInfo::UnorderedAccess(),
+		mFactory);
+	
+	mBlockCacheMissArrayTexture = new SharedTexture3D(
 		blockCacheMissArraySizeX,
 		blockCacheMissArraySizeY,
 		blockCacheMissArraySizeZ,
 		PixelFormat::R32Uint,
-		ResourceInfo::UnorderedAccess());
+		ResourceInfo::UnorderedAccess(),
+		mFactory);
 
-	mBlockCacheUsageStateUsage = mFactory->createUnorderedAccessUsage(mBlockCacheUsageStateTexture, mBlockCacheUsageStateTexture->getPixelFormat());
-	mBlockCacheMissArrayUsage = mFactory->createUnorderedAccessUsage(mBlockCacheMissArrayTexture, mBlockCacheMissArrayTexture->getPixelFormat());
+	mBlockCacheUsageStateUsage = mFactory->createUnorderedAccessUsage(
+		mBlockCacheUsageStateTexture->getGpuTexture(), 
+		mBlockCacheUsageStateTexture->getPixelFormat());
+
+	mBlockCacheMissArrayUsage = mFactory->createUnorderedAccessUsage(
+		mBlockCacheMissArrayTexture->getGpuTexture(), 
+		mBlockCacheMissArrayTexture->getPixelFormat());
+}
+
+void VirtualMemoryManager::solveCacheMiss()
+{
 }
 
 void VirtualMemoryManager::finalize() 
@@ -119,8 +130,8 @@ void VirtualMemoryManager::finalize()
 	delete mGPUPageCacheTable;
 	delete mGPUBlockCacheTable;
 
-	mFactory->destoryTexture3D(mBlockCacheUsageStateTexture);
-	mFactory->destoryTexture3D(mBlockCacheMissArrayTexture);
+	delete mBlockCacheUsageStateTexture;
+	delete mBlockCacheMissArrayTexture;
 
 	mFactory->destoryUnorderedAccessUsage(mBlockCacheUsageStateUsage);
 	mFactory->destoryUnorderedAccessUsage(mBlockCacheMissArrayUsage);

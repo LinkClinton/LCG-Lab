@@ -50,9 +50,10 @@ float sampleVolume(float3 position, int level, int reportCount,
     if (directoryEntry.w == MAPPED)
     {
         //get the block count of level
+        //the entry need to mul the PAGE_SIZE_XYZ, because the entry is in the range [0, PAGE_COUNT_XYZ) (next version, we can compute it when we change for performance)
         //so the address of current position is entry + (position * block count) % PAGE_SIZE_XYZ
         int blockCount = PAGE_SIZE_XYZ * resolutionSize.x * resolutionSize.y * resolutionSize.z;
-        int3 pageTableAddress = directoryEntry.xyz + (position * blockCount) % PAGE_SIZE_XYZ;
+        int3 pageTableAddress = directoryEntry.xyz * PAGE_SIZE_XYZ + (position * blockCount) % PAGE_SIZE_XYZ;
 
         uint4 pageTableEntry = PageCacheTexture.Load(int4(pageTableAddress, 0));
         
@@ -60,9 +61,10 @@ float sampleVolume(float3 position, int level, int reportCount,
         if (pageTableEntry.w == MAPPED)
         {
             //get the voxel count of level
+            //the entry need to mul the BLOCK_SIZE_XYZ, because the entry is in the range [0, BLOCK_COUNT_XYZ) (next version, we can compute it when we change for performance)
             //so the address of current position is entry + (position * voxel count) % BLOCK_SIZE_XYZ
             int voxelCount = BLOCK_SIZE_XYZ * blockCount;
-            int3 blockTableAddress = pageTableEntry.xyz + (position * voxelCount) % BLOCK_SIZE_XYZ;
+            int3 blockTableAddress = pageTableEntry.xyz * BLOCK_SIZE_XYZ + (position * voxelCount) % BLOCK_SIZE_XYZ;
 
             sample = BlockCacheTexture.Load(int4(blockTableAddress, 0));
         } else reportCacheMiss(position, level, reportCount, hashTableIndex);

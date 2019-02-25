@@ -41,4 +41,10 @@ public:
 	}
 
 	virtual void update(void* data, int left, int top, int front, int right, int bottom, int back) = 0;
+
+	virtual void copy(Texture3D* source) = 0;
+
+	virtual auto map() -> void* = 0;
+
+	virtual void unmap() = 0;
 };

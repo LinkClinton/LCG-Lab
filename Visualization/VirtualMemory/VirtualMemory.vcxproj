@@ -145,6 +145,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PageDirectory.cpp" />
     <ClCompile Include="PageTable.cpp" />
+    <ClCompile Include="SharedTexture3D.cpp" />
     <ClCompile Include="VirtualMemoryManager.cpp" />
     <ClCompile Include="VMRenderFramework.cpp" />
   </ItemGroup>
@@ -165,6 +166,7 @@
     <ClInclude Include="PageTable.hpp" />
     <ClInclude Include="CPUMemoryTestUnit.hpp" />
     <ClInclude Include="SharedMacro.hpp" />
+    <ClInclude Include="SharedTexture3D.hpp" />
     <ClInclude Include="VirtualMemoryManager.hpp" />
     <ClInclude Include="VMRenderFramework.hpp" />
     <ClInclude Include="Helper.hpp" />

@@ -1,6 +1,7 @@
 #pragma once
 
 enum class BindUsage {
+	None = 0,
 	VertexBufferUsage = 0x1L,
 	IndexBufferUsage = 0x2L,
 	ConstantBufferUsage = 0x4L,

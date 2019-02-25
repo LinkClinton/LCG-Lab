@@ -7,6 +7,7 @@
 #include "GPUBlockTable.hpp"
 #include "GPUPageDirectory.hpp"
 #include "SharedMacro.hpp"
+#include "SharedTexture3D.hpp"
 
 #include <Framework.hpp>
 #include <fstream>
@@ -33,8 +34,8 @@ private:
 	GPUBlockTable* mGPUBlockCacheTable;
 
 	//for cache
-	Texture3D* mBlockCacheUsageStateTexture;
-	Texture3D* mBlockCacheMissArrayTexture;
+	SharedTexture3D* mBlockCacheUsageStateTexture;
+	SharedTexture3D* mBlockCacheMissArrayTexture;
 
 	ConstantBuffer* mMultiResolutionSizeBuffer;
 	ConstantBuffer* mMultiResolutionBaseBuffer;
@@ -50,6 +51,8 @@ public:
 		mFactory(factory), mGraphics(graphics), mResolutionWidth(width), mResolutionHeight(height) {}
 
 	void initialize(const std::string &fileName, const std::vector<glm::vec3> &resolutions);
+
+	void solveCacheMiss();
 
 	void finalize();
 
