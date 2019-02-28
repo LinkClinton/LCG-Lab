@@ -24,7 +24,7 @@ public:
 
 	virtual void copy(Texture3D* source)override;
 
-	virtual auto map() -> void* override;
+	virtual auto map() -> MappedData override;
 
 	virtual void unmap()override;
 };

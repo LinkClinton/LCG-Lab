@@ -23,6 +23,9 @@ private:
 	std::ifstream mFile;
 	Size mFileSize;
 
+	std::vector<Size> mMultiResolutionSize;
+	std::vector<VirtualAddress> mMultiResolutionBase;
+
 	//CPU resource
 	PageDirectory* mDirectoryCache;
 	PageTable* mPageCacheTable;
@@ -58,7 +61,7 @@ public:
 
 	void mapAddress(int resolution, int blockID);
 
-	auto loadBlock(int resolution, const VirtualAddress &blockAddress) -> BlockCache*;
+	void loadBlock(int resolution, const VirtualAddress &blockAddress, BlockCache & output);
 
 	auto getPageDirectory() -> GPUPageDirectory*;
 

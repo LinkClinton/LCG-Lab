@@ -42,6 +42,8 @@ void VMRenderFramework::render(void * sender, float mDeltaTime)
 	mGraphics->drawIndexed(36, 0, 0);
 
 	mSwapChain->present(true);
+
+	mVirtualMemoryManager->solveCacheMiss();
 }
 
 void VMRenderFramework::update(void * sender, float mDeltaTime)
@@ -189,12 +191,6 @@ VMRenderFramework::VMRenderFramework(const std::string &name, int width, int hei
 	mInput = mFactory->createInput(this);
 	
 	mVirtualMemoryManager = new VirtualMemoryManager(mFactory, mGraphics, mWidth, mHeight);
-
-	//set multi-resolution
-	std::vector<glm::vec3> multiResolution;
-	multiResolution.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
-
-	mVirtualMemoryManager->initialize("volume", multiResolution);
 }
 
 VMRenderFramework::~VMRenderFramework()
@@ -214,5 +210,11 @@ void VMRenderFramework::initialize()
 	initializeInputStage();
 	initializeShaderStage();
 	initializeRasterizerStage();
+
+	//set multi-resolution
+	std::vector<glm::vec3> multiResolution;
+	multiResolution.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
+
+	mVirtualMemoryManager->initialize("volume", multiResolution);
 }
 

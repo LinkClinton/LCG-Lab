@@ -221,6 +221,9 @@
     <ClInclude Include="IndexBuffer.hpp">
       <Filter>Header Files\Interface\Resource</Filter>
     </ClInclude>
+    <ClInclude Include="MappedData.hpp">
+      <Filter>Header Files\Structure</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowsVertexShader.cpp">

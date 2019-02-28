@@ -19,8 +19,15 @@ void reportCacheMiss(float3 position, int level, int reportCount,
     if (reportCount == BLOCK_RAY_CACHE_MISS_MAX_PER_FRAME) return;
 
     //report cache miss
-    //note: atomic operation
+    //allocate count
     int count = (++BlockCacheMissArrayRWTexture[hashTableIndex]).x;
+    
+    if (count >= BLOCK_HASH_TABLE_ARRAY_SIZE)
+    {
+        BlockCacheMissArrayRWTexture[hashTableIndex] = BLOCK_HASH_TABLE_ARRAY_SIZE - 1;
+        return;
+    }
+
     int3 blockCount = PAGE_SIZE_XYZ * MultiResolutionSize[level];
     int3 blockAddress = blockCount * position;
 
@@ -30,7 +37,7 @@ void reportCacheMiss(float3 position, int level, int reportCount,
     int depthPitch = rowPitch * blockCount.y;
     int blockID = blockAddress.x + blockAddress.y * rowPitch + blockAddress.z * depthPitch;
 
-    //set data, x : block id, y : level
+    //set data
     BlockCacheMissArrayRWTexture[int3(hashTableIndex.xy, count)] = blockID;
 }
 
@@ -66,6 +73,9 @@ float sampleVolume(float3 position, int level, int reportCount,
             int voxelCount = BLOCK_SIZE_XYZ * blockCount;
             int3 blockTableAddress = pageTableEntry.xyz * BLOCK_SIZE_XYZ + (position * voxelCount) % BLOCK_SIZE_XYZ;
 
+            //record the block we access, for LRU system
+            BlockCacheUsageStateRWTexture[pageTableEntry.xyz] = 1;
+
             sample = BlockCacheTexture.Load(int4(blockTableAddress, 0));
         } else reportCacheMiss(position, level, reportCount, hashTableIndex);
     } else reportCacheMiss(position, level, reportCount, hashTableIndex);
@@ -93,7 +103,7 @@ float4 main(InputPixel input) : SV_Target
     [loop]
     for (int i = 0; i < MAX_LOOP; i++)
     {
-        float4 sample = sampleVolume(position, 1, reportCount, hashTableIndex) * STEP_SIZE * LIGHT;
+        float4 sample = sampleVolume(position, 0, reportCount, hashTableIndex) * STEP_SIZE * LIGHT;
 
         color = (1 - sample) * color + sample;
 

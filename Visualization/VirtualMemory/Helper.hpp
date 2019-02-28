@@ -86,6 +86,11 @@ public:
 			left.Z + right.Z);
 	}
 
+	template<typename T>
+	static auto min(const T &x, const T &y) -> T {
+		return x < y ? x : y;
+	}
+
 	static auto readFile(const std::string &fileName) -> std::vector<byte> {
 		std::ifstream file(fileName, std::ios::binary | std::ios::ate);
 

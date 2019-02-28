@@ -226,6 +226,17 @@ public:
 
 		return result;
 	}
+
+	static auto convertCpuAccesssFlagToMapType(CpuAccessFlag cpuAccess) -> D3D11_MAP {
+
+		if (hasCpuAccessFlag(cpuAccess, CpuAccessFlag::Read) == true &&
+			hasCpuAccessFlag(cpuAccess, CpuAccessFlag::Write) == true) return D3D11_MAP::D3D11_MAP_READ_WRITE;
+
+		if (hasCpuAccessFlag(cpuAccess, CpuAccessFlag::Read) == true) return D3D11_MAP::D3D11_MAP_READ;
+		if (hasCpuAccessFlag(cpuAccess, CpuAccessFlag::Write) == true) return D3D11_MAP::D3D11_MAP_WRITE;
+
+		return (D3D11_MAP)0;
+	}
 #endif // _WIN32
 
 };

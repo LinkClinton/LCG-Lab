@@ -36,6 +36,7 @@
     <ClInclude Include="IndexBuffer.hpp" />
     <ClInclude Include="Input.hpp" />
     <ClInclude Include="KeyCode.hpp" />
+    <ClInclude Include="MappedData.hpp" />
     <ClInclude Include="Math.hpp" />
     <ClInclude Include="MouseButton.hpp" />
     <ClInclude Include="PixelFormat.hpp" />

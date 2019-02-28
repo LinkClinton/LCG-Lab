@@ -24,12 +24,12 @@ void SharedTexture3D::update()
 	mCpuTexture->copy(mGpuTexture);
 }
 
-auto SharedTexture3D::mapCpuTexture() -> byte *
+auto SharedTexture3D::mapCpuTexture() -> MappedData
 {
-	return (byte*)mCpuTexture->map();
+	return mCpuTexture->map();
 }
 
-auto SharedTexture3D::unmapCpuTexture()
+void SharedTexture3D::unmapCpuTexture()
 {
 	mCpuTexture->unmap();
 }

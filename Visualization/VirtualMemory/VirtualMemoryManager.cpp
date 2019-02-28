@@ -1,5 +1,7 @@
 #include "VirtualMemoryManager.hpp"
 
+#undef min
+
 void VirtualMemoryManager::analyseFile(const std::string & fileName)
 {
 	//analyse the volume data
@@ -41,9 +43,6 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 	//page size means the size of one page cache can store
 	int pageSize = PAGE_SIZE_XYZ * BLOCK_SIZE_XYZ;
 
-	std::vector<Size> multiResolutionSize;
-	std::vector<VirtualAddress> multiResolutionBase;
-
 	//for all resolution, we compute the real size
 	//then we compute the directory size we need
 	for (size_t i = 0; i < resolution.size(); i++) {
@@ -54,30 +53,30 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 			(int)ceil((float)realSize.Z / pageSize)
 		);
 
-		multiResolutionSize.push_back(directorySize);
+		mMultiResolutionSize.push_back(directorySize);
 	}
 
-	multiResolutionBase.push_back(0);
+	mMultiResolutionBase.push_back(0);
 
 	for (size_t i = 1; i < resolution.size(); i++) {
-		auto base = VirtualAddress(multiResolutionBase[i - 1].X + multiResolutionSize[i - 1].X, 0, 0);
+		auto base = VirtualAddress(mMultiResolutionBase[i - 1].X + mMultiResolutionSize[i - 1].X, 0, 0);
 
-		multiResolutionBase.push_back(base);
+		mMultiResolutionBase.push_back(base);
 	}
 
 	//init page directory cache with multi-resolution
-	mDirectoryCache = new PageDirectory(multiResolutionSize, mPageCacheTable);
+	mDirectoryCache = new PageDirectory(mMultiResolutionSize, mPageCacheTable);
 
 	//create buffer for resolution
 	mMultiResolutionSizeBuffer = mFactory->createConstantBuffer(sizeof(Size) * MAX_MULTIRESOLUTION_COUNT, ResourceInfo::ConstantBuffer());
 	mMultiResolutionBaseBuffer = mFactory->createConstantBuffer(sizeof(VirtualAddress) * MAX_MULTIRESOLUTION_COUNT, ResourceInfo::ConstantBuffer());
-	mMultiResolutionSizeBuffer->update(&multiResolutionSize[0]);
-	mMultiResolutionBaseBuffer->update(&multiResolutionBase[0]);
+	mMultiResolutionSizeBuffer->update(&mMultiResolutionSize[0]);
+	mMultiResolutionBaseBuffer->update(&mMultiResolutionBase[0]);
 
 	//init the GPU resource(Texture3D and ResourceUsage)
 	mGPUBlockCacheTable = new GPUBlockTable(mFactory, mGraphics, BLOCK_COUNT_XYZ);
 	mGPUPageCacheTable = new GPUPageTable(mFactory, mGraphics, PAGE_COUNT_XYZ, mGPUBlockCacheTable);
-	mGPUDirectoryCache = new GPUPageDirectory(mFactory, mGraphics, multiResolutionSize, mGPUPageCacheTable);
+	mGPUDirectoryCache = new GPUPageDirectory(mFactory, mGraphics, mMultiResolutionSize, mGPUPageCacheTable);
 
 	//for current version, we use one byte to store a block state(it is simple, may be changed in next version) 
 	//and we do not use hash to avoid the same block problem(will be solved in next version)
@@ -95,7 +94,7 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 		blockCacheUsageStateSize, 
 		blockCacheUsageStateSize, 
 		blockCacheUsageStateSize, 
-		PixelFormat::R8Unknown,
+		PixelFormat::R8Uint,
 		ResourceInfo::UnorderedAccess(),
 		mFactory);
 	
@@ -118,6 +117,83 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 
 void VirtualMemoryManager::solveCacheMiss()
 {
+	//update the GpuTexture to CpuTexture
+	mBlockCacheUsageStateTexture->update();
+	mBlockCacheMissArrayTexture->update();
+
+	//solve the usage state texture
+	//map the texture to memory
+	auto usageState = mBlockCacheUsageStateTexture->mapCpuTexture();
+
+	//get data pointer
+	byte* usageStateData = (byte*)usageState.Data;
+	//get array size, because of padding the size is not equal the texture size
+	auto endPosition = usageState.DepthPitch * mBlockCacheUsageStateTexture->getDepth();
+
+	//check state
+	for (int id = 0; id < endPosition; id++) {
+
+		if (usageStateData[id] == 0) continue;
+
+		//get address
+		//id = x + y * rowPitch + z * depthPitch
+		//because of usageState is byte
+		auto address = VirtualAddress(
+			(id % usageState.DepthPitch) % usageState.RowPitch,
+			(id % usageState.DepthPitch) / usageState.RowPitch,
+			(id / usageState.DepthPitch)
+		);
+
+		//update the LRU system
+		mGPUBlockCacheTable->getAddress(address);
+	}
+
+	//unmap
+	mBlockCacheUsageStateTexture->unmapCpuTexture();
+
+	//solve the cache miss
+	//map the texture to memory
+	auto cacheMiss = mBlockCacheMissArrayTexture->mapCpuTexture();
+
+	//get data pointer
+	unsigned int* cacheMissData = (unsigned int*)cacheMiss.Data;
+
+	//reset the row pitch and depth pitch to size
+	//the cache miss is unsigned int
+	cacheMiss.RowPitch = cacheMiss.RowPitch / sizeof(unsigned int);
+	cacheMiss.DepthPitch = cacheMiss.DepthPitch / sizeof(unsigned int);
+
+	auto xEndPosition = mBlockCacheMissArrayTexture->getWidth();
+	auto yEndPosition = mBlockCacheMissArrayTexture->getHeight();
+	
+	std::vector<bool> isShow(mMultiResolutionSize[0].X * mMultiResolutionSize[0].Y * mMultiResolutionSize[0].Z
+		* PAGE_SIZE_XYZ * PAGE_SIZE_XYZ * PAGE_SIZE_XYZ);
+
+	int count = 0;
+
+	for (size_t x = 0; x < xEndPosition; x++) {
+		for (size_t y = 0; y < yEndPosition; y++) {
+			//we store count at (x, y, 0) -> x + y * rowPitch + 0 * depthPitch
+			auto cacheMissCount = cacheMissData[x + y * cacheMiss.RowPitch];
+
+			for (size_t z = 1; z <= cacheMissCount; z++) {
+				auto id = cacheMissData[x + y * cacheMiss.RowPitch + z * cacheMiss.DepthPitch];
+
+				if (isShow[id] == true) continue;
+
+				++count;
+
+				isShow[id] = true;
+
+				//note: discuss the level
+				mapAddress(0, id);
+			}
+		}
+	}
+
+	printf("%d\n", count);
+
+	mBlockCacheMissArrayTexture->unmapCpuTexture();
 }
 
 void VirtualMemoryManager::finalize() 
@@ -161,9 +237,9 @@ void VirtualMemoryManager::mapAddress(int resolution, int blockID)
 	//so y = ((block id) % (depth pitch)) / (row pitch)
 	//so x = (block id % (depth pitch)) % (row pitch)
 	auto blockAddress = VirtualAddress(
-		(blockID % depthPitch),
+		(blockID % depthPitch) % rowPitch,
 		(blockID % depthPitch) / rowPitch,
-		(blockID % depthPitch) % rowPitch
+		(blockID / depthPitch)
 	);
 
 	//get center position for the block test
@@ -179,8 +255,12 @@ void VirtualMemoryManager::mapAddress(int resolution, int blockID)
 	//not, we load from disk and add it in to CPU virtual memory
 	if (blockCache == nullptr) {
 		//load block data from disk and do some special process
-		blockCache = loadBlock(resolution, blockAddress);
+		static BlockCache output(BLOCK_SIZE_XYZ);
+
+		loadBlock(resolution, blockAddress, output);
 		
+		blockCache = &output;
+
 		mDirectoryCache->mapAddress(resolution, blockCenterPosition, blockCache);
 	}
 
@@ -188,10 +268,61 @@ void VirtualMemoryManager::mapAddress(int resolution, int blockID)
 	mapAddressToGPU(resolution, blockCenterPosition, blockCache);
 }
 
-auto VirtualMemoryManager::loadBlock(int resolution, const VirtualAddress & blockAddress) -> BlockCache *
+void VirtualMemoryManager::loadBlock(int resolution, const VirtualAddress & blockAddress, BlockCache & output) 
 {
-	//to do:
-	return nullptr;
+	//load block data
+	//note: need discuss the resolution level
+	static auto blockSize = BLOCK_SIZE_XYZ;
+
+	//static buffer for reading block cache
+	static int bufferSize = BLOCK_SIZE_XYZ * BLOCK_SIZE_XYZ * BLOCK_SIZE_XYZ;
+	static byte buffer[BLOCK_SIZE_XYZ * BLOCK_SIZE_XYZ * BLOCK_SIZE_XYZ];
+
+	static int rowPitch = mFileSize.X;
+	static int depthPitch = mFileSize.X * mFileSize.Y;
+	
+	int bufferPosition = 0;
+
+	auto startPosition = Helper::multiple(blockAddress, VirtualAddress(blockSize));
+
+	//compute the end position range
+	//we need to avoid to read the block out of range
+	Size endPosition = Size(
+		Helper::min(startPosition.X + blockSize, mFileSize.X),
+		Helper::min(startPosition.Y + blockSize, mFileSize.Y),
+		Helper::min(startPosition.Z + blockSize, mFileSize.Z)
+	);
+
+	int length = endPosition.X - startPosition.X;
+
+	//read buffer
+	//for volume: it made from surface(index z)
+	//for surface: it made from line(index y)
+	//so we need to enumerate the z first, it means enumerate the surface of block cache
+	//then we need to enumerate the y second, it menas enumerate the line of surface
+	//at last, we read the data to buffer
+	for (int z = startPosition.Z; z < endPosition.Z; z++) {
+		for (int y = startPosition.Y; y < endPosition.Y; y++) {
+			//compute the file position offset
+			//compute the read block size
+			int offset = z * depthPitch + y * rowPitch + startPosition.X;
+
+			assert(bufferPosition + blockSize <= bufferSize);
+
+			//seek position and read
+			mFile.seekg(offset);
+			mFile.read((char*)&buffer[bufferPosition], length);
+
+			//next
+			bufferPosition += blockSize;
+		}
+
+		//skip the empty data
+		if (endPosition.Y < startPosition.Y + blockSize)
+			bufferPosition += blockSize * (startPosition.Y + blockSize - endPosition.Y);
+	}
+
+	output = BlockCache(blockSize, buffer);
 }
 
 auto VirtualMemoryManager::getPageDirectory() -> GPUPageDirectory *

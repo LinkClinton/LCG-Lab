@@ -16,9 +16,9 @@ public:
 
 	void update();
 
-	auto mapCpuTexture() -> byte*;
+	auto mapCpuTexture() -> MappedData;
 
-	auto unmapCpuTexture();
+	void unmapCpuTexture();
 
 	auto getWidth() -> int;
 

@@ -4,6 +4,7 @@
 #include "PixelFormat.hpp"
 
 #include "Utility.hpp"
+#include "MappedData.hpp"
 
 class Graphics;
 
@@ -44,7 +45,7 @@ public:
 
 	virtual void copy(Texture3D* source) = 0;
 
-	virtual auto map() -> void* = 0;
+	virtual auto map() -> MappedData = 0;
 
 	virtual void unmap() = 0;
 };
