@@ -1,5 +1,7 @@
 #include "VirtualMemoryManager.hpp"
 
+#include <algorithm>
+
 #undef min
 
 void VirtualMemoryManager::analyseFile(const std::string & fileName)
@@ -43,6 +45,9 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 	//page size means the size of one page cache can store
 	int pageSize = PAGE_SIZE_XYZ * BLOCK_SIZE_XYZ;
 
+	//the count of block for multi-resolution
+	std::vector<int> multiResolutionBlock;
+
 	//for all resolution, we compute the real size
 	//then we compute the directory size we need
 	for (size_t i = 0; i < resolution.size(); i++) {
@@ -52,17 +57,34 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 			(int)ceil((float)realSize.Y / pageSize),
 			(int)ceil((float)realSize.Z / pageSize)
 		);
+		
+		//block count size
+		auto blockSize = Size(
+			(int)ceil((float)realSize.X / BLOCK_SIZE_XYZ),
+			(int)ceil((float)realSize.Y / BLOCK_SIZE_XYZ),
+			(int)ceil((float)realSize.Z / BLOCK_SIZE_XYZ)
+		);
 
 		mMultiResolutionSize.push_back(directorySize);
+		multiResolutionBlock.push_back(blockSize.X * blockSize.Y * blockSize.Z);
 	}
 
 	mMultiResolutionBase.push_back(0);
+	mMultiResolutionBlockBase.push_back(0);
 
 	for (size_t i = 1; i < resolution.size(); i++) {
 		auto base = VirtualAddress(mMultiResolutionBase[i - 1].X + mMultiResolutionSize[i - 1].X, 0, 0);
+		auto blockBase = mMultiResolutionBlockBase[i - 1] + multiResolutionBlock[i - 1];
 
 		mMultiResolutionBase.push_back(base);
+		mMultiResolutionBlockBase.push_back(blockBase);
+		mMultiResolutionBlockEnd.push_back(blockBase - 1);
 	}
+
+	//compute the end of block count for multi-resolution
+	mMultiResolutionBlockEnd.push_back(
+		mMultiResolutionBlockBase[mMultiResolutionBlockBase.size() - 1] +
+		multiResolutionBlock[multiResolutionBlock.size() - 1] - 1);
 
 	//init page directory cache with multi-resolution
 	mDirectoryCache = new PageDirectory(mMultiResolutionSize, mPageCacheTable);
@@ -70,8 +92,10 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 	//create buffer for resolution
 	mMultiResolutionSizeBuffer = mFactory->createConstantBuffer(sizeof(Size) * MAX_MULTIRESOLUTION_COUNT, ResourceInfo::ConstantBuffer());
 	mMultiResolutionBaseBuffer = mFactory->createConstantBuffer(sizeof(VirtualAddress) * MAX_MULTIRESOLUTION_COUNT, ResourceInfo::ConstantBuffer());
+	mMultiResolutionBlockBaseBuffer = mFactory->createConstantBuffer(sizeof(int) * MAX_MULTIRESOLUTION_COUNT, ResourceInfo::ConstantBuffer());
 	mMultiResolutionSizeBuffer->update(&mMultiResolutionSize[0]);
 	mMultiResolutionBaseBuffer->update(&mMultiResolutionBase[0]);
+	mMultiResolutionBlockBaseBuffer->update(&mMultiResolutionBlockBase[0]);
 
 	//init the GPU resource(Texture3D and ResourceUsage)
 	mGPUBlockCacheTable = new GPUBlockTable(mFactory, mGraphics, BLOCK_COUNT_XYZ);
@@ -144,7 +168,8 @@ void VirtualMemoryManager::solveCacheMiss()
 			(id / usageState.DepthPitch)
 		);
 
-		//update the LRU system
+		//update the LRU system, we need update the directory, pages and block
+		//so it is not right in this version
 		mGPUBlockCacheTable->getAddress(address);
 	}
 
@@ -166,11 +191,6 @@ void VirtualMemoryManager::solveCacheMiss()
 	auto xEndPosition = mBlockCacheMissArrayTexture->getWidth();
 	auto yEndPosition = mBlockCacheMissArrayTexture->getHeight();
 	
-	std::vector<bool> isShow(mMultiResolutionSize[0].X * mMultiResolutionSize[0].Y * mMultiResolutionSize[0].Z
-		* PAGE_SIZE_XYZ * PAGE_SIZE_XYZ * PAGE_SIZE_XYZ);
-
-	int count = 0;
-
 	for (size_t x = 0; x < xEndPosition; x++) {
 		for (size_t y = 0; y < yEndPosition; y++) {
 			//we store count at (x, y, 0) -> x + y * rowPitch + 0 * depthPitch
@@ -179,19 +199,17 @@ void VirtualMemoryManager::solveCacheMiss()
 			for (size_t z = 1; z <= cacheMissCount; z++) {
 				auto id = cacheMissData[x + y * cacheMiss.RowPitch + z * cacheMiss.DepthPitch];
 
-				if (isShow[id] == true) continue;
+				//get resolution 
+				auto resolution = unsigned int(
+					std::lower_bound(mMultiResolutionBlockEnd.begin(), mMultiResolutionBlockEnd.end(), id) - mMultiResolutionBlockEnd.begin()) 
+					/ (unsigned int)sizeof(unsigned int);
+	
+				id = id - mMultiResolutionBlockBase[resolution];
 
-				++count;
-
-				isShow[id] = true;
-
-				//note: discuss the level
-				mapAddress(0, id);
+				mapAddress(resolution, id);
 			}
 		}
 	}
-
-	printf("%d\n", count);
 
 	mBlockCacheMissArrayTexture->unmapCpuTexture();
 }
@@ -348,6 +366,11 @@ auto VirtualMemoryManager::getMultiResolutionSizeBuffer() -> ConstantBuffer*
 auto VirtualMemoryManager::getMultiResolutionBaseBuffer() -> ConstantBuffer*
 {
 	return mMultiResolutionBaseBuffer;
+}
+
+auto VirtualMemoryManager::getMultiResolutionBlockBaseBuffer() -> ConstantBuffer *
+{
+	return mMultiResolutionBlockBaseBuffer;
 }
 
 auto VirtualMemoryManager::getUnorderedAccessUsage() -> std::vector<UnorderedAccessUsage *>

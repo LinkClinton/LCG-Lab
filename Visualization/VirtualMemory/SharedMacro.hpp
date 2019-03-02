@@ -21,7 +21,7 @@
 #define BLOCK_HASH_TABLE_PIXEL_TILE_SIZE_XY 64
 //BLOCK_HASH_TABLE_ARRAY_SIZE :
 //the size of hash table, it is used for cache miss to hash block id
-#define BLOCK_HASH_TABLE_ARRAY_SIZE 256
+#define BLOCK_HASH_TABLE_ARRAY_SIZE 32
 
 //PAGE_SIZE_XYZ :
 //the page block size of x-axis, y-axis and z-axis

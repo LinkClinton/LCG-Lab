@@ -31,11 +31,11 @@ void reportCacheMiss(float3 position, int level, int reportCount,
     int3 blockCount = PAGE_SIZE_XYZ * MultiResolutionSize[level];
     int3 blockAddress = blockCount * position;
 
-    //the block id is equal the x + y * row pitch + z * depth pitch
-    //note: need discuss the level
+    //the block id is equal the x + y * row pitch + z * depth pitch + MultiResolutionBlockBase[level]
+    //MultiResolutionBlockBase means the block count sum of 0 -> level - 1
     int rowPitch = blockCount.x;
     int depthPitch = rowPitch * blockCount.y;
-    int blockID = blockAddress.x + blockAddress.y * rowPitch + blockAddress.z * depthPitch;
+    int blockID = MultiResolutionBlockBase[level] + blockAddress.x + blockAddress.y * rowPitch + blockAddress.z * depthPitch;
 
     //set data
     BlockCacheMissArrayRWTexture[int3(hashTableIndex.xy, count)] = blockID;

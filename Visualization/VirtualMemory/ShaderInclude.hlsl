@@ -35,6 +35,11 @@ cbuffer MultiResolutionBaseBuffer : register(b2)
     int3 MultiResolutionBase[MAX_MULTIRESOLUTION_COUNT];
 }
 
+cbuffer MultiResolutionBlockBaseBuffer : register(b3)
+{
+    int MultiResolutionBlockBase[MAX_MULTIRESOLUTION_COUNT];
+}
+
 Texture3D<uint4> DirectoryCacheTexture : register(t0);
 Texture3D<uint4> PageCacheTexture : register(t1);
 Texture3D<float> BlockCacheTexture : register(t2);

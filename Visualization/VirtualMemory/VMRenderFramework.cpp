@@ -26,6 +26,7 @@ void VMRenderFramework::render(void * sender, float mDeltaTime)
 	mGraphics->setConstantBuffer(mMatrixBuffer, 0);
 	mGraphics->setConstantBuffer(mVirtualMemoryManager->getMultiResolutionSizeBuffer(), 1);
 	mGraphics->setConstantBuffer(mVirtualMemoryManager->getMultiResolutionBaseBuffer(), 2);
+	mGraphics->setConstantBuffer(mVirtualMemoryManager->getMultiResolutionBlockBaseBuffer(), 3);
 
 	mGraphics->setResourceUsage(mVirtualMemoryManager->getPageDirectory()->getTextureUsage(), 0);
 	mGraphics->setResourceUsage(mVirtualMemoryManager->getPageTable()->getTextureUsage(), 1);

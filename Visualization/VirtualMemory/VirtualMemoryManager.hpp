@@ -25,6 +25,8 @@ private:
 
 	std::vector<Size> mMultiResolutionSize;
 	std::vector<VirtualAddress> mMultiResolutionBase;
+	std::vector<unsigned int> mMultiResolutionBlockEnd;
+	std::vector<unsigned int> mMultiResolutionBlockBase;
 
 	//CPU resource
 	PageDirectory* mDirectoryCache;
@@ -42,6 +44,7 @@ private:
 
 	ConstantBuffer* mMultiResolutionSizeBuffer;
 	ConstantBuffer* mMultiResolutionBaseBuffer;
+	ConstantBuffer* mMultiResolutionBlockBaseBuffer;
 
 	UnorderedAccessUsage* mBlockCacheUsageStateUsage;
 	UnorderedAccessUsage* mBlockCacheMissArrayUsage;
@@ -72,6 +75,8 @@ public:
 	auto getMultiResolutionSizeBuffer() -> ConstantBuffer*;
 
 	auto getMultiResolutionBaseBuffer() -> ConstantBuffer*;
+
+	auto getMultiResolutionBlockBaseBuffer() -> ConstantBuffer*;
 
 	auto getUnorderedAccessUsage() -> std::vector<UnorderedAccessUsage*>;
 };
