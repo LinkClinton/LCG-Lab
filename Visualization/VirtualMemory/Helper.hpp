@@ -79,6 +79,14 @@ public:
 	}
 
 	template<typename T>
+	static auto div(const Vector3<T> &left, const Vector3<T> &right) -> Vector3<T> {
+		return Vector3<T>(
+			left.X / right.X,
+			left.Y / right.Y,
+			left.Z / right.Z);
+	}
+
+	template<typename T>
 	static auto add(const Vector3<T> &left, const Vector3<T> &right) -> Vector3<T> {
 		return Vector3<T>(
 			left.X + right.X,

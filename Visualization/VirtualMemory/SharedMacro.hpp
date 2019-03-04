@@ -43,6 +43,9 @@
 //the max multi-resolution count(in other words, the directory count)
 #define MAX_MULTIRESOLUTION_COUNT 8
 
+//max buffer size of read
+#define MAX_READ_BUFFER 16384
+
 //for HLSL
 #ifndef __cplusplus
 

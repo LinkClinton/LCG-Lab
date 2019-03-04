@@ -11,8 +11,8 @@ void VirtualMemoryManager::analyseFile(const std::string & fileName)
 	//to do:
 
 	mFile.sync_with_stdio(false);
-	//mFile.open(fileName, std::ios::binary);
-	mFileSize = Size(1000, 1000, 1000);
+	mFile.open(fileName, std::ios::ate);
+	mFileSize = Size(128, 128, 62);
 }
 
 void VirtualMemoryManager::mapAddressToGPU(int resolution, const glm::vec3 & position, BlockCache * block)
@@ -24,6 +24,7 @@ void VirtualMemoryManager::mapAddressToGPU(int resolution, const glm::vec3 & pos
 void VirtualMemoryManager::initialize(const std::string &fileName, const std::vector<glm::vec3> &resolution)
 {
 	//initialize the virutal memroy resource(CPU and GPU)
+	mResolution = resolution;
 
 	//expand size of CPU virtual memory
 	//if the size of CPU and GPU are same, it can not work well
@@ -59,14 +60,10 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 		);
 		
 		//block count size
-		auto blockSize = Size(
-			(int)ceil((float)realSize.X / BLOCK_SIZE_XYZ),
-			(int)ceil((float)realSize.Y / BLOCK_SIZE_XYZ),
-			(int)ceil((float)realSize.Z / BLOCK_SIZE_XYZ)
-		);
+		auto blockCount = Helper::multiple(directorySize, Size(PAGE_SIZE_XYZ));
 
 		mMultiResolutionSize.push_back(directorySize);
-		multiResolutionBlock.push_back(blockSize.X * blockSize.Y * blockSize.Z);
+		multiResolutionBlock.push_back(blockCount.X * blockCount.Y * blockCount.Z);
 	}
 
 	mMultiResolutionBase.push_back(0);
@@ -88,6 +85,22 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 
 	//init page directory cache with multi-resolution
 	mDirectoryCache = new PageDirectory(mMultiResolutionSize, mPageCacheTable);
+
+	//compute some information
+	for (size_t i = 0; i < mResolution.size(); i++) {
+		//the number of voxel in the virtual memory at resolution i
+		//the read blocl size in the virtual memory at resolution i
+		//the read block size is equal BLOCK_SIZE_XYZ / (voxelCount / file size) = BLOCK_SIZE_XYZ / voxelCount * file size
+
+		auto voxelCount = Helper::multiple(mDirectoryCache->getResolutionSize((int)i), Size(PAGE_SIZE_XYZ * BLOCK_SIZE_XYZ));
+		auto readBlockSize = Size(
+			(int)((float)BLOCK_SIZE_XYZ / voxelCount.X * mFileSize.X),
+			(int)((float)BLOCK_SIZE_XYZ / voxelCount.Y * mFileSize.Y),
+			(int)((float)BLOCK_SIZE_XYZ / voxelCount.Z * mFileSize.Z));
+
+		mVoxelCount.push_back(voxelCount);
+		mReadBlockSize.push_back(readBlockSize);
+	}
 
 	//create buffer for resolution
 	mMultiResolutionSizeBuffer = mFactory->createConstantBuffer(sizeof(Size) * MAX_MULTIRESOLUTION_COUNT, ResourceInfo::ConstantBuffer());
@@ -288,59 +301,60 @@ void VirtualMemoryManager::mapAddress(int resolution, int blockID)
 
 void VirtualMemoryManager::loadBlock(int resolution, const VirtualAddress & blockAddress, BlockCache & output) 
 {
-	//load block data
-	//note: need discuss the resolution level
-	static auto blockSize = BLOCK_SIZE_XYZ;
+	//because of the resolution, the size of block is not equal the BLOCK_SIZE_XYZ
+	//in other word, it may be bigger(smaller) than BLOCK_SIZE_XYZ
+	//we need to scale it to block that its size is BLOCK_SIZE_XYZ
+	//in this version, we only skip some voxel or sample same voxel to scale it
 
-	//static buffer for reading block cache
-	static int bufferSize = BLOCK_SIZE_XYZ * BLOCK_SIZE_XYZ * BLOCK_SIZE_XYZ;
-	static byte buffer[BLOCK_SIZE_XYZ * BLOCK_SIZE_XYZ * BLOCK_SIZE_XYZ];
+	//get read block size
+	auto readBlockSize = mReadBlockSize[resolution];
 
-	static int rowPitch = mFileSize.X;
-	static int depthPitch = mFileSize.X * mFileSize.Y;
-	
-	int bufferPosition = 0;
+	//get read block entry, it is equal block address * read block size
+	auto readBlockEntry = Helper::multiple(blockAddress, readBlockSize);
 
-	auto startPosition = Helper::multiple(blockAddress, VirtualAddress(blockSize));
+	//z and y offset
+	float xOffset = (float)(readBlockSize.X - 1) / (BLOCK_SIZE_XYZ - 1);
+	float zOffset = (float)(readBlockSize.Z - 1) / (BLOCK_SIZE_XYZ - 1);
+	float yOffset = (float)(readBlockSize.Y - 1) / (BLOCK_SIZE_XYZ - 1);
 
-	//compute the end position range
-	//we need to avoid to read the block out of range
-	Size endPosition = Size(
-		Helper::min(startPosition.X + blockSize, mFileSize.X),
-		Helper::min(startPosition.Y + blockSize, mFileSize.Y),
-		Helper::min(startPosition.Z + blockSize, mFileSize.Z)
-	);
+	int fileRowPitch = mFileSize.X;
+	int fileDepthPitch = fileRowPitch * mFileSize.Y;
 
-	int length = endPosition.X - startPosition.X;
+	int blockRowPitch = BLOCK_SIZE_XYZ;
+	int blockDepthPitch = blockRowPitch * BLOCK_SIZE_XYZ;
 
-	//read buffer
-	//for volume: it made from surface(index z)
-	//for surface: it made from line(index y)
-	//so we need to enumerate the z first, it means enumerate the surface of block cache
-	//then we need to enumerate the y second, it menas enumerate the line of surface
-	//at last, we read the data to buffer
-	for (int z = startPosition.Z; z < endPosition.Z; z++) {
-		for (int y = startPosition.Y; y < endPosition.Y; y++) {
-			//compute the file position offset
-			//compute the read block size
-			int offset = z * depthPitch + y * rowPitch + startPosition.X;
+	static byte buffer[MAX_READ_BUFFER];
 
-			assert(bufferPosition + blockSize <= bufferSize);
+	//read block
+	float zPosition = (float)readBlockEntry.Z;
 
-			//seek position and read
-			mFile.seekg(offset);
-			mFile.read((char*)&buffer[bufferPosition], length);
+	for (int zCount = 0; zCount < BLOCK_SIZE_XYZ; zCount++, zPosition += zOffset) {
+		float yPosition = (float)readBlockEntry.Y;
 
-			//next
-			bufferPosition += blockSize;
+		for (int yCount = 0; yCount < BLOCK_SIZE_XYZ; yCount++, yPosition += yOffset) {
+			//get the start position in the file we need read
+			int readStartPosition =
+				(int)std::round(zPosition) * fileDepthPitch +
+				(int)std::round(yPosition) * fileRowPitch +
+				readBlockEntry.X;
+
+			//get the start position in the block we need copy to
+			int blockStartPosition = zCount * blockDepthPitch + yCount * blockRowPitch;
+
+			//the memory address we need copy to
+			byte* address = output.getDataPointer() + blockStartPosition;
+
+			//read data
+			mFile.seekg(readStartPosition);
+			mFile.read((char*)buffer, readBlockSize.X);
+
+			float xPosition = 0;
+
+			//copy data
+			for (int xCount = 0; xCount < BLOCK_SIZE_XYZ; xCount++, xPosition += xOffset)
+				address[xCount] = buffer[(int)std::round(xPosition)];
 		}
-
-		//skip the empty data
-		if (endPosition.Y < startPosition.Y + blockSize)
-			bufferPosition += blockSize * (startPosition.Y + blockSize - endPosition.Y);
 	}
-
-	output = BlockCache(blockSize, buffer);
 }
 
 auto VirtualMemoryManager::getPageDirectory() -> GPUPageDirectory *

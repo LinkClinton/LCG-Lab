@@ -120,5 +120,8 @@
     <CopyFileToFolders Include="ShaderInclude.hlsl">
       <Filter>Resource Files</Filter>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="Teddybear.raw">
+      <Filter>Resource Files</Filter>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>

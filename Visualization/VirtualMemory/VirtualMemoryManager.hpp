@@ -23,6 +23,11 @@ private:
 	std::ifstream mFile;
 	Size mFileSize;
 
+	std::vector<glm::vec3> mResolution;
+	std::vector<Size> mVoxelCount;
+	std::vector<Size> mReadBlockSize;
+
+	//used for buffer update
 	std::vector<Size> mMultiResolutionSize;
 	std::vector<VirtualAddress> mMultiResolutionBase;
 	std::vector<unsigned int> mMultiResolutionBlockEnd;

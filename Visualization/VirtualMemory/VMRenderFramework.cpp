@@ -216,6 +216,6 @@ void VMRenderFramework::initialize()
 	std::vector<glm::vec3> multiResolution;
 	multiResolution.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
 
-	mVirtualMemoryManager->initialize("volume", multiResolution);
+	mVirtualMemoryManager->initialize("Teddybear.raw", multiResolution);
 }
 
