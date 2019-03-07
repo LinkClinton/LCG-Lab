@@ -31,6 +31,10 @@ void reportCacheMiss(float3 position, int level, int reportCount,
     int3 blockCount = PAGE_SIZE_XYZ * MultiResolutionSize[level];
     int3 blockAddress = blockCount * position;
 
+    if (blockAddress.x == blockCount.x) blockAddress.x = blockAddress.x - 1;
+    if (blockAddress.y == blockCount.y) blockAddress.y = blockAddress.y - 1;
+    if (blockAddress.z == blockCount.z) blockAddress.z = blockAddress.z - 1;
+
     //the block id is equal the x + y * row pitch + z * depth pitch + MultiResolutionBlockBase[level]
     //MultiResolutionBlockBase means the block count sum of 0 -> level - 1
     int rowPitch = blockCount.x;
@@ -74,7 +78,7 @@ float sampleVolume(float3 position, int level, int reportCount,
             //record the block we access, for LRU system
             BlockCacheUsageStateRWTexture[pageTableEntry.xyz] = 1;
 
-            sample = BlockCacheTexture.Load(int4(blockTableAddress, 0));
+            sample = BlockCacheTexture.Load(int4(blockTableAddress, 0)).x;
         } else reportCacheMiss(position, level, reportCount, hashTableIndex);
     } else reportCacheMiss(position, level, reportCount, hashTableIndex);
 
@@ -82,7 +86,7 @@ float sampleVolume(float3 position, int level, int reportCount,
 }
 
 #define STEP_SIZE 0.003
-#define MAX_LOOP 100
+#define MAX_LOOP 1000
 #define LIGHT 5
 
 float4 main(InputPixel input) : SV_Target
@@ -107,8 +111,7 @@ float4 main(InputPixel input) : SV_Target
 
         position = position + dir * STEP_SIZE;
 
-        if (outLimit(position) == true || color.a >= 1.0f)
-            break;
+        if (outLimit(position) == true) break;
     }
 
     return color;

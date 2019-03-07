@@ -11,12 +11,14 @@ void VirtualMemoryManager::analyseFile(const std::string & fileName)
 	//to do:
 
 	mFile.sync_with_stdio(false);
-	mFile.open(fileName, std::ios::ate);
+	mFile.open(fileName);
 	mFileSize = Size(128, 128, 62);
 }
 
 void VirtualMemoryManager::mapAddressToGPU(int resolution, const glm::vec3 & position, BlockCache * block)
 {
+	if (mGPUDirectoryCache->queryAddress(resolution, position) != nullptr) return;
+
 	//upload block data to GPU virtual memory
 	mGPUDirectoryCache->mapAddress(resolution, position, block);
 }
