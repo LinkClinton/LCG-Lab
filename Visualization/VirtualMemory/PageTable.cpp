@@ -102,10 +102,6 @@ void PageTable::mapAddress(const glm::vec3 & position, const Size &size, BlockCa
 	if (address.Y == allSize.Y) address.Y = allSize.Y - 1;
 	if (address.Z == allSize.Z) address.Z = allSize.Z - 1;
 
-	//from address for virtual link
-	//from address means the real address in the page table
-	auto fromAddress = address;
-
 	//we can get the relate address by using real address mod size
 	address.X = address.X % pageSize.X;
 	address.Y = address.Y % pageSize.Y;
@@ -118,7 +114,7 @@ void PageTable::mapAddress(const glm::vec3 & position, const Size &size, BlockCa
 
 	//we use static memory allocation, so we do not set the address when memory are allocated
 	//now set virtual link's from address to address
-	nextAddress->FromAddress = fromAddress;
+	nextAddress->FromAddress = Helper::add(Helper::multiple(virtualLink->Address, pageSize), address);
 
 	//to next page, the end is null
 	if (mNext != nullptr) {

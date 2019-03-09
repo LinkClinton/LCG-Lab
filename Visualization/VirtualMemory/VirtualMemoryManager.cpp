@@ -11,14 +11,12 @@ void VirtualMemoryManager::analyseFile(const std::string & fileName)
 	//to do:
 
 	mFile.sync_with_stdio(false);
-	mFile.open(fileName);
+	mFile.open(fileName, std::ios::binary);
 	mFileSize = Size(128, 128, 62);
 }
 
 void VirtualMemoryManager::mapAddressToGPU(int resolution, const glm::vec3 & position, BlockCache * block)
 {
-	if (mGPUDirectoryCache->queryAddress(resolution, position) != nullptr) return;
-
 	//upload block data to GPU virtual memory
 	mGPUDirectoryCache->mapAddress(resolution, position, block);
 }
@@ -281,6 +279,8 @@ void VirtualMemoryManager::mapAddress(int resolution, int blockID)
 		(blockAddress.Y + 0.5f) / blockCacheSize.Y,
 		(blockAddress.Z + 0.5f) / blockCacheSize.Z
 	);
+
+	if (mGPUDirectoryCache->queryAddress(resolution, blockCenterPosition) != nullptr) return;
 
 	//query the block if in the CPU virtual memory
 	BlockCache* blockCache = mDirectoryCache->queryAddress(resolution, blockCenterPosition);

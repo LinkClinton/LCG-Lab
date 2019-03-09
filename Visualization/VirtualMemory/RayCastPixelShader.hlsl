@@ -62,7 +62,7 @@ float sampleVolume(float3 position, int level, int reportCount,
     {
         //get the block count of level
         //so the address of current position is entry + (position * block count) % PAGE_SIZE_XYZ
-        int blockCount = PAGE_SIZE_XYZ * resolutionSize.x * resolutionSize.y * resolutionSize.z;
+        int3 blockCount = PAGE_SIZE_XYZ * resolutionSize;
         int3 pageTableAddress = directoryEntry.xyz * PAGE_SIZE_XYZ + (position * blockCount) % PAGE_SIZE_XYZ;
 
         uint4 pageTableEntry = PageCacheTexture.Load(int4(pageTableAddress, 0));
@@ -72,7 +72,7 @@ float sampleVolume(float3 position, int level, int reportCount,
         {
             //get the voxel count of level
             //so the address of current position is entry + (position * voxel count) % BLOCK_SIZE_XYZ
-            int voxelCount = BLOCK_SIZE_XYZ * blockCount;
+            int3 voxelCount = BLOCK_SIZE_XYZ * blockCount;
             int3 blockTableAddress = pageTableEntry.xyz * BLOCK_SIZE_XYZ + (position * voxelCount) % BLOCK_SIZE_XYZ;
 
             //record the block we access, for LRU system
