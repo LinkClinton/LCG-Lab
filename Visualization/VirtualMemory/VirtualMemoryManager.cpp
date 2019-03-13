@@ -164,26 +164,19 @@ void VirtualMemoryManager::solveCacheMiss()
 
 	//get data pointer
 	byte* usageStateData = (byte*)usageState.Data;
-	//get array size, because of padding the size is not equal the texture size
-	auto endPosition = usageState.DepthPitch * mBlockCacheUsageStateTexture->getDepth();
+	
+	for (int x = 0; x < mBlockCacheUsageStateTexture->getWidth(); x++) {
+		for (int y = 0; y < mBlockCacheUsageStateTexture->getHeight(); y++) {
+			for (int z = 0; z < mBlockCacheUsageStateTexture->getDepth(); z++) {
+				int id = x + y * usageState.RowPitch + z * usageState.DepthPitch;
 
-	//check state
-	for (int id = 0; id < endPosition; id++) {
+				if (usageStateData[id] != 1) continue;
 
-		if (usageStateData[id] == 0) continue;
-
-		//get address
-		//id = x + y * rowPitch + z * depthPitch
-		//because of usageState is byte
-		auto address = VirtualAddress(
-			(id % usageState.DepthPitch) % usageState.RowPitch,
-			(id % usageState.DepthPitch) / usageState.RowPitch,
-			(id / usageState.DepthPitch)
-		);
-
-		//update the LRU system, we need update the directory, pages and block
-		//so it is not right in this version
-		mGPUBlockCacheTable->getAddress(address);
+				//query the page table and block table them contain this block
+				//trigger the LRU system
+				mGPUBlockCacheTable->invertQuery(VirtualAddress(x, y, z));
+			}
+		}
 	}
 
 	//unmap

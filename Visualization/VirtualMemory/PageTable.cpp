@@ -13,7 +13,7 @@ void PageTable::deletePageCache(PageCache *& pageCache)
 }
 
 PageTable::PageTable(const Size &size, PageTable* nextTable) : AddressMap(size),
-	mNext(nextTable), mEnd(nullptr), mMapRelation(size.X * size.Y * size.Z) 
+	mNext(nextTable), mEnd(nullptr), mMapRelation(size.X * size.Y * size.Z), mFromTable(nullptr), mFromDirectory(nullptr)
 {
 	//compute the pool size and get address pointer
 	auto memorySize = mSize.X * mSize.Y * mSize.Z;
@@ -24,10 +24,13 @@ PageTable::PageTable(const Size &size, PageTable* nextTable) : AddressMap(size),
 
 	//get the address of virtual link
 	for (int i = 0; i < memorySize; i++) arrayPointer[i] = &mMemoryPool[i];
+
+	//set from table for next
+	mNext->mFromTable = this;
 }
 
 PageTable::PageTable(const Size &size, BlockTable* endTable) : AddressMap(size),
-	mNext(nullptr), mEnd(endTable), mMapRelation(size.X * size.Y * size.Z) 
+	mNext(nullptr), mEnd(endTable), mMapRelation(size.X * size.Y * size.Z), mFromTable(nullptr), mFromDirectory(nullptr)
 {
 	//compute the pool size and get address pointer
 	auto memorySize = mSize.X * mSize.Y * mSize.Z;
@@ -38,6 +41,9 @@ PageTable::PageTable(const Size &size, BlockTable* endTable) : AddressMap(size),
 
 	//get the address of virtual link
 	for (int i = 0; i < memorySize; i++) arrayPointer[i] = &mMemoryPool[i];
+
+	//set from table for end
+	mEnd->mFromTable = this;
 }
 
 PageTable::~PageTable()
@@ -170,6 +176,22 @@ auto PageTable::queryAddress(const glm::vec3 & position, const Size & size, Virt
 
 	//error 
 	assert(false); return nullptr;
+}
+
+auto PageTable::invertQuery(const VirtualLink* virtualLink) -> PageDirectory* {
+	assert((mFromTable != nullptr) ^ (mFromDirectory != nullptr));
+
+	//find directory
+	if (mFromTable == nullptr) return mFromDirectory;
+
+	//get the page cache's address
+	auto address = Helper::div(virtualLink->FromAddress, PageCache::getPageCacheSize());
+
+	//trigger the LRU system
+	getAddress(address);
+
+	//continue 
+	return mFromTable->invertQuery(mMapRelation[getArrayIndex(address)]);
 }
 
 PageCache::PageCache(const Size & size) : DataCache(size)

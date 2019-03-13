@@ -49,7 +49,7 @@ void VMRenderFramework::render(void * sender, float mDeltaTime)
 
 void VMRenderFramework::update(void * sender, float mDeltaTime)
 {
-	static float moveSpeed = 2.0f;
+	static float moveSpeed = 4.0f;
 
 	glm::vec3 moveVector = glm::vec3(0, 0, 0);
 
@@ -71,7 +71,7 @@ void VMRenderFramework::update(void * sender, float mDeltaTime)
 	}
 	
 	//update matrix
-	mMatrixStructure.WorldTransform = glm::mat4(1);
+	mMatrixStructure.WorldTransform = glm::scale(glm::mat4(1), glm::vec3(10, 10, 10));
 	mMatrixStructure.CameraTransform = mCamera.getView();
 	mMatrixStructure.ProjectTransform = mCamera.getPerspective();
 	mMatrixStructure.EyePosition[0] = glm::vec4(mCamera.getPosition(), 0.0f);
@@ -136,7 +136,7 @@ void VMRenderFramework::initializeInputStage()
 	mVertexBuffer->update(&Cube::GetVertics(1.0f, 1.0f, 1.0f)[0]);
 
 	//set camera
-	mCamera.setPosition(glm::vec3(0, 0, -5));
+	mCamera.setPosition(glm::vec3(0, 0, -50));
 	mCamera.setForward(glm::vec3(0, 0, 1));
 	mCamera.setPerspective(glm::perspectiveFov(glm::pi<float>() * 0.1f, (float)mWidth , (float)mHeight, 1.0f, 100.0f));
 

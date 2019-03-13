@@ -9,6 +9,8 @@
 #include "AddressMap.hpp"
 #include "BlockTable.hpp"
 
+class PageDirectory;
+
 class PageCache : public DataCache<VirtualLink*> {
 private:
 	std::vector<VirtualLink> mMemoryPool;
@@ -33,7 +35,12 @@ private:
 	PageTable* mNext;
 	BlockTable* mEnd;
 
+	PageTable* mFromTable;
+	PageDirectory* mFromDirectory;
+
 	static void deletePageCache(PageCache* &pageCache);
+
+	friend class PageDirectory;
 protected:
 	std::vector<VirtualLink*> mMapRelation;
 public:
@@ -50,6 +57,8 @@ public:
 	virtual void mapAddress(const glm::vec3 &position, const Size &size, BlockCache* blockCache, VirtualLink* virtualLink);
 
 	virtual auto queryAddress(const glm::vec3 &position, const Size & size, VirtualLink* virtualLink) -> BlockCache*;
+
+	virtual auto invertQuery(const VirtualLink* virtualLink) -> PageDirectory*;
 };
 
 

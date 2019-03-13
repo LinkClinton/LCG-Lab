@@ -111,7 +111,7 @@ float4 main(InputPixel input) : SV_Target
 
         position = position + dir * STEP_SIZE;
 
-        if (outLimit(position) == true) break;
+        if (outLimit(position) == true || color.a >= 1.0f) break;
     }
 
     return color;

@@ -39,6 +39,12 @@
     <Filter Include="Header Files\Structure">
       <UniqueIdentifier>{370584bf-8a5c-4c7d-b51a-b0d776bdbc9e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Extension\Intersections">
+      <UniqueIdentifier>{940b04d2-b915-41e0-97ed-d917071f0333}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Extension\Intersections">
+      <UniqueIdentifier>{0263c6b0-3995-443c-ab5c-b7600afee548}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework.hpp">
@@ -224,6 +230,15 @@
     <ClInclude Include="MappedData.hpp">
       <Filter>Header Files\Structure</Filter>
     </ClInclude>
+    <ClInclude Include="Plane.hpp">
+      <Filter>Header Files\Extension\Intersections</Filter>
+    </ClInclude>
+    <ClInclude Include="Line.hpp">
+      <Filter>Header Files\Extension\Intersections</Filter>
+    </ClInclude>
+    <ClInclude Include="IntersectionSolver.hpp">
+      <Filter>Header Files\Extension\Intersections</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowsVertexShader.cpp">
@@ -294,6 +309,9 @@
     </ClCompile>
     <ClCompile Include="WindowsInput.cpp">
       <Filter>Source Files\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="IntersectionSolver.cpp">
+      <Filter>Source Files\Extension\Intersections</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

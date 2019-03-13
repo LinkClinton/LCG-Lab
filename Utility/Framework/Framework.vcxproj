@@ -35,11 +35,14 @@
     <ClInclude Include="HeapType.hpp" />
     <ClInclude Include="IndexBuffer.hpp" />
     <ClInclude Include="Input.hpp" />
+    <ClInclude Include="IntersectionSolver.hpp" />
     <ClInclude Include="KeyCode.hpp" />
+    <ClInclude Include="Line.hpp" />
     <ClInclude Include="MappedData.hpp" />
     <ClInclude Include="Math.hpp" />
     <ClInclude Include="MouseButton.hpp" />
     <ClInclude Include="PixelFormat.hpp" />
+    <ClInclude Include="Plane.hpp" />
     <ClInclude Include="PrimitiveType.hpp" />
     <ClInclude Include="RasterizerState.hpp" />
     <ClInclude Include="RenderTarget.hpp" />
@@ -84,6 +87,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="FpsCounter.cpp" />
+    <ClCompile Include="IntersectionSolver.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="WindowsConstantBuffer.cpp" />
     <ClCompile Include="WindowsDepthStencil.cpp" />

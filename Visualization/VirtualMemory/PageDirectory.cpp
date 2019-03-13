@@ -49,6 +49,9 @@ PageDirectory::PageDirectory(const std::vector<Size>& resolutionSize, PageTable 
 
 	//get the address of virtual link
 	for (int i = 0; i < memorySize; i++) arrayPointer[i] = &mMemoryPool[i];
+
+	//set from directory for next
+	mNext->mFromDirectory = this;
 }
 
 PageDirectory::~PageDirectory()

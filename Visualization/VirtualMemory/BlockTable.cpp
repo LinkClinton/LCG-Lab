@@ -1,4 +1,5 @@
 #include "BlockTable.hpp"
+#include "PageTable.hpp"
 
 Size BlockCache::mBlockCacheSize;
 
@@ -29,7 +30,7 @@ void BlockTable::deleteBlockCache(BlockCache *& blockCache)
 }
 
 BlockTable::BlockTable(const Size & size) : AddressMap(size),
-	mMapRelation(size.X * size.Y * size.Z) 
+	mMapRelation(size.X * size.Y * size.Z), mFromTable(nullptr)
 {
 	//compute the pool size and get address pointer
 	auto memorySize = mSize.X * mSize.Y * mSize.Z;
@@ -101,4 +102,11 @@ void BlockTable::mapAddress(const glm::vec3 & position, const Size & size, Block
 auto BlockTable::queryAddress(const glm::vec3 & position, const Size & size, VirtualLink * virtualLink) -> BlockCache *
 {
 	return getAddress(virtualLink->Address);
+}
+
+auto BlockTable::invertQuery(const VirtualAddress &address) -> PageDirectory* {
+	//trigger the LRU system
+	getAddress(address);
+
+	return mFromTable->invertQuery(mMapRelation[getArrayIndex(address)]);
 }
