@@ -38,6 +38,14 @@ public:
 		object = nullptr;
 	}
 
+	template<typename T>
+	static T clamp(T value, T min, T max) {
+		if (value < min) return min;
+		if (value > max) return max;
+
+		return value;
+	}
+
 	static auto computePixelFomratBytes(PixelFormat pixelFormat) -> int {
 		switch (pixelFormat)
 		{

@@ -49,32 +49,25 @@ void VMRenderFramework::render(void * sender, float mDeltaTime)
 
 void VMRenderFramework::update(void * sender, float mDeltaTime)
 {
-	static float moveSpeed = 4.0f;
+	glm::vec2 offset = glm::vec2(0, 0);
 
-	glm::vec3 moveVector = glm::vec3(0, 0, 0);
+	if (mInput->isKeyDown(KeyCode::Space) == true) mCamera.zoom(-1.0f, mDeltaTime);
+	if (mInput->isKeyDown(KeyCode::F) == true) mCamera.zoom(1.0f, mDeltaTime);
 
-	//for move vector
-	if (mInput->isKeyDown(KeyCode::W) == true) moveVector = moveVector + Camera::forward();
-	if (mInput->isKeyDown(KeyCode::S) == true) moveVector = moveVector + Camera::back();
-	if (mInput->isKeyDown(KeyCode::A) == true) moveVector = moveVector + Camera::left();
-	if (mInput->isKeyDown(KeyCode::D) == true) moveVector = moveVector + Camera::right();
-	if (mInput->isKeyDown(KeyCode::F) == true) moveVector = moveVector + Camera::down();
-	if (mInput->isKeyDown(KeyCode::Space) == true) moveVector = moveVector + Camera::up();
-	
-	//move vector is not zero, means we input the key
-	if (glm::length(moveVector) != 0) {
-		auto length = glm::normalize(moveVector) * moveSpeed * mDeltaTime; //length
+	if (mInput->isKeyDown(KeyCode::W) == true) offset += glm::vec2(0, 1);
+	if (mInput->isKeyDown(KeyCode::S) == true) offset += glm::vec2(0, -1);
+	if (mInput->isKeyDown(KeyCode::A) == true) offset += glm::vec2(1, 0);
+	if (mInput->isKeyDown(KeyCode::D) == true) offset += glm::vec2(-1, 0);
 
-		mCamera.walk(length.z);
-		mCamera.strafe(-length.x);
-		mCamera.fly(length.y);
-	}
-	
+	if (glm::length(offset) != 0) mCamera.pan(glm::normalize(offset), getDeltaTime());
+
+	mCamera.update(mDeltaTime);
+
 	//update matrix
 	mMatrixStructure.WorldTransform = glm::scale(glm::mat4(1), glm::vec3(10, 10, 10));
-	mMatrixStructure.CameraTransform = mCamera.getView();
-	mMatrixStructure.ProjectTransform = mCamera.getPerspective();
-	mMatrixStructure.EyePosition[0] = glm::vec4(mCamera.getPosition(), 0.0f);
+	mMatrixStructure.CameraTransform = mCamera.viewMatrix();
+	mMatrixStructure.ProjectTransform = mCamera.projectionMatrix();
+	mMatrixStructure.EyePosition[0] = glm::vec4(mCamera.position(), 0.0f);
 
 	mMatrixBuffer->update(&mMatrixStructure);
 }
@@ -85,16 +78,10 @@ void VMRenderFramework::mouseMove(void * sender, MouseMoveEvent * eventArg)
 	if (mMouseButtonState[0] == false && mMouseButtonState[1] == false && mMouseButtonState[2] == false)
 		return;
 
-	//angle speed
-	static float angle = glm::pi<float>() * 0.0001f;
-	
 	auto centerPosition = glm::vec2(mWidth * 0.5f, mHeight * 0.5f);
 	auto offset = eventArg->getPosition() - centerPosition;
 
-	if (glm::length(offset) != 0) {
-		mCamera.rotateY(angle * offset.x);
-		mCamera.rotateRight(angle * offset.y);
-	}
+	//if (offset.length() != 0) mCamera.rotate(offset, getDeltaTime());
 
 	mInput->setCursorPosition(centerPosition);
 }
@@ -136,13 +123,12 @@ void VMRenderFramework::initializeInputStage()
 	mVertexBuffer->update(&Cube::GetVertics(1.0f, 1.0f, 1.0f)[0]);
 
 	//set camera
-	mCamera.setPosition(glm::vec3(0, 0, -50));
-	mCamera.setForward(glm::vec3(0, 0, 1));
-	mCamera.setPerspective(glm::perspectiveFov(glm::pi<float>() * 0.1f, (float)mWidth , (float)mHeight, 1.0f, 100.0f));
+	mCamera.perspective(glm::pi<float>() * 0.3f, (float)mWidth / mHeight);
+	mCamera.resize(mWidth, mHeight);
 
 	mMatrixStructure.WorldTransform = glm::mat4(1);
-	mMatrixStructure.CameraTransform = mCamera.getView();
-	mMatrixStructure.ProjectTransform = mCamera.getPerspective();
+	mMatrixStructure.CameraTransform = mCamera.viewMatrix();
+	mMatrixStructure.ProjectTransform = mCamera.projectionMatrix();
 
 	//update matrix's data
 	mMatrixBuffer->update(&mMatrixStructure);

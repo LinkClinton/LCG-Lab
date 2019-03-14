@@ -27,7 +27,7 @@ public:
 	}
 
 	auto length() const -> float {
-		return (mEnd - mStart).length();
+		return glm::length(mEnd - mStart);
 	}
 
 	auto vector() const -> glm::vec3 {

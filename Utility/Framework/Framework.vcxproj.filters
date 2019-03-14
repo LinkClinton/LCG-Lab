@@ -45,6 +45,12 @@
     <Filter Include="Source Files\Extension\Intersections">
       <UniqueIdentifier>{0263c6b0-3995-443c-ab5c-b7600afee548}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Extension\Camera">
+      <UniqueIdentifier>{7d66031f-9710-4d92-9cef-66f543bb6370}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Extension\Camera">
+      <UniqueIdentifier>{4eab2966-c18a-4a66-89b3-b04556f74ceb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework.hpp">
@@ -176,9 +182,6 @@
     <ClInclude Include="WindowsResourceUsage.hpp">
       <Filter>Header Files\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.hpp">
-      <Filter>Header Files\Extension</Filter>
-    </ClInclude>
     <ClInclude Include="UnorderedAccessUsage.hpp">
       <Filter>Header Files\Interface</Filter>
     </ClInclude>
@@ -186,9 +189,6 @@
       <Filter>Header Files\Windows</Filter>
     </ClInclude>
     <ClInclude Include="Cube.hpp">
-      <Filter>Header Files\Extension</Filter>
-    </ClInclude>
-    <ClInclude Include="Math.hpp">
       <Filter>Header Files\Extension</Filter>
     </ClInclude>
     <ClInclude Include="KeyCode.hpp">
@@ -238,6 +238,12 @@
     </ClInclude>
     <ClInclude Include="IntersectionSolver.hpp">
       <Filter>Header Files\Extension\Intersections</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.hpp">
+      <Filter>Header Files\Extension\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="OrbitCamera.hpp">
+      <Filter>Header Files\Extension\Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -292,9 +298,6 @@
     <ClCompile Include="WindowsResourceUsage.cpp">
       <Filter>Source Files\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files\Extension</Filter>
-    </ClCompile>
     <ClCompile Include="WindowsUnorderedAccessUsage.cpp">
       <Filter>Source Files\Windows</Filter>
     </ClCompile>
@@ -312,6 +315,12 @@
     </ClCompile>
     <ClCompile Include="IntersectionSolver.cpp">
       <Filter>Source Files\Extension\Intersections</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files\Extension\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="OrbitCamera.cpp">
+      <Filter>Source Files\Extension\Camera</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

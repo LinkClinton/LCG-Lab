@@ -1,7 +1,7 @@
 #pragma once
 
 #include <WindowsFramework.hpp>
-#include <Camera.hpp>
+#include <OrbitCamera.hpp>
 
 #include "Helper.hpp"
 #include "SharedMacro.hpp"
@@ -24,7 +24,7 @@ private:
 	Input* mInput;
 	bool mMouseButtonState[3];
 
-	Camera mCamera;
+	OrbitCamera mCamera;
 	MatrixStructure mMatrixStructure;
 
 	VirtualMemoryManager* mVirtualMemoryManager;

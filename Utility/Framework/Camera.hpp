@@ -4,53 +4,46 @@
 #include <glm\gtc\quaternion.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 
+enum class ProjectionMode {
+	Perspective,
+	Orthographic
+};
 
 class Camera {
-private:
-	glm::vec3 mPosition;
-	glm::vec3 mForward;
-	glm::vec3 mRight;
-	glm::vec3 mUp;
+protected:
+	float mFov;
+	float mAspect;
+	float mNear;
+	float mFar;
 
-	glm::mat4 mPerspective;
+	float mWidth;
+	float mHeight;
+
+	glm::mat4 mTransform;
+	glm::mat4 mProjection;
+
+	ProjectionMode mProjectionMode;
 public:
-	Camera(
-		const glm::vec3 &position = glm::vec3(0, 0, 0),
-		const glm::mat4 &perspective = glm::mat4(1));
+	Camera();
 
-	void walk(float length);
+	~Camera();
 
-	void strafe(float length);
+	void setTransform(const glm::mat4 &transform);
+	void orthoNormalize();
+	void resize(int width, int height);
+	void perspective(float fov, float aspect, float near = 0.01f, float far = 1000.0f);
+	void orthographic(float width, float height, float near = 0.01f, float far = 1000.0f);
 
-	void fly(float length);
+	ProjectionMode projectionMode() const;
 
-	void rotateRight(float angle);
+	glm::mat4 projectionMatrix() const;
+	glm::mat4 transformMatrix() const;
+	glm::mat4 viewMatrix();
+	glm::vec3 position() const;
 
-	void rotateY(float angle);
-
-	void setPosition(const glm::vec3 &position);
+	float aspect() const;
 	
-	void setForward(const glm::vec3 &forward);
-
-	void setPerspective(const glm::mat4 &perspective);
-
-	auto getPosition() -> glm::vec3;
-
-	auto getForward() -> glm::vec3;
-
-	auto getView() -> glm::mat4;
-
-	auto getPerspective() -> glm::mat4;
-
-	static auto forward() -> glm::vec3;
-
-	static auto back() -> glm::vec3;
-
-	static auto left() -> glm::vec3;
-
-	static auto right() -> glm::vec3;
-
-	static auto up() -> glm::vec3;
-
-	static auto down() -> glm::vec3;
+	bool isOrthographic() const;
+	bool isPerspective() const;
+	bool isOrthoNormal() const;
 };

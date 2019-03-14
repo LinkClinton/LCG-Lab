@@ -1,115 +1,173 @@
 #include "Camera.hpp"
-#include "Math.hpp"
 
-Camera::Camera(const glm::vec3 & position, const glm::mat4 & perspective)
-	:mPosition(position), mPerspective(perspective)
+Camera::Camera()
 {
-	mForward = forward();
-	mRight = right();
-	mUp = up();
+	mFov = 60.0f;
+	mAspect = 1.3f;
+	mNear = 0.01f;
+	mFar = 1000.0f;
+
+	mWidth = 1.0f;
+	mHeight = 1.0f;
+	
+	mTransform = glm::mat4(1);
+	mProjection = glm::perspective(mFov, mAspect, mNear, mFar);
+
+	mProjectionMode = ProjectionMode::Perspective;
 }
 
-void Camera::walk(float length)
+Camera::~Camera()
 {
-	mPosition = mPosition + mForward * length;
 }
 
-void Camera::strafe(float length)
+glm::mat4 Camera::projectionMatrix() const
 {
-	mPosition = mPosition + mRight * length;
+	return mProjection;
 }
 
-void Camera::fly(float length)
+glm::mat4 Camera::transformMatrix() const
 {
-	mPosition = mPosition + up() * length;
+	return mTransform;
 }
 
-void Camera::rotateRight(float angle)
+glm::mat4 Camera::viewMatrix()
 {
-	auto rotate = glm::rotate(glm::tquat<float, glm::qualifier::highp>(1, 0, 0, 0), angle, mRight);
+	//view matrix is the invert of transform matrix
+	//because the invert is very expensive, we need to avoid it
 
-	mForward = glm::normalize(mForward * rotate);
-	mUp = glm::normalize(mUp * rotate);
+	//normalize
+	if (isOrthoNormal() == false) orthoNormalize();
+	
+	//transpose it to invert the rotation of the matrix, because of orthogonal and normal
+	//M * M^T = I
+	auto inverse = glm::transpose(mTransform);
+
+	inverse[3][0] = inverse[0][3] = 0.0f;
+	inverse[3][1] = inverse[1][3] = 0.0f;
+	inverse[3][2] = inverse[2][3] = 0.0f;
+
+	//compute the right, up, forward vectors from matrix
+	auto forward = glm::vec3(mTransform[2].x, mTransform[2].y, mTransform[2].z);
+	auto right = glm::vec3(mTransform[0].x, mTransform[0].y, mTransform[0].z);
+	auto up = glm::vec3(mTransform[1].x, mTransform[1].y, mTransform[1].z);
+
+	//compute the position from matrix
+	//we need to invert the translation of transform
+	auto position = glm::vec3(mTransform[3].x, mTransform[3].y, mTransform[3].z);
+
+	inverse[3][2] = -glm::dot(forward, position);
+	inverse[3][0] = -glm::dot(right, position);
+	inverse[3][1] = -glm::dot(up, position);
+
+	return inverse;
 }
 
-void Camera::rotateY(float angle)
+glm::vec3 Camera::position() const
 {
-	auto rotate = glm::rotate(glm::tquat<float, glm::qualifier::highp>(1, 0, 0, 0), angle, glm::vec3(0, 1, 0));
-
-	mForward = glm::normalize(mForward * rotate);
-	mRight = glm::normalize(mRight * rotate);
-	mUp = glm::normalize(mUp * rotate);
+	return glm::vec3(mTransform[3].x, mTransform[3].y, mTransform[3].z);
 }
 
-void Camera::setPosition(const glm::vec3 & position)
+void Camera::setTransform(const glm::mat4 & transform)
 {
-	mPosition = position;
+	mTransform = transform;
 }
 
-void Camera::setForward(const glm::vec3 & forward)
+void Camera::orthoNormalize()
 {
-	//set property
-	auto rotate = Math::computeRotateFromVector(mForward, forward);
+	//compute the right, up, forward vectors from matrix
+	auto forward = glm::vec3(mTransform[2].x, mTransform[2].y, mTransform[2].z);
+	auto right = glm::vec3(mTransform[0].x, mTransform[0].y, mTransform[0].z);
+	auto up = glm::vec3(mTransform[1].x, mTransform[1].y, mTransform[1].z);
 
-	mForward = glm::normalize(mForward * rotate);
-	mRight = glm::normalize(mRight * rotate);
-	mUp = glm::normalize(mUp * rotate);
+	//create new vectors with perpendicular
+	auto newForward = glm::normalize(forward);
+	auto newRight = glm::normalize(glm::cross(up, newForward));
+	auto newUp = glm::cross(newForward, newRight);
+
+	//rebuild the transform matrix
+	mTransform = glm::mat4(
+		newRight.x, newRight.y, newRight.z, 0.0f,
+		newUp.x, newUp.y, newUp.z, 0.0f,
+		newForward.x, newForward.y, newForward.z, 0.0f,
+		mTransform[3].x, mTransform[3].y, mTransform[3].z, 1.0f);
 }
 
-void Camera::setPerspective(const glm::mat4 & perspective)
+void Camera::resize(int width, int height)
 {
-	mPerspective = perspective;
+	mAspect = (float)width / height;
+
+	if (mProjectionMode == ProjectionMode::Perspective) 
+		mProjection = glm::perspective(mFov, mAspect, mNear, mFar);
+	else if (mProjectionMode == ProjectionMode::Orthographic) {
+		mWidth = (float)width; mHeight = (float)height;
+
+		auto halfWidth = mWidth * 0.5f;
+		auto halfHeight = mHeight * 0.5f;
+
+		mProjection = glm::ortho(-halfWidth, halfWidth, halfHeight, -halfHeight, mNear, mFar);
+	}
 }
 
-auto Camera::getPosition() -> glm::vec3
+void Camera::perspective(float fov, float aspect, float near, float far)
 {
-	return mPosition;
+	mFov = fov;
+	mAspect = aspect;
+	mNear = near;
+	mFar = far;
+
+	mProjection = glm::perspective(mFov, mAspect, mNear, mFar);
+
+	mProjectionMode = ProjectionMode::Perspective;
 }
 
-auto Camera::getForward() -> glm::vec3
+void Camera::orthographic(float width, float height, float near, float far)
 {
-	return mForward;
+	mWidth = width; mHeight = height; mNear = near; mFar = far;
+
+	auto halfWidth = mWidth * 0.5f;
+	auto halfHeight = mHeight * 0.5f;
+
+	mProjection = glm::ortho(-halfWidth, halfWidth, halfHeight, -halfHeight, mNear, mFar);
+
+	mProjectionMode = ProjectionMode::Orthographic;
 }
 
-auto Camera::getView() -> glm::mat4
+ProjectionMode Camera::projectionMode() const
 {
-	auto center = mPosition + mForward;
-
-	return glm::lookAt(mPosition, center, mUp);
+	return mProjectionMode;
 }
 
-auto Camera::getPerspective() -> glm::mat4
+float Camera::aspect() const
 {
-	return mPerspective;
+	return mAspect;
 }
 
-auto Camera::forward() -> glm::vec3
+bool Camera::isOrthographic() const
 {
-	return glm::vec3(0, 0, 1);
+	return mProjectionMode == ProjectionMode::Orthographic;
 }
 
-auto Camera::back() -> glm::vec3
+bool Camera::isPerspective() const
 {
-	return glm::vec3(0, 0, -1);
+	return mProjectionMode == ProjectionMode::Perspective;
 }
 
-auto Camera::left() -> glm::vec3
+bool Camera::isOrthoNormal() const
 {
-	return glm::vec3(1, 0, 0);
-}
+	//compute the right, up, forward vectors from matrix
+	auto forward = glm::vec3(mTransform[2].x, mTransform[2].y, mTransform[2].z);
+	auto right = glm::vec3(mTransform[0].x, mTransform[0].y, mTransform[0].z);
+	auto up = glm::vec3(mTransform[1].x, mTransform[1].y, mTransform[1].z);
 
-auto Camera::right() -> glm::vec3
-{
-	return glm::vec3(-1, 0, 0);
-}
+	//not normal vector
+	if (forward.length() != 1.0f || right.length() != 1.0f || up.length() != 1.0f)
+		return false;
 
-auto Camera::up() -> glm::vec3
-{
-	return glm::vec3(0, 1, 0);
-}
+	//not perpendicular
+	if (glm::dot(forward, right) != 0.0f || 
+		glm::dot(forward, up) != 0.0f || 
+		glm::dot(right, up) != 0.0f)
+		return false;
 
-auto Camera::down() -> glm::vec3
-{
-	return glm::vec3(0, -1, 0);
+	return true;
 }
-
