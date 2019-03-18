@@ -1,8 +1,6 @@
 #include "OrbitCamera.hpp"
 #include "Utility.hpp"
 
-#include <iostream>
-
 float OrbitCamera::clampAngle(float angle, float min, float max)
 {
 	auto twoPi = glm::two_pi<float>();
@@ -13,10 +11,10 @@ float OrbitCamera::clampAngle(float angle, float min, float max)
 	return Utility::clamp(angle, min, max);
 }
 
-OrbitCamera::OrbitCamera()
+OrbitCamera::OrbitCamera(const glm::vec3 &target, float distance)
 {
-	mTarget = glm::vec3(0, 0, 0);
-	mZoomDistance = 10.0f;
+	mTarget = target;
+	mZoomDistance = distance;
 	mZoomSpeed = 10.0f;
 	mRotateSpeed = glm::vec2(10.0f / 180.0f, 10.0f / 180.0f);
 	mCurrentRotation = glm::vec2(0, 0);
@@ -30,13 +28,36 @@ OrbitCamera::~OrbitCamera()
 {
 }
 
+void OrbitCamera::setRotateSpeed(const glm::vec2 & rotateSpeed)
+{
+	mRotateSpeed = rotateSpeed;
+}
+
+void OrbitCamera::setPanSpeed(const glm::vec2 & panSpeed)
+{
+	mPanSpeed = panSpeed;
+}
+
+void OrbitCamera::setZoomSpeed(float zoomSpeed)
+{
+	mZoomSpeed = zoomSpeed;
+}
+
+void OrbitCamera::setZoomLimit(float minLimit, float maxLimit)
+{
+	mZoomDistanceMinLimit = minLimit;
+	mZoomDistanceMaxLimit = maxLimit;
+}
+
 void OrbitCamera::rotate(const glm::vec2 & deltaRotation, float deltaTime)
 {
 	mCurrentRotation.x = mCurrentRotation.x + deltaRotation.x * mRotateSpeed.x * mZoomDistance * deltaTime;
 	mCurrentRotation.y = mCurrentRotation.y + deltaRotation.y * mRotateSpeed.y * mZoomDistance * deltaTime;
 
-	mCurrentRotation.x = clampAngle(mCurrentRotation.x, -glm::two_pi<float>(), glm::two_pi<float>());
-	mCurrentRotation.y = clampAngle(mCurrentRotation.y, -glm::two_pi<float>(), glm::two_pi<float>());
+	auto yLimit = 89.0f / 180.0f * glm::pi<float>();
+
+	mCurrentRotation.x = glm::mod(mCurrentRotation.x, glm::two_pi<float>());
+	mCurrentRotation.y = glm::clamp(mCurrentRotation.y, -yLimit, yLimit);
 }
 
 void OrbitCamera::pan(const glm::vec2 & deltaPan, float deltaTime)
@@ -59,22 +80,13 @@ void OrbitCamera::zoom(float deltaZoom, float deltaTime)
 void OrbitCamera::update(float deltaTime)
 {
 	auto rotationMatrix = glm::mat4(1);
-	
-	//error way for rotation
+
 	rotationMatrix = glm::rotate(rotationMatrix, mCurrentRotation.x, glm::vec3(0, 1, 0));
 	rotationMatrix = glm::rotate(rotationMatrix, mCurrentRotation.y, glm::vec3(1, 0, 0));
-
+	
+	auto up = glm::vec3(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f) * rotationMatrix);
 	auto direction = glm::vec4(0.0f, 0.0f, mZoomDistance, 1.0f) * rotationMatrix;
 	auto position = mTarget - glm::vec3(direction);
 
-	auto up = glm::vec3(0, 1, 0);
-
-	//change up
-	if (mCurrentRotation.y >  glm::half_pi<float>()) up = glm::vec3(0, -1, 0);
-	if (mCurrentRotation.y < -glm::half_pi<float>()) up = glm::vec3(0, -1, 0);
-	if (mCurrentRotation.y >  glm::half_pi<float>() + glm::pi<float>()) up = glm::vec3(0, 1, 0);
-	if (mCurrentRotation.y < -glm::half_pi<float>() - glm::pi<float>()) up = glm::vec3(0, 1, 0);
-
 	mTransform = glm::inverse(glm::lookAt(position, mTarget, up));
-
 }

@@ -81,7 +81,7 @@ void VMRenderFramework::mouseMove(void * sender, MouseMoveEvent * eventArg)
 	auto centerPosition = glm::vec2(mWidth * 0.5f, mHeight * 0.5f);
 	auto offset = eventArg->getPosition() - centerPosition;
 
-	//if (offset.length() != 0) mCamera.rotate(offset, getDeltaTime());
+	if (offset.length() != 0) mCamera.rotate(glm::vec2(offset.x, -offset.y), getDeltaTime());
 
 	mInput->setCursorPosition(centerPosition);
 }
@@ -123,8 +123,12 @@ void VMRenderFramework::initializeInputStage()
 	mVertexBuffer->update(&Cube::GetVertics(1.0f, 1.0f, 1.0f)[0]);
 
 	//set camera
+	mCamera = OrbitCamera(glm::vec3(0, 0, 0), 20.0f);
 	mCamera.perspective(glm::pi<float>() * 0.3f, (float)mWidth / mHeight);
 	mCamera.resize(mWidth, mHeight);
+
+	mCamera.setRotateSpeed(glm::vec2(glm::pi<float>() * 0.01f));
+	mCamera.setZoomLimit(3.0f, 100.0f);
 
 	mMatrixStructure.WorldTransform = glm::mat4(1);
 	mMatrixStructure.CameraTransform = mCamera.viewMatrix();

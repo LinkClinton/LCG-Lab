@@ -19,6 +19,13 @@ void VirtualMemoryManager::mapAddressToGPU(int resolution, const glm::vec3 & pos
 {
 	//upload block data to GPU virtual memory
 	mGPUDirectoryCache->mapAddress(resolution, position, block);
+
+#ifdef _DEBUG
+	static int count = 0;
+
+	printf("Mapped Times from Cpu to Gpu: %d\n", ++count);
+#endif // _DEBUG
+
 }
 
 void VirtualMemoryManager::initialize(const std::string &fileName, const std::vector<glm::vec3> &resolution)
@@ -196,7 +203,9 @@ void VirtualMemoryManager::solveCacheMiss()
 
 	auto xEndPosition = mBlockCacheMissArrayTexture->getWidth();
 	auto yEndPosition = mBlockCacheMissArrayTexture->getHeight();
-	
+
+	int count = 0;
+
 	for (size_t x = 0; x < xEndPosition; x++) {
 		for (size_t y = 0; y < yEndPosition; y++) {
 			//we store count at (x, y, 0) -> x + y * rowPitch + 0 * depthPitch
@@ -212,10 +221,15 @@ void VirtualMemoryManager::solveCacheMiss()
 	
 				id = id - mMultiResolutionBlockBase[resolution];
 
-				mapAddress(resolution, id);
+				mapAddress(resolution, id); ++count;
 			}
 		}
 	}
+
+#ifdef _DEBUG
+	printf("Cache Miss Solved Times Per Frame: %d\n", count);
+#endif // _DEBUG
+
 
 	mBlockCacheMissArrayTexture->unmapCpuTexture();
 }

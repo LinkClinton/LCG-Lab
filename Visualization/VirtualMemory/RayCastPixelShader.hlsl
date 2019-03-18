@@ -1,5 +1,7 @@
 #include "ShaderInclude.hlsl"
 
+#define eps 0.0001f
+
 bool outLimit(float3 texCoord)
 {
     if (texCoord.x < 0.0f || texCoord.x > 1.0f)
@@ -10,6 +12,13 @@ bool outLimit(float3 texCoord)
         return true;
 
     return false;
+}
+
+float3 limitFloat(float value, float maxLimit)
+{
+    if (value >= maxLimit) value = maxLimit - eps;
+
+    return value;
 }
 
 void reportCacheMiss(float3 position, int level, int reportCount,
@@ -50,20 +59,25 @@ float sampleVolume(float3 position, int level, int reportCount,
 {
     float sample = 0.0f;
 
-    int3 resolutionSize = MultiResolutionSize[level];
+    uint3 resolutionSize = MultiResolutionSize[level];
+
+    //avoid x or y or z is equal the 1.0f
+    position.x = limitFloat(position.x, 1.0f);
+    position.y = limitFloat(position.y, 1.0f);
+    position.z = limitFloat(position.z, 1.0f);
 
     //compute the address of position in the directory texture
     //and get the next virtual address
-    int3 directoryAddress = MultiResolutionBase[level] + position * resolutionSize;
+    uint3 directoryAddress = MultiResolutionBase[level] + position * resolutionSize;
     uint4 directoryEntry = DirectoryCacheTexture.Load(int4(directoryAddress, 0));
-    
+
     //mapped, we continue
     if (directoryEntry.w == MAPPED)
     {
         //get the block count of level
         //so the address of current position is entry + (position * block count) % PAGE_SIZE_XYZ
-        int3 blockCount = PAGE_SIZE_XYZ * resolutionSize;
-        int3 pageTableAddress = directoryEntry.xyz * PAGE_SIZE_XYZ + (position * blockCount) % PAGE_SIZE_XYZ;
+        uint3 blockCount = PAGE_SIZE_XYZ * resolutionSize;
+        uint3 pageTableAddress = directoryEntry.xyz * PAGE_SIZE_XYZ + (position * blockCount) % PAGE_SIZE_XYZ;
 
         uint4 pageTableEntry = PageCacheTexture.Load(int4(pageTableAddress, 0));
         
@@ -72,8 +86,8 @@ float sampleVolume(float3 position, int level, int reportCount,
         {
             //get the voxel count of level
             //so the address of current position is entry + (position * voxel count) % BLOCK_SIZE_XYZ
-            int3 voxelCount = BLOCK_SIZE_XYZ * blockCount;
-            int3 blockTableAddress = pageTableEntry.xyz * BLOCK_SIZE_XYZ + (position * voxelCount) % BLOCK_SIZE_XYZ;
+            uint3 voxelCount = BLOCK_SIZE_XYZ * blockCount;
+            uint3 blockTableAddress = pageTableEntry.xyz * BLOCK_SIZE_XYZ + (position * voxelCount) % BLOCK_SIZE_XYZ;
 
             //record the block we access, for LRU system
             BlockCacheUsageStateRWTexture[pageTableEntry.xyz] = 1;
@@ -105,13 +119,13 @@ float4 main(InputPixel input) : SV_Target
     [loop]
     for (int i = 0; i < MAX_LOOP; i++)
     {
+        if (outLimit(position) == true || color.a >= 1.0f) break;
+
         float4 sample = sampleVolume(position, 0, reportCount, hashTableIndex) * STEP_SIZE * LIGHT;
 
         color = (1 - sample) * color + sample;
 
         position = position + dir * STEP_SIZE;
-
-        if (outLimit(position) == true || color.a >= 1.0f) break;
     }
 
     return color;
