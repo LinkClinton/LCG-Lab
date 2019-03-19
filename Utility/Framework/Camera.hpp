@@ -4,6 +4,8 @@
 #include <glm\gtc\quaternion.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 
+#include "Frustum.hpp"
+
 enum class ProjectionMode {
 	Perspective,
 	Orthographic
@@ -36,9 +38,11 @@ public:
 
 	ProjectionMode projectionMode() const;
 
+	Frustum frustum() const;
+
 	glm::mat4 projectionMatrix() const;
 	glm::mat4 transformMatrix() const;
-	glm::mat4 viewMatrix();
+	glm::mat4 viewMatrix() const;
 	glm::vec3 position() const;
 
 	float aspect() const;

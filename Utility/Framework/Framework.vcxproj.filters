@@ -245,6 +245,12 @@
     <ClInclude Include="OrbitCamera.hpp">
       <Filter>Header Files\Extension\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="Frustum.hpp">
+      <Filter>Header Files\Extension\Intersections</Filter>
+    </ClInclude>
+    <ClInclude Include="Triangle.hpp">
+      <Filter>Header Files\Extension\Intersections</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowsVertexShader.cpp">

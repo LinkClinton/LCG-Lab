@@ -11,6 +11,7 @@ auto IntersectionSolver::IntersectLineAndPlane(const Line & line, const Plane & 
 
 	float distance = (plane.distance() - nA) / nAB;
 
-	if (distance >= 0.0f && distance <= 1.0f) return LineIntersectionResult(true, distance);
+	if (distance >= 0.0f && distance <= 1.0f) 
+		return LineIntersectionResult(true, distance, line.start() + line.vector() * distance);
 	else return LineIntersectionResult(false, 0);
 }

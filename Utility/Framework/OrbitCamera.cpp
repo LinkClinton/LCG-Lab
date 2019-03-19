@@ -89,4 +89,7 @@ void OrbitCamera::update(float deltaTime)
 	auto position = mTarget - glm::vec3(direction);
 
 	mTransform = glm::inverse(glm::lookAt(position, mTarget, up));
+
+	//normalize transform
+	if (isOrthoNormal() == false) orthoNormalize();
 }

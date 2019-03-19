@@ -1,7 +1,7 @@
 #pragma once
 
-class Line;
-class Plane;
+#include "Line.hpp"
+#include "Plane.hpp"
 
 struct IntersectionResult {
 	bool IsIntersection;
@@ -11,9 +11,10 @@ struct IntersectionResult {
 
 struct LineIntersectionResult : IntersectionResult {
 	float Distance; //the distance from start
+	glm::vec3 Point;
 
-	LineIntersectionResult(bool isIntersection = false, float distance = 0) : IntersectionResult(isIntersection),
-		Distance(distance) {}
+	LineIntersectionResult(bool isIntersection = false, float distance = 0, const glm::vec3 &point = glm::vec3()) 
+		: IntersectionResult(isIntersection), Distance(distance), Point(point) {}
 };
 
 class IntersectionSolver {

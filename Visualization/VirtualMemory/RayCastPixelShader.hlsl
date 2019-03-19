@@ -14,7 +14,7 @@ bool outLimit(float3 texCoord)
     return false;
 }
 
-float3 limitFloat(float value, float maxLimit)
+float limitFloat(float value, float maxLimit)
 {
     if (value >= maxLimit) value = maxLimit - eps;
 

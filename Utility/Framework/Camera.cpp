@@ -30,14 +30,11 @@ glm::mat4 Camera::transformMatrix() const
 	return mTransform;
 }
 
-glm::mat4 Camera::viewMatrix()
+glm::mat4 Camera::viewMatrix() const
 {
 	//view matrix is the invert of transform matrix
 	//because the invert is very expensive, we need to avoid it
 
-	//normalize
-	if (isOrthoNormal() == false) orthoNormalize();
-	
 	//transpose it to invert the rotation of the matrix, because of orthogonal and normal
 	//M * M^T = I
 	auto inverse = glm::transpose(mTransform);
@@ -70,6 +67,9 @@ glm::vec3 Camera::position() const
 void Camera::setTransform(const glm::mat4 & transform)
 {
 	mTransform = transform;
+
+	//normalize
+	if (isOrthoNormal() == false) orthoNormalize();
 }
 
 void Camera::orthoNormalize()
@@ -135,6 +135,42 @@ void Camera::orthographic(float width, float height, float near, float far)
 ProjectionMode Camera::projectionMode() const
 {
 	return mProjectionMode;
+}
+
+Frustum Camera::frustum() const
+{
+	assert(mProjectionMode == ProjectionMode::Perspective);
+
+	auto viewAndPrj = projectionMatrix() * viewMatrix();
+
+	auto column0 = glm::vec3(viewAndPrj[0].x, viewAndPrj[1].x, viewAndPrj[2].x);
+	auto column1 = glm::vec3(viewAndPrj[0].y, viewAndPrj[1].y, viewAndPrj[2].y);
+	auto column2 = glm::vec3(viewAndPrj[0].z, viewAndPrj[1].z, viewAndPrj[2].z);
+	auto column3 = glm::vec3(viewAndPrj[0].w, viewAndPrj[1].w, viewAndPrj[2].w);
+	
+	auto distance = viewAndPrj[3];
+
+	//left, top, right, bottom, near, far
+	std::vector<Plane> planes(6);
+
+	//get planes
+	planes[(int)FrustumPlane::Bottom] = Plane(column3 + column1, distance.w + distance.y);
+	planes[(int)FrustumPlane::Right] = Plane(column3 - column0, distance.w - distance.x);
+	planes[(int)FrustumPlane::Left] = Plane(column3 + column0, distance.w + distance.x);
+	planes[(int)FrustumPlane::Top] = Plane(column3 - column1, distance.w - distance.y);
+	planes[(int)FrustumPlane::Far] = Plane(column3 - column2, distance.w - distance.z);
+	planes[(int)FrustumPlane::Near] = Plane(column2, distance.z);
+
+	//normalize
+	for (auto &plane : planes) {
+		auto length = 1.0f / glm::length(plane.normal());
+		auto normal = plane.normal() * length;
+		auto distance = plane.distance() * length;
+
+		plane = Plane(normal, distance);
+	}
+
+	return Frustum(planes);
 }
 
 float Camera::aspect() const
