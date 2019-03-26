@@ -19,7 +19,7 @@ public:
 	}
 
 	auto distance(const glm::vec3 &point) const {
-		return glm::dot(point, mNormal) - mDistance;
+		return glm::dot(point, mNormal) + mDistance;
 	}
 
 	auto normal() const -> glm::vec3 {
