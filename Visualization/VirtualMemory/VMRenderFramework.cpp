@@ -3,8 +3,6 @@
 
 #include <glm/glm.hpp>
 
-#include <Cube.hpp>
-
 void VMRenderFramework::render(void * sender, float mDeltaTime)
 {
 	float rgba[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -64,7 +62,7 @@ void VMRenderFramework::update(void * sender, float mDeltaTime)
 	mCamera.update(mDeltaTime);
 
 	//update matrix
-	mMatrixStructure.WorldTransform = glm::scale(glm::mat4(1), glm::vec3(10, 10, 10));
+	mMatrixStructure.WorldTransform = glm::mat4(1);
 	mMatrixStructure.CameraTransform = mCamera.viewMatrix();
 	mMatrixStructure.ProjectTransform = mCamera.projectionMatrix();
 	mMatrixStructure.EyePosition[0] = glm::vec4(mCamera.position(), 0.0f);
@@ -113,22 +111,26 @@ void VMRenderFramework::initializeInputStage()
 
 	//initialize the vertex and index buffer
 	mIndexBuffer = mFactory->createIndexBuffer(36 * sizeof(unsigned int), ResourceInfo::IndexBuffer());
-	mVertexBuffer = mFactory->createVertexBuffer(8 * sizeof(CubeVertex), sizeof(CubeVertex), ResourceInfo::VertexBuffer());
+	mVertexBuffer = mFactory->createVertexBuffer(8 * sizeof(Mesh::Vertex), sizeof(Mesh::Vertex), ResourceInfo::VertexBuffer());
 
 	//initialize the matrix buffer
 	mMatrixBuffer = mFactory->createConstantBuffer(sizeof(MatrixStructure), ResourceInfo::ConstantBuffer());
 
+	//init cube's data
+	mCubeMesh = Mesh::Cube(glm::vec3(10));
+
 	//update cube's data
-	mIndexBuffer->update(&Cube::GetIndices()[0]);
-	mVertexBuffer->update(&Cube::GetVertics(1.0f, 1.0f, 1.0f)[0]);
+	mIndexBuffer->update(mCubeMesh.indices().data());
+	mVertexBuffer->update(mCubeMesh.vertices().data());
 
 	//set camera
 	mCamera = OrbitCamera(glm::vec3(0, 0, 0), 20.0f);
 	mCamera.perspective(glm::pi<float>() * 0.3f, (float)mWidth / mHeight);
 	mCamera.resize(mWidth, mHeight);
 
+	mCamera.setZoomSpeed(20.0f);
 	mCamera.setRotateSpeed(glm::vec2(glm::pi<float>() * 0.01f));
-	mCamera.setZoomLimit(3.0f, 100.0f);
+	mCamera.setZoomLimit(5.10f, 100.0f);
 
 	mMatrixStructure.WorldTransform = glm::mat4(1);
 	mMatrixStructure.CameraTransform = mCamera.viewMatrix();

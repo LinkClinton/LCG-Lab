@@ -51,6 +51,12 @@
     <Filter Include="Source Files\Extension\Camera">
       <UniqueIdentifier>{4eab2966-c18a-4a66-89b3-b04556f74ceb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Extension\Model">
+      <UniqueIdentifier>{a32719b8-bd06-4b85-8588-82ce0171f8e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Extension\Model">
+      <UniqueIdentifier>{5c56276b-5a24-4b73-b0ce-6de70c02a537}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework.hpp">
@@ -188,9 +194,6 @@
     <ClInclude Include="WindowsUnorderedAccessUsage.hpp">
       <Filter>Header Files\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="Cube.hpp">
-      <Filter>Header Files\Extension</Filter>
-    </ClInclude>
     <ClInclude Include="KeyCode.hpp">
       <Filter>Header Files\Enum</Filter>
     </ClInclude>
@@ -250,6 +253,9 @@
     </ClInclude>
     <ClInclude Include="Triangle.hpp">
       <Filter>Header Files\Extension\Intersections</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.hpp">
+      <Filter>Header Files\Extension\Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -327,6 +333,12 @@
     </ClCompile>
     <ClCompile Include="OrbitCamera.cpp">
       <Filter>Source Files\Extension\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files\Extension\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Frustum.cpp">
+      <Filter>Source Files\Extension\Intersections</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

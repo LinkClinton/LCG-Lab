@@ -24,7 +24,6 @@
     <ClInclude Include="ComparisonMode.hpp" />
     <ClInclude Include="ConstantBuffer.hpp" />
     <ClInclude Include="CpuAccessFlag.hpp" />
-    <ClInclude Include="Cube.hpp" />
     <ClInclude Include="CullMode.hpp" />
     <ClInclude Include="DepthStencil.hpp" />
     <ClInclude Include="DepthStencilState.hpp" />
@@ -40,6 +39,7 @@
     <ClInclude Include="KeyCode.hpp" />
     <ClInclude Include="Line.hpp" />
     <ClInclude Include="MappedData.hpp" />
+    <ClInclude Include="Mesh.hpp" />
     <ClInclude Include="MouseButton.hpp" />
     <ClInclude Include="OrbitCamera.hpp" />
     <ClInclude Include="PixelFormat.hpp" />
@@ -89,7 +89,9 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="FpsCounter.cpp" />
+    <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="IntersectionSolver.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="OrbitCamera.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="WindowsConstantBuffer.cpp" />

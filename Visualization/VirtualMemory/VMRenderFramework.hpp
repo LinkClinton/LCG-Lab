@@ -2,6 +2,7 @@
 
 #include <WindowsFramework.hpp>
 #include <OrbitCamera.hpp>
+#include <Mesh.hpp>
 
 #include "Helper.hpp"
 #include "SharedMacro.hpp"
@@ -19,10 +20,10 @@ private:
 
 	RasterizerState* mRasterizerState;
 
-	
-
 	Input* mInput;
 	bool mMouseButtonState[3];
+
+	Mesh mCubeMesh;
 
 	OrbitCamera mCamera;
 	MatrixStructure mMatrixStructure;

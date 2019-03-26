@@ -37,7 +37,7 @@ glm::mat4 Camera::viewMatrix() const
 
 	//transpose it to invert the rotation of the matrix, because of orthogonal and normal
 	//M * M^T = I
-	auto inverse = glm::transpose(mTransform);
+	auto inverse = mTransform;
 
 	inverse[3][0] = inverse[0][3] = 0.0f;
 	inverse[3][1] = inverse[1][3] = 0.0f;
@@ -52,11 +52,11 @@ glm::mat4 Camera::viewMatrix() const
 	//we need to invert the translation of transform
 	auto position = glm::vec3(mTransform[3].x, mTransform[3].y, mTransform[3].z);
 
-	inverse[3][2] = -glm::dot(forward, position);
-	inverse[3][0] = -glm::dot(right, position);
-	inverse[3][1] = -glm::dot(up, position);
+	inverse[2][3] = -glm::dot(forward, position);
+	inverse[0][3] = -glm::dot(right, position);
+	inverse[1][3] = -glm::dot(up, position);
 
-	return inverse;
+	return glm::transpose(inverse);
 }
 
 glm::vec3 Camera::position() const
@@ -141,14 +141,14 @@ Frustum Camera::frustum() const
 {
 	assert(mProjectionMode == ProjectionMode::Perspective);
 
-	auto viewAndPrj = projectionMatrix() * viewMatrix();
+	auto viewAndPrj = glm::transpose(projectionMatrix() * viewMatrix());
 
-	auto column0 = glm::vec3(viewAndPrj[0].x, viewAndPrj[1].x, viewAndPrj[2].x);
-	auto column1 = glm::vec3(viewAndPrj[0].y, viewAndPrj[1].y, viewAndPrj[2].y);
-	auto column2 = glm::vec3(viewAndPrj[0].z, viewAndPrj[1].z, viewAndPrj[2].z);
-	auto column3 = glm::vec3(viewAndPrj[0].w, viewAndPrj[1].w, viewAndPrj[2].w);
+	auto column0 = viewAndPrj[0];
+	auto column1 = viewAndPrj[1];
+	auto column2 = viewAndPrj[2];
+	auto column3 = viewAndPrj[3];
 	
-	auto distance = viewAndPrj[3];
+	auto distance = glm::vec4(viewAndPrj[0].w, viewAndPrj[1].w, viewAndPrj[2].w, viewAndPrj[3].w);
 
 	//left, top, right, bottom, near, far
 	std::vector<Plane> planes(6);
@@ -165,7 +165,7 @@ Frustum Camera::frustum() const
 	for (auto &plane : planes) {
 		auto length = 1.0f / glm::length(plane.normal());
 		auto normal = plane.normal() * length;
-		auto distance = plane.distance() * length;
+		auto distance = -plane.distance() * length;
 
 		plane = Plane(normal, distance);
 	}

@@ -46,6 +46,12 @@ public:
 		return value;
 	}
 
+	template<typename T>
+	static T sign(T value) {
+		if (value < 0) return 0;
+		return 1;
+	}
+
 	static auto computePixelFomratBytes(PixelFormat pixelFormat) -> int {
 		switch (pixelFormat)
 		{
