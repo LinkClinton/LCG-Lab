@@ -57,10 +57,32 @@ struct MatrixStructure {
 	glm::mat4 WorldTransform;
 	glm::mat4 CameraTransform;
 	glm::mat4 ProjectTransform;
-	glm::mat4 EyePosition;
+	glm::mat4 RenderConfig;
 
 	MatrixStructure() : WorldTransform(1),
-		CameraTransform(1), ProjectTransform(1), EyePosition(0) {}
+		CameraTransform(1), ProjectTransform(1), RenderConfig(0) {}
+};
+
+struct UInt4 {
+	unsigned int X, Y, Z, W;
+
+	UInt4(unsigned int x, unsigned int y, unsigned int z, unsigned int w) :
+		X(x), Y(y), Z(z), W(w) {}
+
+	UInt4(unsigned int value = 0) :
+		X(value), Y(value), Z(value), W(value) {}
+
+	UInt4(Vector3<int> value) :
+		X(value.X), Y(value.Y), Z(value.Z), W(0) {}
+
+	template<typename T>
+	static auto fromVector(const std::vector<T> value) -> std::vector<UInt4> {
+		std::vector<UInt4> result;
+
+		for (auto x : value) result.push_back(UInt4(x));
+
+		return result;
+	}
 };
 
 class Helper {

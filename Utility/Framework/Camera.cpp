@@ -165,7 +165,7 @@ Frustum Camera::frustum() const
 	for (auto &plane : planes) {
 		auto length = 1.0f / glm::length(plane.normal());
 		auto normal = plane.normal() * length;
-		auto distance = plane.distance() * length;
+		auto distance = -plane.distance() * length;
 
 		plane = Plane(normal, distance);
 	}

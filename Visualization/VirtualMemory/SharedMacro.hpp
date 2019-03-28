@@ -11,7 +11,7 @@
 //BLOCK_COUNT_XYZ :
 //the block count of x-axis, y-axis and z-axis
 //the texture size(xyz-axis) is euqal BLOCK_COUNT_XYZ * BLOCK_SIZE_XYZ
-#define BLOCK_COUNT_XYZ 8
+#define BLOCK_COUNT_XYZ 6
 //BLOCK_RAY_CACHE_MISS_MAX_PER_FRAME :
 //the max cache miss count of ray in per frame
 #define BLOCK_RAY_CACHE_MISS_MAX_PER_FRAME 4
@@ -26,15 +26,12 @@
 //PAGE_SIZE_XYZ :
 //the page block size of x-axis, y-axis and z-axis
 //the texture size is euqal PAGE_SIZE_XYZ * PAGE_SIZE_COUNT
-#define PAGE_SIZE_XYZ 4
+#define PAGE_SIZE_XYZ 2
 //PAGE_COUNT_XYZ :
 //the page block count of x-axis, y-axis and z-axis
 //the texture size is euqal PAGE_SIZE_XYZ * PAGE_SIZE_COUNT
 #define PAGE_COUNT_XYZ 4
 
-//MULTIRESOLUTION_COUNT :
-//the multi-resolution count(in other words, the directory count)
-#define MULTIRESOLUTION_COUNT 1
 //MAX_MULTIRESOLUTION_COUNT
 //the max multi-resolution count(in other words, the directory count)
 #define MAX_MULTIRESOLUTION_COUNT 8

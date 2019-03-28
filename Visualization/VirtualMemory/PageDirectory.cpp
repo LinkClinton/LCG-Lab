@@ -114,7 +114,7 @@ auto PageDirectory::queryAddress(int resolution, const glm::vec3 & position) -> 
 	if (nextAddress->State != PageState::Mapped) return nullptr;
 
 	//go to next layer and query address
-	return mNext->queryAddress(position, mSize, nextAddress);
+	return mNext->queryAddress(position, resolutionSize, nextAddress);
 }
 
 auto PageDirectory::getResolutionSize(int resolution) -> Size

@@ -36,6 +36,7 @@ public:
 		std::vector<Size> resolutionSize;
 
 		resolutionSize.push_back(10);
+		resolutionSize.push_back(5);
 
 		mBlockTable = new BlockTable(5);
 		mPageTable = new PageTable(5, mBlockTable);
@@ -59,7 +60,7 @@ public:
 		int rightCase = 0;
 
 		//random engine
-		std::default_random_engine random((unsigned int)time(0));
+		std::default_random_engine random(0); //(unsigned int)time(0));
 		
 		std::uniform_real_distribution<double> randomRange(0, 1);
 

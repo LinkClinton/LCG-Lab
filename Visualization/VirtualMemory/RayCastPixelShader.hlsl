@@ -1,6 +1,6 @@
 #include "ShaderInclude.hlsl"
 
-#define eps 0.0001f
+#define eps 0.001f
 
 bool outLimit(float3 texCoord)
 {
@@ -21,6 +21,15 @@ float limitFloat(float value, float maxLimit)
     return value;
 }
 
+uint3 limitUint3(uint3 value, uint3 maxLimit)
+{
+    if (value.x >= maxLimit.x) value.x = maxLimit.x - 1;
+    if (value.y >= maxLimit.y) value.y = maxLimit.y - 1;
+    if (value.z >= maxLimit.z) value.z = maxLimit.z - 1;
+
+    return value;
+}
+
 void reportCacheMiss(float3 position, int level, int reportCount,
     int3 hashTableIndex)
 {
@@ -37,7 +46,7 @@ void reportCacheMiss(float3 position, int level, int reportCount,
         return;
     }
 
-    int3 blockCount = PAGE_SIZE_XYZ * MultiResolutionSize[level];
+    int3 blockCount = PAGE_SIZE_XYZ * MultiResolutionSize[level].xyz;
     int3 blockAddress = blockCount * position;
 
     if (blockAddress.x == blockCount.x) blockAddress.x = blockAddress.x - 1;
@@ -48,7 +57,7 @@ void reportCacheMiss(float3 position, int level, int reportCount,
     //MultiResolutionBlockBase means the block count sum of 0 -> level - 1
     int rowPitch = blockCount.x;
     int depthPitch = rowPitch * blockCount.y;
-    int blockID = MultiResolutionBlockBase[level] + blockAddress.x + blockAddress.y * rowPitch + blockAddress.z * depthPitch;
+    int blockID = MultiResolutionBlockBase[level].x + blockAddress.x + blockAddress.y * rowPitch + blockAddress.z * depthPitch;
 
     //set data
     BlockCacheMissArrayRWTexture[int3(hashTableIndex.xy, count)] = blockID;
@@ -59,17 +68,13 @@ float sampleVolume(float3 position, int level, int reportCount,
 {
     float sample = 0.0f;
 
-    uint3 resolutionSize = MultiResolutionSize[level];
-
-    //avoid x or y or z is equal the 1.0f
-    position.x = limitFloat(position.x, 1.0f);
-    position.y = limitFloat(position.y, 1.0f);
-    position.z = limitFloat(position.z, 1.0f);
+    uint3 resolutionSize = MultiResolutionSize[level].xyz;
 
     //compute the address of position in the directory texture
     //and get the next virtual address
-    uint3 directoryAddress = MultiResolutionBase[level] + position * resolutionSize;
+    uint3 directoryAddress = MultiResolutionBase[level].xyz + limitUint3(position * resolutionSize, resolutionSize);
     uint4 directoryEntry = DirectoryCacheTexture.Load(int4(directoryAddress, 0));
+  
 
     //mapped, we continue
     if (directoryEntry.w == MAPPED)
@@ -77,7 +82,7 @@ float sampleVolume(float3 position, int level, int reportCount,
         //get the block count of level
         //so the address of current position is entry + (position * block count) % PAGE_SIZE_XYZ
         uint3 blockCount = PAGE_SIZE_XYZ * resolutionSize;
-        uint3 pageTableAddress = directoryEntry.xyz * PAGE_SIZE_XYZ + (position * blockCount) % PAGE_SIZE_XYZ;
+        uint3 pageTableAddress = directoryEntry.xyz * PAGE_SIZE_XYZ + limitUint3(position * blockCount, blockCount) % PAGE_SIZE_XYZ;
 
         uint4 pageTableEntry = PageCacheTexture.Load(int4(pageTableAddress, 0));
         
@@ -87,7 +92,7 @@ float sampleVolume(float3 position, int level, int reportCount,
             //get the voxel count of level
             //so the address of current position is entry + (position * voxel count) % BLOCK_SIZE_XYZ
             uint3 voxelCount = BLOCK_SIZE_XYZ * blockCount;
-            uint3 blockTableAddress = pageTableEntry.xyz * BLOCK_SIZE_XYZ + (position * voxelCount) % BLOCK_SIZE_XYZ;
+            uint3 blockTableAddress = pageTableEntry.xyz * BLOCK_SIZE_XYZ + limitUint3(position * voxelCount, voxelCount) % BLOCK_SIZE_XYZ;
 
             //record the block we access, for LRU system
             BlockCacheUsageStateRWTexture[pageTableEntry.xyz] = 1;
@@ -111,7 +116,9 @@ float4 main(InputPixel input) : SV_Target
     input.mSVPosition.x / BLOCK_HASH_TABLE_PIXEL_TILE_SIZE_XY, 
     input.mSVPosition.y / BLOCK_HASH_TABLE_PIXEL_TILE_SIZE_XY, 0);
 
-    float3 dir = normalize(input.mPosition - EyePosition[0].xyz);
+    int resolutionLevel = (int) RenderConfig[1].x;
+
+    float3 dir = normalize(input.mPosition - RenderConfig[0].xyz);
     
     float4 color = float4(0, 0, 0, 0);
     float3 position = input.mTexcoord;
@@ -121,7 +128,7 @@ float4 main(InputPixel input) : SV_Target
     {
         if (outLimit(position) == true || color.a >= 1.0f) break;
 
-        float4 sample = sampleVolume(position, 0, reportCount, hashTableIndex) * STEP_SIZE * LIGHT;
+        float4 sample = sampleVolume(position, resolutionLevel, reportCount, hashTableIndex) * STEP_SIZE * LIGHT;
 
         color = (1 - sample) * color + sample;
 

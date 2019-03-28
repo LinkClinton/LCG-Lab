@@ -23,7 +23,7 @@ void VirtualMemoryManager::mapAddressToGPU(int resolution, const glm::vec3 & pos
 #ifdef _DEBUG
 	static int count = 0;
 
-	printf("Mapped Times from Cpu to Gpu: %d\n", ++count);
+	printf("Mapped Times from Cpu to Gpu: %d with resolution : %d\n", ++count, resolution);
 #endif // _DEBUG
 
 }
@@ -47,14 +47,9 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 	mBlockCacheTable = new BlockTable(BLOCK_COUNT_XYZ + expand);
 	mPageCacheTable = new PageTable(PAGE_COUNT_XYZ + expand, mBlockCacheTable);
 	
-	assert(resolution.size() == ((size_t)MULTIRESOLUTION_COUNT));
-
 	//initialize resolution 0 directory
 	//page size means the size of one page cache can store
 	int pageSize = PAGE_SIZE_XYZ * BLOCK_SIZE_XYZ;
-
-	//the count of block for multi-resolution
-	std::vector<int> multiResolutionBlock;
 
 	//for all resolution, we compute the real size
 	//then we compute the directory size we need
@@ -70,7 +65,7 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 		auto blockCount = Helper::multiple(directorySize, Size(PAGE_SIZE_XYZ));
 
 		mMultiResolutionSize.push_back(directorySize);
-		multiResolutionBlock.push_back(blockCount.X * blockCount.Y * blockCount.Z);
+		mMultiResolutionBlockCount.push_back(blockCount.X * blockCount.Y * blockCount.Z);
 	}
 
 	mMultiResolutionBase.push_back(0);
@@ -78,7 +73,7 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 
 	for (size_t i = 1; i < resolution.size(); i++) {
 		auto base = VirtualAddress(mMultiResolutionBase[i - 1].X + mMultiResolutionSize[i - 1].X, 0, 0);
-		auto blockBase = mMultiResolutionBlockBase[i - 1] + multiResolutionBlock[i - 1];
+		auto blockBase = mMultiResolutionBlockBase[i - 1] + mMultiResolutionBlockCount[i - 1];
 
 		mMultiResolutionBase.push_back(base);
 		mMultiResolutionBlockBase.push_back(blockBase);
@@ -88,7 +83,7 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 	//compute the end of block count for multi-resolution
 	mMultiResolutionBlockEnd.push_back(
 		mMultiResolutionBlockBase[mMultiResolutionBlockBase.size() - 1] +
-		multiResolutionBlock[multiResolutionBlock.size() - 1] - 1);
+		mMultiResolutionBlockCount[mMultiResolutionBlockCount.size() - 1] - 1);
 
 	//init page directory cache with multi-resolution
 	mDirectoryCache = new PageDirectory(mMultiResolutionSize, mPageCacheTable);
@@ -110,12 +105,12 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 	}
 
 	//create buffer for resolution
-	mMultiResolutionSizeBuffer = mFactory->createConstantBuffer(sizeof(Size) * MAX_MULTIRESOLUTION_COUNT, ResourceInfo::ConstantBuffer());
-	mMultiResolutionBaseBuffer = mFactory->createConstantBuffer(sizeof(VirtualAddress) * MAX_MULTIRESOLUTION_COUNT, ResourceInfo::ConstantBuffer());
-	mMultiResolutionBlockBaseBuffer = mFactory->createConstantBuffer(sizeof(int) * MAX_MULTIRESOLUTION_COUNT, ResourceInfo::ConstantBuffer());
-	mMultiResolutionSizeBuffer->update(&mMultiResolutionSize[0]);
-	mMultiResolutionBaseBuffer->update(&mMultiResolutionBase[0]);
-	mMultiResolutionBlockBaseBuffer->update(&mMultiResolutionBlockBase[0]);
+	mMultiResolutionSizeBuffer = mFactory->createConstantBuffer(sizeof(UInt4) * MAX_MULTIRESOLUTION_COUNT, ResourceInfo::ConstantBuffer());
+	mMultiResolutionBaseBuffer = mFactory->createConstantBuffer(sizeof(UInt4) * MAX_MULTIRESOLUTION_COUNT, ResourceInfo::ConstantBuffer());
+	mMultiResolutionBlockBaseBuffer = mFactory->createConstantBuffer(sizeof(UInt4) * MAX_MULTIRESOLUTION_COUNT, ResourceInfo::ConstantBuffer());
+	mMultiResolutionSizeBuffer->update(UInt4::fromVector(mMultiResolutionSize).data());
+	mMultiResolutionBaseBuffer->update(UInt4::fromVector(mMultiResolutionBase).data());
+	mMultiResolutionBlockBaseBuffer->update(UInt4::fromVector(mMultiResolutionBlockBase).data());
 
 	//init the GPU resource(Texture3D and ResourceUsage)
 	mGPUBlockCacheTable = new GPUBlockTable(mFactory, mGraphics, BLOCK_COUNT_XYZ);
@@ -216,8 +211,7 @@ void VirtualMemoryManager::solveCacheMiss()
 
 				//get resolution 
 				auto resolution = unsigned int(
-					std::lower_bound(mMultiResolutionBlockEnd.begin(), mMultiResolutionBlockEnd.end(), id) - mMultiResolutionBlockEnd.begin()) 
-					/ (unsigned int)sizeof(unsigned int);
+					std::lower_bound(mMultiResolutionBlockEnd.begin(), mMultiResolutionBlockEnd.end(), id) - mMultiResolutionBlockEnd.begin());
 	
 				id = id - mMultiResolutionBlockBase[resolution];
 
@@ -257,7 +251,7 @@ void VirtualMemoryManager::mapAddress(int resolution, int blockID)
 	//if it is not in the memory, we will load it from disk
 	//if it is in the memory, we will upload it to GPU virtual memory
 
-	assert(resolution < MULTIRESOLUTION_COUNT);
+	assert(resolution < MAX_MULTIRESOLUTION_COUNT && (size_t)resolution < mResolution.size());
 
 	//get the directory cache size of current resolution
 	auto directoryCacheSize = mDirectoryCache->getResolutionSize(resolution);
@@ -288,7 +282,7 @@ void VirtualMemoryManager::mapAddress(int resolution, int blockID)
 	);
 
 	if (mGPUDirectoryCache->queryAddress(resolution, blockCenterPosition) != nullptr) return;
-
+	
 	//query the block if in the CPU virtual memory
 	BlockCache* blockCache = mDirectoryCache->queryAddress(resolution, blockCenterPosition);
 
@@ -364,6 +358,20 @@ void VirtualMemoryManager::loadBlock(int resolution, const VirtualAddress & bloc
 				address[xCount] = buffer[(int)std::round(xPosition)];
 		}
 	}
+}
+
+auto VirtualMemoryManager::detectResolutionLevel(float ratio) -> int
+{
+	static auto gpuBlockCount = (unsigned int)(BLOCK_COUNT_XYZ * BLOCK_COUNT_XYZ * BLOCK_COUNT_XYZ);
+
+	for (size_t i = 0; i < mMultiResolutionBlockCount.size(); i++) {
+		unsigned int blockCount = mMultiResolutionBlockCount[i];
+		unsigned int requirement = (unsigned int)ceil(blockCount * ratio);
+
+		if (gpuBlockCount >= requirement) return (int)i;
+	}
+
+	return (int)(mMultiResolutionBlockCount.size() - 1);
 }
 
 auto VirtualMemoryManager::getPageDirectory() -> GPUPageDirectory *

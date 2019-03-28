@@ -61,11 +61,22 @@ void VMRenderFramework::update(void * sender, float mDeltaTime)
 
 	mCamera.update(mDeltaTime);
 
+	static auto cubeMeshTriangles = mCubeMesh.triangles();
+	static auto cubeMeshVolume = mCubeMesh.volume();
+
+	auto ratio = Mesh(mCamera.frustum().clip(cubeMeshTriangles)).volume() / cubeMeshVolume;
+	auto resolutionLevel = mVirtualMemoryManager->detectResolutionLevel(ratio);
+
+#ifdef _DEBUG
+	printf("Current Resolution Level : %d\n", resolutionLevel);
+#endif // _DEBUG
+
 	//update matrix
 	mMatrixStructure.WorldTransform = glm::mat4(1);
 	mMatrixStructure.CameraTransform = mCamera.viewMatrix();
 	mMatrixStructure.ProjectTransform = mCamera.projectionMatrix();
-	mMatrixStructure.EyePosition[0] = glm::vec4(mCamera.position(), 0.0f);
+	mMatrixStructure.RenderConfig[0] = glm::vec4(mCamera.position(), 0.0f);
+	mMatrixStructure.RenderConfig[1] = glm::vec4((float)resolutionLevel);
 
 	mMatrixBuffer->update(&mMatrixStructure);
 }
@@ -207,6 +218,7 @@ void VMRenderFramework::initialize()
 	//set multi-resolution
 	std::vector<glm::vec3> multiResolution;
 	multiResolution.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
+	multiResolution.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
 
 	mVirtualMemoryManager->initialize("Teddybear.raw", multiResolution);
 }

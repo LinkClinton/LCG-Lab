@@ -22,22 +22,22 @@ cbuffer MatrixBuffer : register(b0)
     matrix WorldTranform;
     matrix CameraTransform;
     matrix ProjectTransform;
-    matrix EyePosition;
+    matrix RenderConfig;
 }
 
 cbuffer MultiResolutionSizeBuffer : register(b1)
 {
-    int3 MultiResolutionSize[MAX_MULTIRESOLUTION_COUNT];
+    uint4 MultiResolutionSize[MAX_MULTIRESOLUTION_COUNT];
 }
 
 cbuffer MultiResolutionBaseBuffer : register(b2)
 {
-    int3 MultiResolutionBase[MAX_MULTIRESOLUTION_COUNT];
+    uint4 MultiResolutionBase[MAX_MULTIRESOLUTION_COUNT];
 }
 
 cbuffer MultiResolutionBlockBaseBuffer : register(b3)
 {
-    int MultiResolutionBlockBase[MAX_MULTIRESOLUTION_COUNT];
+    uint4 MultiResolutionBlockBase[MAX_MULTIRESOLUTION_COUNT];
 }
 
 Texture3D<uint4> DirectoryCacheTexture : register(t0);

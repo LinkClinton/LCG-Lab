@@ -32,6 +32,7 @@ private:
 	std::vector<VirtualAddress> mMultiResolutionBase;
 	std::vector<unsigned int> mMultiResolutionBlockEnd;
 	std::vector<unsigned int> mMultiResolutionBlockBase;
+	std::vector<unsigned int> mMultiResolutionBlockCount;
 
 	//CPU resource
 	PageDirectory* mDirectoryCache;
@@ -70,6 +71,8 @@ public:
 	void mapAddress(int resolution, int blockID);
 
 	void loadBlock(int resolution, const VirtualAddress &blockAddress, BlockCache & output);
+
+	auto detectResolutionLevel(float ratio) -> int;
 
 	auto getPageDirectory() -> GPUPageDirectory*;
 
