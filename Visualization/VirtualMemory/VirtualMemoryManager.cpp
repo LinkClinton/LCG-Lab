@@ -167,6 +167,8 @@ void VirtualMemoryManager::solveCacheMiss()
 	//get data pointer
 	byte* usageStateData = (byte*)usageState.Data;
 	
+	int blockCacheCount = 0;
+
 	for (int x = 0; x < mBlockCacheUsageStateTexture->getWidth(); x++) {
 		for (int y = 0; y < mBlockCacheUsageStateTexture->getHeight(); y++) {
 			for (int z = 0; z < mBlockCacheUsageStateTexture->getDepth(); z++) {
@@ -177,12 +179,18 @@ void VirtualMemoryManager::solveCacheMiss()
 				//query the page table and block table them contain this block
 				//trigger the LRU system
 				mGPUBlockCacheTable->invertQuery(VirtualAddress(x, y, z));
+
+				blockCacheCount++;
 			}
 		}
 	}
 
 	//unmap
 	mBlockCacheUsageStateTexture->unmapCpuTexture();
+
+	//if "blockCacheCount" is equal the block texture size, we do not solve the cache miss
+	//because it is meanless
+	if (blockCacheCount == BLOCK_COUNT_XYZ * BLOCK_COUNT_XYZ * BLOCK_COUNT_XYZ) return;
 
 	//solve the cache miss
 	//map the texture to memory
