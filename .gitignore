@@ -270,3 +270,4 @@ ThirdParty/
 /Visualization/VolumeRendering/volume
 /Visualization/VolumeRendering/data_gen
 /Visualization/VolumeRendering/data_gen.cpp
+/Visualization/3DVectorField/volume
