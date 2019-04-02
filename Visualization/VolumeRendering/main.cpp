@@ -1,5 +1,5 @@
 #include <WindowsFramework.hpp>
-#include <Cube.hpp>
+#include <Mesh.hpp>
 
 #include "FileManager.hpp"
 
@@ -30,11 +30,11 @@ private:
 	glm::vec3 mCameraPosition;
 protected:
 	
-	virtual void update(void* sender)override {
+	virtual void update(void* sender, float deltaTime)override {
 		//mCameraTranslation = glm::rotate(glm::mat4(1), 0.5f, glm::vec3(0, 0, -1));// *mCameraTranslation;
 		mCameraTranslation = glm::rotate(glm::mat4(1), glm::pi<float>() * 0.5f * 0.01f, glm::vec3(0, 0, -1)) * mCameraTranslation;
 
-		mCameraPosition = mCameraTranslation * glm::vec4(0, -5, 0, 1);
+		mCameraPosition = mCameraTranslation * glm::vec4(0, -2, 0, 1);
 
 		mMatrix[1] = glm::lookAt(mCameraPosition, glm::vec3(0, 0, 0), glm::vec3(0, 0, -1));
 		mMatrix[3][0] = glm::vec4(mCameraPosition, 0.0f);
@@ -42,7 +42,7 @@ protected:
 		mConstantBuffer->update(&mMatrix[0]);
 	}
 
-	virtual void render(void* sender)override {
+	virtual void render(void* sender, float deltaTime)override {
 		float rgba[4] = { 0.f, 0.f, 0.f, 1.0f };
 		
 		mRasterizerState->setCullMode(CullMode::Back);
@@ -74,7 +74,7 @@ protected:
 		mGraphics->setPrimitiveType(PrimitiveType::TriangleList);
 		mGraphics->drawIndexed(36, 0, 0);
 
-		mSwapChain->present(false);
+		mSwapChain->present(true);
 	}
 public:
 	MyRenderFramework(const std::string &name, int width, int height) :
@@ -89,9 +89,9 @@ public:
 	}
 
 	void buildBuffer() {
-		mVertexBuffer = mFactory->createVertexBuffer(8 * sizeof(CubeVertex), sizeof(CubeVertex));
-		mIndexBuffer = mFactory->createIndexBuffer(36 * sizeof(unsigned int));
-		mConstantBuffer = mFactory->createConstantBuffer(sizeof(mMatrix));
+		mVertexBuffer = mFactory->createVertexBuffer(8 * sizeof(Mesh::Vertex), sizeof(Mesh::Vertex), ResourceInfo::VertexBuffer());
+		mIndexBuffer = mFactory->createIndexBuffer(36 * sizeof(unsigned int), ResourceInfo::IndexBuffer());
+		mConstantBuffer = mFactory->createConstantBuffer(sizeof(mMatrix), ResourceInfo::ConstantBuffer());
 
 		mCameraPosition = glm::vec3(0, -5, 0);
 		mCameraTranslation = glm::translate(glm::mat4(1), glm::vec3(0, -5, 0));
@@ -101,8 +101,8 @@ public:
 		mMatrix[2] = glm::perspectiveFov(glm::pi<float>() * 0.55f, (float)mWidth, (float)mHeight, 1.0f, 100.0f);
 		mMatrix[3][0] = glm::vec4(mCameraPosition, 0.0f);
 
-		mVertexBuffer->update(&Cube::GetVertics(3.0f, 3.0f, 3.0f)[0]);
-		mIndexBuffer->update(&Cube::GetIndices()[0]);
+		mVertexBuffer->update(Mesh::Cube(glm::vec3(3.0f)).vertices().data());
+		mIndexBuffer->update(Mesh::Cube(glm::vec3(3.0f)).indices().data());
 		mConstantBuffer->update(&mMatrix[0]);
 	}
 
@@ -134,7 +134,7 @@ public:
 	}
 
 	void buildVolumeData() {
-		std::ifstream file("Teddybear.raw", std::ios::ate);
+		std::ifstream file("volume", std::ios::ate | std::ios::binary);
 
 		size_t fileSize = (size_t)file.tellg();
 
@@ -144,8 +144,8 @@ public:
 		file.read((char*)&mVolumeData[0], fileSize);
 		file.close();
 
-		mVolumeTexture = mFactory->createTexture3D(128, 128, 62, PixelFormat::R8Unknown);
-		mVolumeTexture->update(&mVolumeData[0]);
+		mVolumeTexture = mFactory->createTexture3D(64, 64, 64, PixelFormat::R8Unknown, ResourceInfo::ShaderResource());
+		mVolumeTexture->update(&mVolumeData[0], 0, 0, 0, mVolumeTexture->getWidth(), mVolumeTexture->getHeight(), mVolumeTexture->getDepth());
 
 		mVolumeUsage = mFactory->createResourceUsage(mVolumeTexture, PixelFormat::R8Unknown);
 	}

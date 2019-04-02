@@ -106,7 +106,7 @@ float sampleVolume(float3 position, int level, int reportCount,
 
 #define STEP_SIZE 0.003
 #define MAX_LOOP 1000
-#define LIGHT 5
+#define LIGHT 3
 
 float4 main(InputPixel input) : SV_Target
 {
@@ -120,7 +120,7 @@ float4 main(InputPixel input) : SV_Target
 
     float3 dir = normalize(input.mPosition - RenderConfig[0].xyz);
     
-    float4 color = float4(0, 0, 0, 0);
+    float4 color = float4(1, 1, 1, 0);
     float3 position = input.mTexcoord;
 
     [loop]
@@ -130,10 +130,10 @@ float4 main(InputPixel input) : SV_Target
 
         float4 sample = sampleVolume(position, resolutionLevel, reportCount, hashTableIndex) * STEP_SIZE * LIGHT;
 
-        color = (1 - sample) * color + sample;
-
+        color.w = color.w + sample.w;
+        
         position = position + dir * STEP_SIZE;
     }
 
-    return color;
+    return color * color.w;
 }

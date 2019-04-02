@@ -265,3 +265,8 @@ __pycache__/
 ThirdParty/
 *.raw
 /Visualization/VirtualMemory/volume
+/Visualization/VirtualMemory/data_gen.cpp
+/Visualization/VirtualMemory/data_gen
+/Visualization/VolumeRendering/volume
+/Visualization/VolumeRendering/data_gen
+/Visualization/VolumeRendering/data_gen.cpp
