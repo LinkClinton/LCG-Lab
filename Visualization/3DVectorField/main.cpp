@@ -11,10 +11,10 @@ void gen_tornado_with_glm(std::vector<glm::vec3> &vectorField, size_t x, size_t 
 	gen_tornado((int)x, (int)y, (int)z, time, tempField);
 
 	for (size_t i = 0; i < vectorField.size(); i++) {
-		vectorField[i] = glm::normalize(glm::vec3(
+		vectorField[i] = glm::vec3(
 			tempField[i * 3 + 0],
 			tempField[i * 3 + 1],
-			tempField[i * 3 + 2]));
+			tempField[i * 3 + 2]);
 	}
 
 	delete[] tempField;
@@ -32,7 +32,7 @@ void step(const std::vector<glm::vec3> &vectorField, std::vector<float> &renderT
 		size_t y = (i % depthPitch) / rowPitch;
 		size_t z = (i / depthPitch);
 
-		glm::vec3 target = glm::round(glm::vec3(x, y, z) + vectorField[i] * length);
+		glm::vec3 target = glm::round(glm::vec3(x, y, z) + glm::normalize(vectorField[i]) * length);
 
 		target = glm::clamp(target, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(sizeX - 1, sizeY - 1, sizeZ - 1));
 
@@ -45,25 +45,27 @@ void step(const std::vector<glm::vec3> &vectorField, std::vector<float> &renderT
 int main() {
 	std::string volumeName = "volume";
 	
-	size_t volumeX = 100;
-	size_t volumeY = 100;
-	size_t volumeZ = 100;
+	size_t volumeX = 800;
+	size_t volumeY = 800;
+	size_t volumeZ = 800;
 	size_t times = 5;
 	float length = 1.5f;
 	float heavy = 0.04f;
 
 	std::vector<glm::vec3> vectorField(volumeX * volumeY * volumeZ);
-	std::vector<float> renderTexture(volumeX * volumeY * volumeZ);
+	std::vector<unsigned char> renderTexture(volumeX * volumeY * volumeZ);
 
 	gen_tornado_with_glm(vectorField, volumeX, volumeY, volumeZ, 0);
 	
-	for (size_t i = 0; i < times; i++) step(vectorField, renderTexture, volumeX, volumeY, volumeZ, length * (i + 1), heavy);
+	for (size_t i = 0; i < vectorField.size(); i++) renderTexture[i] = (unsigned char)(glm::length(vectorField[i]) * 255);
+
+	//for (size_t i = 0; i < times; i++) step(vectorField, renderTexture, volumeX, volumeY, volumeZ, length * (i + 1), heavy);
 
 	std::ofstream file;
 
 	file.open(volumeName, std::ios::binary);
 
-	file.write((char*)renderTexture.data(), renderTexture.size() * sizeof(float));
+	file.write((char*)renderTexture.data(), renderTexture.size() * sizeof(unsigned char));
 
 	file.close();
 }

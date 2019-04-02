@@ -25,7 +25,10 @@ private:
 
 	Mesh mCubeMesh;
 
-	OrbitCamera mCamera;
+	Camera* mCamera;
+
+	Camera mFixCamera[3];
+	OrbitCamera mViewCamera;
 	MatrixStructure mMatrixStructure;
 
 	VirtualMemoryManager* mVirtualMemoryManager;

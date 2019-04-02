@@ -32,5 +32,7 @@ public:
 	void pan(const glm::vec2 &deltaPan, float deltaTime);
 	void zoom(float deltaZoom, float deltaTime);
 
+	float zoomDistance() const;
+
 	void update(float deltaTime);
 };

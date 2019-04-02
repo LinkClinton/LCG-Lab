@@ -3,8 +3,6 @@
 
 VMRenderFramework renderFramework = VMRenderFramework("VirtualMemory", 1920, 1080);
 
-CPUMemoryTestUnit unit("volume", Size(128, 128, 62));
-
 int main() {
 	renderFramework.initialize();
 	renderFramework.showWindow();

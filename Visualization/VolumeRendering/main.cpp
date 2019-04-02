@@ -144,10 +144,10 @@ public:
 		file.read((char*)&mVolumeData[0], fileSize);
 		file.close();
 
-		mVolumeTexture = mFactory->createTexture3D(100, 100, 100, PixelFormat::R32Float, ResourceInfo::ShaderResource());
+		mVolumeTexture = mFactory->createTexture3D(100, 100, 100, PixelFormat::R8Unknown, ResourceInfo::ShaderResource());
 		mVolumeTexture->update(&mVolumeData[0], 0, 0, 0, mVolumeTexture->getWidth(), mVolumeTexture->getHeight(), mVolumeTexture->getDepth());
 
-		mVolumeUsage = mFactory->createResourceUsage(mVolumeTexture, PixelFormat::R32Float);
+		mVolumeUsage = mFactory->createResourceUsage(mVolumeTexture, PixelFormat::R8Unknown);
 	}
 
 	~MyRenderFramework() {

@@ -77,6 +77,11 @@ void OrbitCamera::zoom(float deltaZoom, float deltaTime)
 	mZoomDistance = Utility::clamp(mZoomDistance, mZoomDistanceMinLimit, mZoomDistanceMaxLimit);
 }
 
+float OrbitCamera::zoomDistance() const
+{
+	return mZoomDistance;
+}
+
 void OrbitCamera::update(float deltaTime)
 {
 	auto rotationMatrix = glm::mat4(1);

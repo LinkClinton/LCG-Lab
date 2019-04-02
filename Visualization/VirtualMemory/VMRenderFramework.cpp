@@ -49,33 +49,33 @@ void VMRenderFramework::update(void * sender, float mDeltaTime)
 {
 	glm::vec2 offset = glm::vec2(0, 0);
 
-	if (mInput->isKeyDown(KeyCode::Space) == true) mCamera.zoom(-1.0f, mDeltaTime);
-	if (mInput->isKeyDown(KeyCode::F) == true) mCamera.zoom(1.0f, mDeltaTime);
+	if (mInput->isKeyDown(KeyCode::Space) == true) mViewCamera.zoom(-1.0f, mDeltaTime);
+	if (mInput->isKeyDown(KeyCode::F) == true) mViewCamera.zoom(1.0f, mDeltaTime);
 
 	if (mInput->isKeyDown(KeyCode::W) == true) offset += glm::vec2(0, 1);
 	if (mInput->isKeyDown(KeyCode::S) == true) offset += glm::vec2(0, -1);
 	if (mInput->isKeyDown(KeyCode::A) == true) offset += glm::vec2(1, 0);
 	if (mInput->isKeyDown(KeyCode::D) == true) offset += glm::vec2(-1, 0);
+	
+	if (glm::length(offset) != 0) mViewCamera.pan(glm::normalize(offset), getDeltaTime());
 
-	if (glm::length(offset) != 0) mCamera.pan(glm::normalize(offset), getDeltaTime());
-
-	mCamera.update(mDeltaTime);
-
+	mViewCamera.update(mDeltaTime);
+	
 	static auto cubeMeshTriangles = mCubeMesh.triangles();
 	static auto cubeMeshVolume = mCubeMesh.volume();
 
-	auto ratio = Mesh(mCamera.frustum().clip(cubeMeshTriangles)).volume() / cubeMeshVolume;
+	auto ratio = Mesh(mCamera->frustum().clip(cubeMeshTriangles)).volume() / cubeMeshVolume;
 	auto resolutionLevel = mVirtualMemoryManager->detectResolutionLevel(ratio);
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	printf("Current Resolution Level : %d\n", resolutionLevel);
-#endif // _DEBUG
+//#endif // _DEBUG
 
 	//update matrix
 	mMatrixStructure.WorldTransform = glm::mat4(1);
-	mMatrixStructure.CameraTransform = mCamera.viewMatrix();
-	mMatrixStructure.ProjectTransform = mCamera.projectionMatrix();
-	mMatrixStructure.RenderConfig[0] = glm::vec4(mCamera.position(), 0.0f);
+	mMatrixStructure.CameraTransform = mCamera->viewMatrix();
+	mMatrixStructure.ProjectTransform = mCamera->projectionMatrix();
+	mMatrixStructure.RenderConfig[0] = glm::vec4(mCamera->position(), 0.0f);
 	mMatrixStructure.RenderConfig[1] = glm::vec4((float)resolutionLevel);
 
 	mMatrixBuffer->update(&mMatrixStructure);
@@ -90,7 +90,7 @@ void VMRenderFramework::mouseMove(void * sender, MouseMoveEvent * eventArg)
 	auto centerPosition = glm::vec2(mWidth * 0.5f, mHeight * 0.5f);
 	auto offset = eventArg->getPosition() - centerPosition;
 
-	if (offset.length() != 0) mCamera.rotate(glm::vec2(offset.x, -offset.y), getDeltaTime());
+	if (offset.length() != 0) mViewCamera.rotate(glm::vec2(offset.x, -offset.y), getDeltaTime());
 
 	mInput->setCursorPosition(centerPosition);
 }
@@ -128,24 +128,28 @@ void VMRenderFramework::initializeInputStage()
 	mMatrixBuffer = mFactory->createConstantBuffer(sizeof(MatrixStructure), ResourceInfo::ConstantBuffer());
 
 	//init cube's data
-	mCubeMesh = Mesh::Cube(glm::vec3(10));
+	mCubeMesh = Mesh::Cube(glm::vec3(100));
 
 	//update cube's data
 	mIndexBuffer->update(mCubeMesh.indices().data());
 	mVertexBuffer->update(mCubeMesh.vertices().data());
 
 	//set camera
-	mCamera = OrbitCamera(glm::vec3(0, 0, 0), 20.0f);
-	mCamera.perspective(glm::pi<float>() * 0.3f, (float)mWidth / mHeight);
-	mCamera.resize(mWidth, mHeight);
+	mViewCamera = OrbitCamera(glm::vec3(0, 0, 0), 200.0f);
+	mViewCamera.perspective(glm::pi<float>() * 0.3f, (float)mWidth / mHeight);
+	mViewCamera.resize(mWidth, mHeight);
 
-	mCamera.setZoomSpeed(20.0f);
-	mCamera.setRotateSpeed(glm::vec2(glm::pi<float>() * 0.01f));
-	mCamera.setZoomLimit(5.10f, 100.0f);
+	mViewCamera.setPanSpeed(glm::vec2(100.0f));
+	mViewCamera.setZoomSpeed(20.0f);
+	mViewCamera.setRotateSpeed(glm::vec2(glm::pi<float>() * 0.01f));
+	mViewCamera.setZoomLimit(100, 200.0f);
+	mViewCamera.rotate(glm::vec2(glm::pi<float>(), glm::pi<float>()), 1.0f);
+
+	mCamera = &mViewCamera;
 
 	mMatrixStructure.WorldTransform = glm::mat4(1);
-	mMatrixStructure.CameraTransform = mCamera.viewMatrix();
-	mMatrixStructure.ProjectTransform = mCamera.projectionMatrix();
+	mMatrixStructure.CameraTransform = mCamera->viewMatrix();
+	mMatrixStructure.ProjectTransform = mCamera->projectionMatrix();
 
 	//update matrix's data
 	mMatrixBuffer->update(&mMatrixStructure);
@@ -218,8 +222,9 @@ void VMRenderFramework::initialize()
 	//set multi-resolution
 	std::vector<glm::vec3> multiResolution;
 	multiResolution.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
-	multiResolution.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
+	multiResolution.push_back(glm::vec3(0.4f, 0.3f, 0.3f));
+	multiResolution.push_back(glm::vec3(0.1f, 0.1f, 0.1f));
 
-	mVirtualMemoryManager->initialize("Teddybear.raw", multiResolution);
+	mVirtualMemoryManager->initialize("volume", multiResolution);
 }
 
