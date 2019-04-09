@@ -290,7 +290,12 @@ void VirtualMemoryManager::mapAddress(int resolution, int blockID)
 	);
 
 	if (mGPUDirectoryCache->queryAddress(resolution, blockCenterPosition) != nullptr) return;
-	
+
+#ifdef _SPARSE_LEAP
+	auto type = mSparseLeapManager->tree()->queryNodeType((blockCenterPosition - glm::vec3(0.5f))* mSparseLeapManager->getCube());
+#endif // _SPARSE_LEAP
+
+
 	//query the block if in the CPU virtual memory
 	BlockCache* blockCache = mDirectoryCache->queryAddress(resolution, blockCenterPosition);
 
@@ -299,8 +304,16 @@ void VirtualMemoryManager::mapAddress(int resolution, int blockID)
 		//load block data from disk and do some special process
 		static BlockCache output(BLOCK_SIZE_XYZ);
 
-		loadBlock(resolution, blockAddress, output);
+		bool empty = loadBlock(resolution, blockAddress, output);
 		
+#ifdef _SPARSE_LEAP
+		if (type == OccupancyType::Unknown)
+			mSparseLeapManager->tree()->insertNoEmpty(
+				(blockCenterPosition - glm::vec3(0.5f)) * mSparseLeapManager->getCube(),
+				empty ? OccupancyType::Empty : OccupancyType::NoEmpty);
+#endif // _SPARSE_LEAP
+
+
 		blockCache = &output;
 
 		mDirectoryCache->mapAddress(resolution, blockCenterPosition, blockCache);
@@ -310,7 +323,7 @@ void VirtualMemoryManager::mapAddress(int resolution, int blockID)
 	mapAddressToGPU(resolution, blockCenterPosition, blockCache);
 }
 
-void VirtualMemoryManager::loadBlock(int resolution, const VirtualAddress & blockAddress, BlockCache & output) 
+bool VirtualMemoryManager::loadBlock(int resolution, const VirtualAddress & blockAddress, BlockCache & output) 
 {
 	//because of the resolution, the size of block is not equal the BLOCK_SIZE_XYZ
 	//in other word, it may be bigger(smaller) than BLOCK_SIZE_XYZ
@@ -335,6 +348,8 @@ void VirtualMemoryManager::loadBlock(int resolution, const VirtualAddress & bloc
 	int blockDepthPitch = blockRowPitch * BLOCK_SIZE_XYZ;
 
 	static byte buffer[MAX_READ_BUFFER];
+
+	unsigned long long average = 0;
 
 	//read block
 	float zPosition = (float)readBlockEntry.Z;
@@ -363,9 +378,14 @@ void VirtualMemoryManager::loadBlock(int resolution, const VirtualAddress & bloc
 
 			//copy data
 			for (int xCount = 0; xCount < BLOCK_SIZE_XYZ; xCount++, xPosition += xOffset)
-				address[xCount] = buffer[(int)std::round(xPosition)];
+				average = average + (address[xCount] = buffer[(int)std::round(xPosition)]);
 		}
 	}
+
+	average = average / (BLOCK_SIZE_XYZ * BLOCK_SIZE_XYZ * BLOCK_SIZE_XYZ);
+
+	if (average / 255.0f >= EMPTY_LIMIT) return false;
+	return true;
 }
 
 auto VirtualMemoryManager::detectResolutionLevel(float ratio) -> int

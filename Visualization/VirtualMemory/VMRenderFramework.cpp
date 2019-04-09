@@ -9,6 +9,11 @@ void VMRenderFramework::render(void * sender, float mDeltaTime)
 	unsigned int uavClear[4] = { 0, 0, 0, 0 };
 	auto unorderedAccessUsage = mVirtualMemoryManager->getUnorderedAccessUsage();
 
+	mMatrixBuffer->update(&mMatrixStructure);
+
+	mRasterizerState->setFillMode(FillMode::Solid);
+	mRasterizerState->setCullMode(CullMode::Back);
+
 	mGraphics->clearState();
 	mGraphics->clearRenderTarget(mSwapChain->getRenderTarget(), rgba);
 	mGraphics->clearUnorderedAccessUsageUint(unorderedAccessUsage[0], uavClear);
@@ -18,8 +23,13 @@ void VMRenderFramework::render(void * sender, float mDeltaTime)
 	mGraphics->setIndexBuffer(mIndexBuffer);
 	mGraphics->setVertexBuffer(mVertexBuffer);
 
+#ifdef _SPARSE_LEAP
+	mGraphics->setVertexShader(mSparseLeapVertexShader);
+	mGraphics->setPixelShader(mSparseLeapPixelShader);
+#else
 	mGraphics->setVertexShader(mVertexShader);
 	mGraphics->setPixelShader(mPixelShader);
+#endif // _SPARSE_LEAP
 
 	mGraphics->setConstantBuffer(mMatrixBuffer, 0);
 	mGraphics->setConstantBuffer(mVirtualMemoryManager->getMultiResolutionSizeBuffer(), 1);
@@ -29,6 +39,13 @@ void VMRenderFramework::render(void * sender, float mDeltaTime)
 	mGraphics->setResourceUsage(mVirtualMemoryManager->getPageDirectory()->getTextureUsage(), 0);
 	mGraphics->setResourceUsage(mVirtualMemoryManager->getPageTable()->getTextureUsage(), 1);
 	mGraphics->setResourceUsage(mVirtualMemoryManager->getBlockTable()->getTextureUsage(), 2);
+
+#ifdef _SPARSE_LEAP
+	mGraphics->setResourceUsage(mSparseLeapManager->mRaySegmentListDepthSRVUsage, 3);
+	mGraphics->setResourceUsage(mSparseLeapManager->mRaySegmentListCountSRVUsage, 4);
+	mGraphics->setResourceUsage(mSparseLeapManager->mRaySegmentListBoxTypeSRVUsage, 5);
+	mGraphics->setResourceUsage(mSparseLeapManager->mRaySegmentListEventTypeSRVUsage, 6);
+#endif // _SPARSE_LEAP
 
 	mGraphics->setUnorderedAccessUsage(unorderedAccessUsage);
 
@@ -72,13 +89,17 @@ void VMRenderFramework::update(void * sender, float mDeltaTime)
 //#endif // _DEBUG
 
 	//update matrix
-	mMatrixStructure.WorldTransform = glm::mat4(1);
+	mMatrixStructure.WorldTransform = glm::scale(glm::mat4(1), mCubeSize);
 	mMatrixStructure.CameraTransform = mCamera->viewMatrix();
 	mMatrixStructure.ProjectTransform = mCamera->projectionMatrix();
 	mMatrixStructure.RenderConfig[0] = glm::vec4(mCamera->position(), 0.0f);
 	mMatrixStructure.RenderConfig[1] = glm::vec4((float)resolutionLevel);
 
-	mMatrixBuffer->update(&mMatrixStructure);
+#ifdef _SPARSE_LEAP
+	mSparseLeapManager->update(mCamera->position());
+	renderRaySegmentList();
+#endif // _SPARSE_LEAP
+
 }
 
 void VMRenderFramework::mouseMove(void * sender, MouseMoveEvent * eventArg)
@@ -112,6 +133,73 @@ void VMRenderFramework::mouseDown(void * sender, MouseClickEvent * eventArg)
 	mInput->setCursorPosition(glm::vec2(mWidth * 0.5f, mHeight * 0.5f));
 }
 
+void VMRenderFramework::renderRaySegmentList()
+{
+	float rgba[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	unsigned int clearValue[4] = { 0, 0, 0, 0 };
+	
+	mGraphics->clearUnorderedAccessUsageUint(mSparseLeapManager->mRaySegmentListCountUAVUsage, clearValue);
+
+	mRasterizerState->setFillMode(FillMode::Solid);
+	mRasterizerState->setCullMode(CullMode::None);
+	
+	mGraphics->clearState();
+
+	mGraphics->setRenderTarget(mSparseLeapManager->mOccupancyGeometryRenderTarget);
+	mGraphics->clearRenderTarget(mSparseLeapManager->mOccupancyGeometryRenderTarget, rgba);
+
+	mGraphics->setViewPort(0, 0, (float)mWidth, (float)mHeight);
+
+	mGraphics->setVertexBuffer(mVertexBuffer);
+	mGraphics->setIndexBuffer(mIndexBuffer);
+	mGraphics->setInputLayout(mInputLayout);
+
+	mGraphics->setRasterizerState(mRasterizerState);
+
+	mGraphics->setVertexShader(mSparseLeapManager->mOccupancyGeometryVertexShader);
+	mGraphics->setPixelShader(mSparseLeapManager->mOccupancyGeometryPixelShader);
+
+	MatrixStructure matrixStructure;
+
+	matrixStructure.WorldTransform = glm::scale(glm::mat4(1), mCubeSize);
+	matrixStructure.CameraTransform = mCamera->viewMatrix();
+	matrixStructure.ProjectTransform = mCamera->projectionMatrix();
+	matrixStructure.RenderConfig[0] = glm::vec4(mCamera->position(), 0.0f);
+	
+	mGraphics->setConstantBuffer(mMatrixBuffer, 0);
+
+	std::vector<UnorderedAccessUsage*> unorderedAccessUsages(4);
+
+	//commit the RWTexture
+	unorderedAccessUsages[0] = mSparseLeapManager->mRaySegmentListCountUAVUsage;
+	unorderedAccessUsages[1] = mSparseLeapManager->mRaySegmentListDepthUAVUsage;
+	unorderedAccessUsages[2] = mSparseLeapManager->mRaySegmentListBoxTypeUAVUsage;
+	unorderedAccessUsages[3] = mSparseLeapManager->mRaySegmentListEventTypeUAVUsage;
+
+	mGraphics->setUnorderedAccessUsage(unorderedAccessUsages);
+
+	mGraphics->setPrimitiveType(PrimitiveType::TriangleList);
+
+	//to do: use the draw instance
+	for (auto it = mSparseLeapManager->mOccupancyGeometry.begin(); it != mSparseLeapManager->mOccupancyGeometry.end(); it++) {
+		OccupancyHistogramNodeCompareComponent component = *it;
+		
+		//transform 
+		matrixStructure.WorldTransform = glm::translate(glm::mat4(1), 
+			(component.Node->AxiallyAlignedBoundingBox.Max + component.Node->AxiallyAlignedBoundingBox.Min) * 0.5f);
+		matrixStructure.WorldTransform = glm::scale(glm::mat4(matrixStructure.WorldTransform), 
+			component.Node->AxiallyAlignedBoundingBox.Max - component.Node->AxiallyAlignedBoundingBox.Min);
+
+		matrixStructure.RenderConfig[1] = glm::vec4((float)component.IsFrontFace, (float)component.Node->Type,
+			(float)(component.Node->Parent != nullptr ? component.Node->Parent->Type : OccupancyType::Empty), 0.0f);
+
+		mMatrixBuffer->update(&matrixStructure);
+
+		mGraphics->setConstantBuffer(mMatrixBuffer, 0);
+		mGraphics->drawIndexed(36, 0, 0);
+	}
+}
+
 void VMRenderFramework::initializeInputStage()
 {
 	//initialize the input layout
@@ -128,7 +216,8 @@ void VMRenderFramework::initializeInputStage()
 	mMatrixBuffer = mFactory->createConstantBuffer(sizeof(MatrixStructure), ResourceInfo::ConstantBuffer());
 
 	//init cube's data
-	mCubeMesh = Mesh::Cube(glm::vec3(100));
+	mCubeMesh = Mesh::Cube(glm::vec3(1));
+	mCubeSize = glm::vec3(100);
 
 	//update cube's data
 	mIndexBuffer->update(mCubeMesh.indices().data());
@@ -159,7 +248,9 @@ void VMRenderFramework::initializeShaderStage()
 {
 	//initialize shader
 	mPixelShader = mFactory->createPixelShader(Helper::readFile("RayCastPixelShader.cso"), true);
+	mSparseLeapPixelShader = mFactory->createPixelShader(Helper::readFile("SparseLeapRayCastPixelShader.cso"), true);
 	mVertexShader = mFactory->createVertexShader(Helper::readFile("RayCastVertexShader.cso"), true);
+	mSparseLeapVertexShader = mFactory->createVertexShader(Helper::readFile("SparseLeapRayCastVertexShader.cso"), true);
 }
 
 void VMRenderFramework::initializeRasterizerStage()
@@ -198,15 +289,20 @@ VMRenderFramework::VMRenderFramework(const std::string &name, int width, int hei
 {
 	mInput = mFactory->createInput(this);
 	
-	mVirtualMemoryManager = new VirtualMemoryManager(mFactory, mGraphics, mWidth, mHeight);
+	mSparseLeapManager = new SparseLeapManager(mFactory, mWidth, mHeight);
+	mVirtualMemoryManager = new VirtualMemoryManager(mFactory, mGraphics, mSparseLeapManager, mWidth, mHeight);
 }
 
 VMRenderFramework::~VMRenderFramework()
 {
 	mFactory->destoryInput(mInput);
 
+#ifdef _SPARSE_LEAP
+	mSparseLeapManager->finalize();
+#endif // _SPARSE_LEAP
 	mVirtualMemoryManager->finalize();
 	delete mVirtualMemoryManager;
+	delete mSparseLeapManager;
 
 	destoryInputStage();
 	destoryShaderStage();
@@ -222,9 +318,12 @@ void VMRenderFramework::initialize()
 	//set multi-resolution
 	std::vector<glm::vec3> multiResolution;
 	multiResolution.push_back(glm::vec3(1.0f, 1.0f, 1.0f));
-	multiResolution.push_back(glm::vec3(0.4f, 0.3f, 0.3f));
+	multiResolution.push_back(glm::vec3(0.3f, 0.3f, 0.3f));
 	multiResolution.push_back(glm::vec3(0.1f, 0.1f, 0.1f));
 
+#ifdef _SPARSE_LEAP
+	mSparseLeapManager->initialize(mCubeSize);
+#endif // _SPARSE_LEAP
 	mVirtualMemoryManager->initialize("volume", multiResolution);
 }
 

@@ -8,6 +8,7 @@
 #include "GPUPageDirectory.hpp"
 #include "SharedMacro.hpp"
 #include "SharedTexture3D.hpp"
+#include "SparseLeapManager.hpp"
 
 #include <Framework.hpp>
 #include <fstream>
@@ -55,12 +56,15 @@ private:
 	UnorderedAccessUsage* mBlockCacheUsageStateUsage;
 	UnorderedAccessUsage* mBlockCacheMissArrayUsage;
 
-	void analyseFile(const std::string &fileName);
+	SparseLeapManager* mSparseLeapManager;
 
-	void mapAddressToGPU(int resolution, const glm::vec3 &position, BlockCache* block);
+	void analyseFile(const std::string& fileName);
+
+	void mapAddressToGPU(int resolution, const glm::vec3& position, BlockCache* block);
 public:
-	VirtualMemoryManager(Factory* factory, Graphics* graphics, int width, int height) :
-		mFactory(factory), mGraphics(graphics), mResolutionWidth(width), mResolutionHeight(height) {}
+	VirtualMemoryManager(Factory* factory, Graphics* graphics, SparseLeapManager* sparseLeapManager, int width, int height) :
+		mFactory(factory), mGraphics(graphics), mSparseLeapManager(sparseLeapManager), mResolutionWidth(width), mResolutionHeight(height)
+	{}
 
 	void initialize(const std::string &fileName, const std::vector<glm::vec3> &resolutions);
 
@@ -70,7 +74,7 @@ public:
 
 	void mapAddress(int resolution, int blockID);
 
-	void loadBlock(int resolution, const VirtualAddress &blockAddress, BlockCache & output);
+	bool loadBlock(int resolution, const VirtualAddress &blockAddress, BlockCache & output);
 
 	auto detectResolutionLevel(float ratio) -> int;
 

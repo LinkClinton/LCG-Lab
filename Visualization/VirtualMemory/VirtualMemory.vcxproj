@@ -143,9 +143,11 @@
     <ClCompile Include="GPUPageDirectory.cpp" />
     <ClCompile Include="GPUPageTable.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="OccupancyHistogramTree.cpp" />
     <ClCompile Include="PageDirectory.cpp" />
     <ClCompile Include="PageTable.cpp" />
     <ClCompile Include="SharedTexture3D.cpp" />
+    <ClCompile Include="SparseLeapManager.cpp" />
     <ClCompile Include="VirtualMemoryManager.cpp" />
     <ClCompile Include="VMRenderFramework.cpp" />
   </ItemGroup>
@@ -162,16 +164,30 @@
     <ClInclude Include="GPUPageDirectory.hpp" />
     <ClInclude Include="GPUPageTable.hpp" />
     <ClInclude Include="LRUCache.hpp" />
+    <ClInclude Include="OccupancyHistogramTree.hpp" />
     <ClInclude Include="PageDirectory.hpp" />
     <ClInclude Include="PageTable.hpp" />
     <ClInclude Include="CPUMemoryTestUnit.hpp" />
     <ClInclude Include="SharedMacro.hpp" />
     <ClInclude Include="SharedTexture3D.hpp" />
+    <ClInclude Include="SparseLeapManager.hpp" />
     <ClInclude Include="VirtualMemoryManager.hpp" />
     <ClInclude Include="VMRenderFramework.hpp" />
     <ClInclude Include="Helper.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="OccupancyGeometryPixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="OccupancyGeometryVertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="RayCastPixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
@@ -203,6 +219,25 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
       <FileType>Document</FileType>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="SparseLeapShaderInclude.hlsl">
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
+    <FxCompile Include="SparseLeapRayCastPixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="SparseLeapRayCastVertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="Teddybear.raw">

@@ -60,6 +60,12 @@
     <ClCompile Include="SharedTexture3D.cpp">
       <Filter>Source Files\Structure</Filter>
     </ClCompile>
+    <ClCompile Include="OccupancyHistogramTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SparseLeapManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AddressMap.hpp">
@@ -107,12 +113,30 @@
     <ClInclude Include="SharedTexture3D.hpp">
       <Filter>Header Files\Structure</Filter>
     </ClInclude>
+    <ClInclude Include="SparseLeapManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OccupancyHistogramTree.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="RayCastVertexShader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
     <FxCompile Include="RayCastPixelShader.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="OccupancyGeometryPixelShader.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="OccupancyGeometryVertexShader.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="SparseLeapRayCastVertexShader.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="SparseLeapRayCastPixelShader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>
@@ -124,6 +148,9 @@
       <Filter>Resource Files</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="volume">
+      <Filter>Resource Files</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="SparseLeapShaderInclude.hlsl">
       <Filter>Resource Files</Filter>
     </CopyFileToFolders>
   </ItemGroup>

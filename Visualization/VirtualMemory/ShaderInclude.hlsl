@@ -43,6 +43,10 @@ cbuffer MultiResolutionBlockBaseBuffer : register(b3)
 Texture3D<uint4> DirectoryCacheTexture : register(t0);
 Texture3D<uint4> PageCacheTexture : register(t1);
 Texture3D<float> BlockCacheTexture : register(t2);
+Texture3D<float> RaySegmentListDepthTexture : register(t3);
+Texture2D<uint> RaySegmentListCountTexture : register(t4);
+Texture3D<uint> RaySegmentListBoxTypeTexture : register(t5);
+Texture3D<uint> RaySegmentListEventTypeTexture : register(t6);
 
 RWTexture3D<uint> BlockCacheUsageStateRWTexture : register(u1);
 RWTexture3D<uint> BlockCacheMissArrayRWTexture : register(u2);

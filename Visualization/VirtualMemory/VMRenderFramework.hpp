@@ -6,6 +6,7 @@
 
 #include "Helper.hpp"
 #include "SharedMacro.hpp"
+#include "SparseLeapManager.hpp"
 #include "VirtualMemoryManager.hpp"
 
 class VMRenderFramework : public WindowsFramework {
@@ -16,7 +17,9 @@ private:
 	ConstantBuffer* mMatrixBuffer;
 
 	PixelShader* mPixelShader;
+	PixelShader* mSparseLeapPixelShader;
 	VertexShader* mVertexShader;
+	VertexShader* mSparseLeapVertexShader;
 
 	RasterizerState* mRasterizerState;
 
@@ -24,6 +27,7 @@ private:
 	bool mMouseButtonState[3];
 
 	Mesh mCubeMesh;
+	glm::vec3 mCubeSize;
 
 	Camera* mCamera;
 
@@ -31,6 +35,7 @@ private:
 	OrbitCamera mViewCamera;
 	MatrixStructure mMatrixStructure;
 
+	SparseLeapManager* mSparseLeapManager;
 	VirtualMemoryManager* mVirtualMemoryManager;
 
 	virtual void render(void* sender, float mDeltaTime)override;
@@ -39,6 +44,8 @@ private:
 	virtual void mouseMove(void* sender, MouseMoveEvent* eventArg)override;
 	virtual void mouseUp(void* sender, MouseClickEvent* eventArg)override;
 	virtual void mouseDown(void* sender, MouseClickEvent* eventArg)override;
+
+	void renderRaySegmentList();
 
 	void initializeInputStage();
 	void initializeShaderStage();
