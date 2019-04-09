@@ -129,6 +129,14 @@ public:
 	}
 
 	template<typename T>
+	static auto divToFloat(const Vector3<T>& left, const Vector3<T>& right) -> glm::vec3 {
+		return glm::vec3(
+			(float)left.X / right.X,
+			(float)left.Y / right.Y,
+			(float)left.Z / right.Z);
+	}
+
+	template<typename T>
 	static auto add(const Vector3<T> &left, const Vector3<T> &right) -> Vector3<T> {
 		return Vector3<T>(
 			left.X + right.X,

@@ -74,7 +74,7 @@ public:
 
 	void mapAddress(int resolution, int blockID);
 
-	bool loadBlock(int resolution, const VirtualAddress &blockAddress, BlockCache & output);
+	void loadBlock(int resolution, const VirtualAddress &blockAddress, BlockCache & output);
 
 	auto detectResolutionLevel(float ratio) -> int;
 

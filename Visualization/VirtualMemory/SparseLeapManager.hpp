@@ -3,6 +3,7 @@
 #include <WindowsFramework.hpp>
 
 #include "OccupancyHistogramTree.hpp"
+#include "SharedTexture3D.hpp"
 #include "SharedMacro.hpp"
 #include "Helper.hpp"
 
@@ -23,7 +24,7 @@ private:
 	Texture3D* mRaySegmentListDepthTexture; //ray segment list depth texture
 	Texture3D* mRaySegmentListBoxTypeTexture; //ray segment list occupancy type texture
 	Texture3D* mRaySegmentListEventTypeTexture; //ray segment list event type texture
-
+	
 	RenderTarget* mOccupancyGeometryRenderTarget; //render target
 
 	UnorderedAccessUsage* mRaySegmentListCountUAVUsage; //ray segment list count texture view(RWTexture)
@@ -50,7 +51,7 @@ public:
 
 	void update(const glm::vec3& cameraPosition);
 
-	auto getCube() const -> glm::vec3;
+	auto cube() const -> glm::vec3;
 
 	auto tree() -> OccupancyHistogramTree*;
 

@@ -7,12 +7,12 @@
 
 template<typename T>
 class DataCache {
-private:
+protected:
 	std::vector<T> mData;
 
 	int mRowPitch;
 	int mDepthPitch;
-protected:
+
 	Size mSize;
 public:
 	DataCache(const Size& size = Size(0, 0, 0)) {

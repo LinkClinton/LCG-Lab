@@ -78,7 +78,7 @@ void SparseLeapManager::update(const glm::vec3& cameraPosition)
 	mOccupancyHistogramTree->getOccupancyGeometry(mOccupancyGeometry);
 }
 
-auto SparseLeapManager::getCube() const -> glm::vec3
+auto SparseLeapManager::cube() const -> glm::vec3
 {
 	return mCube;
 }

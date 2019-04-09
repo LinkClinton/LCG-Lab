@@ -21,6 +21,8 @@ public:
 
 	BlockCache() : BlockCache(mBlockCacheSize) {}
 
+	auto average(const VirtualAddress &from, const VirtualAddress &to) -> byte;
+
 	static void setBlockCacheSize(const Size &size);
 
 	static auto getBlockCacheSize() -> Size;

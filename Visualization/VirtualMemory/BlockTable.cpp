@@ -13,6 +13,23 @@ BlockCache::BlockCache(const Size & size) : DataCache(size)
 	memset(getDataPointer(), 0, size.X * size.Y * size.Z);
 }
 
+auto BlockCache::average(const VirtualAddress& from, const VirtualAddress& to) -> byte
+{
+	unsigned long long value = 0;
+
+	for (size_t z = from.Z; z < to.Z; z++) {
+		for (size_t y = from.Y; y < to.Y; y++) {
+			auto baseAddress = z * mDepthPitch + y * mRowPitch;
+			for (size_t address = baseAddress + from.X; address < baseAddress + to.X; address++)
+				value = value + mData[address];
+		}
+	}
+
+	Size size = Size(to.X - from.X, to.Y - from.Y, to.Z - from.Z);
+
+	return (byte)(value / (size.X * size.Y * size.Z));
+}
+
 void BlockCache::setBlockCacheSize(const Size & size)
 {
 	mBlockCacheSize = size;

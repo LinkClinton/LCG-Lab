@@ -156,7 +156,9 @@ private:
 	/**
 	 * @brief insert a empty or no-empty node at position(input)
 	 */
-	void insert(OccupancyHistogramNode* node, const glm::vec3 &position, OccupancyType type , int depth);
+	void insert(OccupancyHistogramNode* node, const glm::vec3 &position, OccupancyType type, int depth);
+
+	void update(OccupancyHistogramNode* node, const glm::vec3& position, OccupancyType type, int depth);
 
 	/**
 	 * @brief query a node's type(unknown means is not existed)
@@ -194,7 +196,11 @@ public:
 	 */
 	void insertNoEmpty(const glm::vec3 &position, OccupancyType type);
 
+	void updateBlock(const glm::vec3& position, OccupancyType type);
+
 	auto queryNodeType(const glm::vec3& position) -> OccupancyType;
+
+	auto maxDepth() -> int;
 
 	/**
 	 * @brief get occupancy geometry, some aabb with right order

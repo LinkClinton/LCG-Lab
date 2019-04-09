@@ -291,11 +291,6 @@ void VirtualMemoryManager::mapAddress(int resolution, int blockID)
 
 	if (mGPUDirectoryCache->queryAddress(resolution, blockCenterPosition) != nullptr) return;
 
-#ifdef _SPARSE_LEAP
-	auto type = mSparseLeapManager->tree()->queryNodeType((blockCenterPosition - glm::vec3(0.5f))* mSparseLeapManager->getCube());
-#endif // _SPARSE_LEAP
-
-
 	//query the block if in the CPU virtual memory
 	BlockCache* blockCache = mDirectoryCache->queryAddress(resolution, blockCenterPosition);
 
@@ -304,13 +299,52 @@ void VirtualMemoryManager::mapAddress(int resolution, int blockID)
 		//load block data from disk and do some special process
 		static BlockCache output(BLOCK_SIZE_XYZ);
 
-		bool empty = loadBlock(resolution, blockAddress, output);
-		
+		loadBlock(resolution, blockAddress, output);
+
 #ifdef _SPARSE_LEAP
-		if (type == OccupancyType::Unknown)
-			mSparseLeapManager->tree()->insertNoEmpty(
-				(blockCenterPosition - glm::vec3(0.5f)) * mSparseLeapManager->getCube(),
-				empty ? OccupancyType::Empty : OccupancyType::NoEmpty);
+		auto treeBlockSize = (float)std::pow(2, mSparseLeapManager->tree()->maxDepth() - 1);
+
+		auto originBox = AxiallyAlignedBoundingBox(
+			treeBlockSize * glm::vec3(
+				((float)blockAddress.X / blockCacheSize.X),
+				((float)blockAddress.Y / blockCacheSize.Y),
+				((float)blockAddress.Z / blockCacheSize.Z)),
+			treeBlockSize * glm::vec3(
+				((float)(blockAddress.X + 1) / blockCacheSize.X),
+				((float)(blockAddress.Y + 1) / blockCacheSize.Y),
+				((float)(blockAddress.Z + 1) / blockCacheSize.Z)));
+
+		auto roundBox = AxiallyAlignedBoundingBox(glm::trunc(originBox.Min), glm::ceil(originBox.Max));
+
+		auto minRange = Size((int)roundBox.Min.x, (int)roundBox.Min.y, (int)roundBox.Min.z);
+		auto maxRange = Size((int)roundBox.Max.x, (int)roundBox.Max.y, (int)roundBox.Max.z);
+		auto tree = mSparseLeapManager->tree();
+		auto cube = mSparseLeapManager->cube();
+
+		auto xOffset = (float)BLOCK_SIZE_XYZ / (maxRange.X - minRange.X);
+		auto yOffset = (float)BLOCK_SIZE_XYZ / (maxRange.Y - minRange.Y);
+		auto zOffset = (float)BLOCK_SIZE_XYZ / (maxRange.Z - minRange.Z);
+		auto offset = glm::vec3(xOffset, yOffset, zOffset);
+
+		for (size_t x = minRange.X; x < maxRange.X; x++) {
+			for (size_t y = minRange.Y; y < maxRange.Y; y++) {
+				for (size_t z = minRange.Z; z < maxRange.Z; z++) {
+					auto center = (glm::vec3(
+						(x + 0.5f) / treeBlockSize,
+						(y + 0.5f) / treeBlockSize,
+						(z + 0.5f) / treeBlockSize) - glm::vec3(0.5f)) * cube;
+
+					auto address = VirtualAddress((int)x - minRange.X, (int)y - minRange.Y, (int)z - minRange.Z);
+
+					auto average = output.average(
+						Helper::multiple(address, offset),
+						Helper::multiple(Helper::add(address, VirtualAddress(1)), offset));
+
+					tree->updateBlock(center, (average > (byte)(255 * EMPTY_LIMIT)) ? OccupancyType::NoEmpty : OccupancyType::Empty);
+				}
+			}
+		}
+
 #endif // _SPARSE_LEAP
 
 
@@ -323,7 +357,7 @@ void VirtualMemoryManager::mapAddress(int resolution, int blockID)
 	mapAddressToGPU(resolution, blockCenterPosition, blockCache);
 }
 
-bool VirtualMemoryManager::loadBlock(int resolution, const VirtualAddress & blockAddress, BlockCache & output) 
+void VirtualMemoryManager::loadBlock(int resolution, const VirtualAddress & blockAddress, BlockCache & output) 
 {
 	//because of the resolution, the size of block is not equal the BLOCK_SIZE_XYZ
 	//in other word, it may be bigger(smaller) than BLOCK_SIZE_XYZ
@@ -348,8 +382,6 @@ bool VirtualMemoryManager::loadBlock(int resolution, const VirtualAddress & bloc
 	int blockDepthPitch = blockRowPitch * BLOCK_SIZE_XYZ;
 
 	static byte buffer[MAX_READ_BUFFER];
-
-	unsigned long long average = 0;
 
 	//read block
 	float zPosition = (float)readBlockEntry.Z;
@@ -378,14 +410,9 @@ bool VirtualMemoryManager::loadBlock(int resolution, const VirtualAddress & bloc
 
 			//copy data
 			for (int xCount = 0; xCount < BLOCK_SIZE_XYZ; xCount++, xPosition += xOffset)
-				average = average + (address[xCount] = buffer[(int)std::round(xPosition)]);
+				address[xCount] = buffer[(int)std::round(xPosition)];
 		}
 	}
-
-	average = average / (BLOCK_SIZE_XYZ * BLOCK_SIZE_XYZ * BLOCK_SIZE_XYZ);
-
-	if (average / 255.0f >= EMPTY_LIMIT) return false;
-	return true;
 }
 
 auto VirtualMemoryManager::detectResolutionLevel(float ratio) -> int

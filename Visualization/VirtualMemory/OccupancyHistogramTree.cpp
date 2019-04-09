@@ -78,7 +78,7 @@ int OccupancyHistogramNode::getTypeCount(OccupancyHistogramNode * node, Occupanc
 auto OccupancyHistogramTree::getOccupancyHistogramNode(OccupancyHistogramNode * parent, SpaceOrder order, int depth) -> OccupancyHistogramNode *
 {
 	mNodeCount++;
-
+	
 	return new OccupancyHistogramNode(parent, order, depth);
 }
 
@@ -129,6 +129,46 @@ void OccupancyHistogramTree::insert(OccupancyHistogramNode * node, const glm::ve
 	//delete node for optimization
 	//we can delete the node that all nodes are same
 	int maxOccupancyTypeCount = std::max(node->OccupancyTypeCount[0], 
+		std::max(node->OccupancyTypeCount[1], node->OccupancyTypeCount[2]));
+
+	int target = (int)std::pow(8, (mMaxDepth - depth));
+
+	//free memory
+	//becarefull if we use other allocator
+	if (maxOccupancyTypeCount == target) {
+		for (int i = 0; i < (int)SpaceOrder::Count; i++) {
+			Utility::Delete(node->Children[i]);
+		}
+	}
+}
+
+void OccupancyHistogramTree::update(OccupancyHistogramNode* node, const glm::vec3& position, OccupancyType type, int depth)
+{
+	//if get the end
+	if (depth >= mMaxDepth) {
+		std::memset(node->OccupancyTypeCount, 0, sizeof(node->OccupancyTypeCount));
+
+		node->OccupancyTypeCount[(int)type]++;
+
+		node->update();
+
+		return;
+	}
+
+	//get order
+	auto order = Helper::getSpaceOrder(node->AxiallyAlignedBoundingBox, position);
+
+	//create new node
+	if (node->Children[(int)order] == nullptr) node->Children[(int)order] =
+		getOccupancyHistogramNode(node, order, depth + 1);
+
+	update(node->Children[(int)order], position, type, depth + 1);
+
+	node->update();
+
+	//delete node for optimization
+	//we can delete the node that all nodes are same
+	int maxOccupancyTypeCount = std::max(node->OccupancyTypeCount[0],
 		std::max(node->OccupancyTypeCount[1], node->OccupancyTypeCount[2]));
 
 	int target = (int)std::pow(8, (mMaxDepth - depth));
@@ -202,9 +242,19 @@ void OccupancyHistogramTree::insertNoEmpty(const glm::vec3 &position, OccupancyT
 	insert(&mRoot, position, type, 1);
 }
 
+void OccupancyHistogramTree::updateBlock(const glm::vec3& position, OccupancyType type)
+{
+	update(&mRoot, position, type, 1);
+}
+
 auto OccupancyHistogramTree::queryNodeType(const glm::vec3& position) -> OccupancyType
 {
 	return query(&mRoot, position, 1);
+}
+
+auto OccupancyHistogramTree::maxDepth() -> int
+{
+	return mMaxDepth;
 }
 
 void OccupancyHistogramTree::getOccupancyGeometry(std::vector<OccupancyHistogramNodeCompareComponent>& geometry, bool sort)

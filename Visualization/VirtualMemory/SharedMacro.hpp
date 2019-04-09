@@ -10,11 +10,11 @@
 //BLOCK_SIZE_XYZ : 
 //the block size of x-axis,y-axis and z-axis
 //the texture size(xyz-axis) is euqal BLOCK_COUNT_XYZ * BLOCK_SIZE_XYZ
-#define BLOCK_SIZE_XYZ 16
+#define BLOCK_SIZE_XYZ 32
 //BLOCK_COUNT_XYZ :
 //the block count of x-axis, y-axis and z-axis
 //the texture size(xyz-axis) is euqal BLOCK_COUNT_XYZ * BLOCK_SIZE_XYZ
-#define BLOCK_COUNT_XYZ 32
+#define BLOCK_COUNT_XYZ 16
 //BLOCK_RAY_CACHE_MISS_MAX_PER_FRAME :
 //the max cache miss count of ray in per frame
 #define BLOCK_RAY_CACHE_MISS_MAX_PER_FRAME 4
