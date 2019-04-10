@@ -52,7 +52,7 @@ void VMRenderFramework::render(void * sender, float mDeltaTime)
 	mGraphics->setPrimitiveType(PrimitiveType::TriangleList);
 	mGraphics->setRasterizerState(mRasterizerState);
 
-	mGraphics->setViewPort(0, 0, (float)mWidth, (float)mHeight);
+	mGraphics->setViewPort(0, 0, float(mWidth), float(mHeight));
 	mGraphics->setRenderTarget(mSwapChain->getRenderTarget());
 
 	mGraphics->drawIndexed(36, 0, 0);
@@ -81,19 +81,20 @@ void VMRenderFramework::update(void * sender, float mDeltaTime)
 	static auto cubeMeshTriangles = mCubeMesh.triangles();
 	static auto cubeMeshVolume = mCubeMesh.volume();
 
-	auto ratio = Mesh(mCamera->frustum().clip(cubeMeshTriangles)).volume() / cubeMeshVolume;
-	auto resolutionLevel = mVirtualMemoryManager->detectResolutionLevel(ratio);
+	const auto ratio = Mesh(mCamera->frustum().clip(cubeMeshTriangles)).volume() / cubeMeshVolume;
+	const auto resolutionLevel = mVirtualMemoryManager->detectResolutionLevel(ratio);
 
-//#ifdef _DEBUG
+#ifdef _DEBUG
 	printf("Current Resolution Level : %d\n", resolutionLevel);
-//#endif // _DEBUG
+#endif // _DEBUG
 
 	//update matrix
 	mMatrixStructure.WorldTransform = glm::scale(glm::mat4(1), mCubeSize);
 	mMatrixStructure.CameraTransform = mCamera->viewMatrix();
 	mMatrixStructure.ProjectTransform = mCamera->projectionMatrix();
 	mMatrixStructure.RenderConfig[0] = glm::vec4(mCamera->position(), 0.0f);
-	mMatrixStructure.RenderConfig[1] = glm::vec4((float)resolutionLevel);
+	mMatrixStructure.RenderConfig[1] = glm::vec4(float(resolutionLevel));
+	mMatrixStructure.RenderConfig[2] = glm::vec4(mCubeSize, 0.0f);
 
 #ifdef _SPARSE_LEAP
 	mSparseLeapManager->update(mCamera->position());
@@ -108,7 +109,7 @@ void VMRenderFramework::mouseMove(void * sender, MouseMoveEvent * eventArg)
 	if (mMouseButtonState[0] == false && mMouseButtonState[1] == false && mMouseButtonState[2] == false)
 		return;
 
-	auto centerPosition = glm::vec2(mWidth * 0.5f, mHeight * 0.5f);
+	const auto centerPosition = glm::vec2(mWidth * 0.5f, mHeight * 0.5f);
 	auto offset = eventArg->getPosition() - centerPosition;
 
 	if (offset.length() != 0) mViewCamera.rotate(glm::vec2(offset.x, -offset.y), getDeltaTime());
@@ -118,7 +119,7 @@ void VMRenderFramework::mouseMove(void * sender, MouseMoveEvent * eventArg)
 
 void VMRenderFramework::mouseUp(void * sender, MouseClickEvent * eventArg)
 {
-	mMouseButtonState[(int)eventArg->getMouseButton()] = false;
+	mMouseButtonState[int(eventArg->getMouseButton())] = false;
 
 	mInput->unlockCursor();
 	mInput->showCursor(true);
@@ -126,7 +127,7 @@ void VMRenderFramework::mouseUp(void * sender, MouseClickEvent * eventArg)
 
 void VMRenderFramework::mouseDown(void * sender, MouseClickEvent * eventArg)
 {
-	mMouseButtonState[(int)eventArg->getMouseButton()] = true;
+	mMouseButtonState[int(eventArg->getMouseButton())] = true;
 
 	mInput->lockCursor();
 	mInput->showCursor(false);
@@ -148,7 +149,7 @@ void VMRenderFramework::renderRaySegmentList()
 	mGraphics->setRenderTarget(mSparseLeapManager->mOccupancyGeometryRenderTarget);
 	mGraphics->clearRenderTarget(mSparseLeapManager->mOccupancyGeometryRenderTarget, rgba);
 
-	mGraphics->setViewPort(0, 0, (float)mWidth, (float)mHeight);
+	mGraphics->setViewPort(0, 0, float(mWidth), float(mHeight));
 
 	mGraphics->setVertexBuffer(mVertexBuffer);
 	mGraphics->setIndexBuffer(mIndexBuffer);
@@ -190,8 +191,8 @@ void VMRenderFramework::renderRaySegmentList()
 		matrixStructure.WorldTransform = glm::scale(glm::mat4(matrixStructure.WorldTransform), 
 			component.Node->AxiallyAlignedBoundingBox.Max - component.Node->AxiallyAlignedBoundingBox.Min);
 
-		matrixStructure.RenderConfig[1] = glm::vec4((float)component.IsFrontFace, (float)component.Node->Type,
-			(float)(component.Node->Parent != nullptr ? component.Node->Parent->Type : OccupancyType::Empty), 0.0f);
+		matrixStructure.RenderConfig[1] = glm::vec4(float(component.IsFrontFace), float(component.Node->Type),
+			float(component.Node->Parent != nullptr ? component.Node->Parent->Type : OccupancyType::Empty), 0.0f);
 
 		mMatrixBuffer->update(&matrixStructure);
 
@@ -225,7 +226,7 @@ void VMRenderFramework::initializeInputStage()
 
 	//set camera
 	mViewCamera = OrbitCamera(glm::vec3(0, 0, 0), 200.0f);
-	mViewCamera.perspective(glm::pi<float>() * 0.3f, (float)mWidth / mHeight);
+	mViewCamera.perspective(glm::pi<float>() * 0.3f, float(mWidth) / mHeight);
 	mViewCamera.resize(mWidth, mHeight);
 
 	mViewCamera.setPanSpeed(glm::vec2(100.0f));
@@ -262,7 +263,7 @@ void VMRenderFramework::initializeRasterizerStage()
 	mRasterizerState->setCullMode(CullMode::Back);
 }
 
-void VMRenderFramework::destoryInputStage()
+void VMRenderFramework::destroyInputStage()
 {
 	//destory input layout
 	mFactory->destoryInputLayout(mInputLayout);
@@ -272,14 +273,14 @@ void VMRenderFramework::destoryInputStage()
 	mFactory->destoryVertexbuffer(mVertexBuffer);
 }
 
-void VMRenderFramework::destoryShaderStage()
+void VMRenderFramework::destroyShaderStage()
 {
 	//destory shader
 	mFactory->destoryPixelShader(mPixelShader);
 	mFactory->destoryVertexShader(mVertexShader);
 }
 
-void VMRenderFramework::destoryRasterizerStage()
+void VMRenderFramework::destroyRasterizerStage()
 {
 	//destory rasterizer state
 	mFactory->destoryRasterizerState(mRasterizerState);
@@ -304,9 +305,9 @@ VMRenderFramework::~VMRenderFramework()
 	delete mVirtualMemoryManager;
 	delete mSparseLeapManager;
 
-	destoryInputStage();
-	destoryShaderStage();
-	destoryRasterizerStage();
+	destroyInputStage();
+	destroyShaderStage();
+	destroyRasterizerStage();
 }
 
 void VMRenderFramework::initialize()

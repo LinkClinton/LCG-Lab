@@ -33,12 +33,29 @@ public:
 		mDepthPitch = mSize.X * mSize.Y;
 	}
 
-	auto virtual getSize() -> Size {
+	virtual ~AddressMap() = default;
+
+	auto getSize() const -> Size {
 		return mSize;
 	}
 
-	auto virtual getAddressPointer() -> T* const {
+	auto getAddressPointer() -> T* const {
 		return &mAddress[0];
+	}
+
+	auto mallocAddress() -> VirtualAddress {
+		//malloc an address to user
+		//if we have empty memory, we will return its address
+		//else we will return the address of LRUCache's back element
+		//and the back element of LRUCache's will be accessed
+
+		//get address
+		auto address = mLRUCache.getBackElement();
+
+		//access the back element
+		mLRUCache.accessElement(address);
+
+		return address;
 	}
 
 	void virtual setAddress(const VirtualAddress &index, const T &address) {
@@ -57,22 +74,7 @@ public:
 		return mAddress[getArrayIndex(index)];
 	}
 
-	auto virtual mallocAddress() -> VirtualAddress {
-		//malloc an address to user
-		//if we have empty memory, we will return its address
-		//else we will return the address of LRUCache's back element
-		//and the back element of LRUCache's will be accessed
-		
-		//get address
-		auto address = mLRUCache.getBackElement();
-
-		//access the back element
-		mLRUCache.accessElement(address);
-
-		return address;
-	}
-
-	auto virtual getArrayIndex(const VirtualAddress &index) -> int {
+	auto getArrayIndex(const VirtualAddress &index) -> int {
 		assert(index.X >= 0 && index.Y >= 0 && index.Z >= 0);
 		assert(index.X < mSize.X && index.Y < mSize.Y && index.Z < mSize.Z);
 

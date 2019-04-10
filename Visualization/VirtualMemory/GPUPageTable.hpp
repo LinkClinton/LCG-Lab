@@ -25,15 +25,15 @@ public:
 
 	~GPUPageTable();
 
-	virtual void mallocAddress(VirtualLink* virtualLink)override;
+	void mallocAddress(VirtualLink* virtualLink)override;
 
-	virtual void clearUpAddress(const VirtualAddress &address)override;
+	void clearUpAddress(const VirtualAddress &address)override;
 
-	virtual void mapAddress(const glm::vec3 &position, const Size &size, BlockCache* blockCache, VirtualLink* virtualLink)override;
+	void mapAddress(const glm::vec3 &position, const Size &size, BlockCache* blockCache, VirtualLink* virtualLink)override;
 
-	virtual auto queryAddress(const glm::vec3 &position, const Size & size, VirtualLink* virtualLink)->BlockCache* override;
+	auto queryAddress(const glm::vec3 &position, const Size & size, VirtualLink* virtualLink)->BlockCache* override;
 
-	auto getTexture() -> Texture3D*;
+	auto getTexture() const -> Texture3D*;
 
-	auto getTextureUsage() -> ResourceUsage*;
+	auto getTextureUsage() const -> ResourceUsage*;
 };

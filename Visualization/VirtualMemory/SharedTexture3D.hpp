@@ -14,21 +14,21 @@ public:
 
 	~SharedTexture3D();
 
-	void update();
+	void update() const;
 
-	auto mapCpuTexture() -> MappedData;
+	auto mapCpuTexture() const -> MappedData;
 
-	void unmapCpuTexture();
+	void unmapCpuTexture() const;
 
-	auto getWidth() -> int;
+	auto getWidth() const -> int;
 
-	auto getHeight() -> int;
+	auto getHeight() const -> int;
 
-	auto getDepth() -> int;
+	auto getDepth() const -> int;
 
-	auto getPixelFormat() -> PixelFormat;
+	auto getPixelFormat() const -> PixelFormat;
 
-	auto getGpuTexture() -> Texture3D*;
+	auto getGpuTexture() const -> Texture3D*;
 
-	auto getCpuTexture() -> Texture3D*;
+	auto getCpuTexture() const -> Texture3D*;
 };

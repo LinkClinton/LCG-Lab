@@ -3,10 +3,10 @@
 std::vector<byte> GPUPageTable::mPageCacheClearMemory;
 
 GPUPageTable::GPUPageTable(Factory * factory, Graphics * graphics, const Size & size, GPUPageTable * nextTable)
-	: PageTable(size, nextTable), mFactory(factory), mGraphics(graphics), mFromTexture(nullptr)
+	: PageTable(size, nextTable), mGraphics(graphics), mFactory(factory), mFromTexture(nullptr)
 {
 	//texture size is equal the table size * block size
-	auto textureSize = Helper::multiple(mSize, PageCache::getPageCacheSize());
+	const auto textureSize = Helper::multiple(mSize, PageCache::getPageCacheSize());
 
 	mPageTableTexture = mFactory->createTexture3D(textureSize.X, textureSize.Y, textureSize.Z, PixelFormat::R8G8B8A8Uint, ResourceInfo::ShaderResource());
 	mTextureUsage = mFactory->createResourceUsage(mPageTableTexture, mPageTableTexture->getPixelFormat());
@@ -16,10 +16,10 @@ GPUPageTable::GPUPageTable(Factory * factory, Graphics * graphics, const Size & 
 }
 
 GPUPageTable::GPUPageTable(Factory * factory, Graphics * graphics, const Size & size, GPUBlockTable * endTable)
-	: PageTable(size, endTable), mFactory(factory), mGraphics(graphics), mFromTexture(nullptr)
+	: PageTable(size, endTable), mGraphics(graphics), mFactory(factory), mFromTexture(nullptr)
 {
 	//texture size is equal the table size * block size
-	auto textureSize = Helper::multiple(mSize, PageCache::getPageCacheSize());
+	const auto textureSize = Helper::multiple(mSize, PageCache::getPageCacheSize());
 
 	mPageTableTexture = mFactory->createTexture3D(textureSize.X, textureSize.Y, textureSize.Z, PixelFormat::R8G8B8A8Uint, ResourceInfo::ShaderResource());
 	mTextureUsage = mFactory->createResourceUsage(mPageTableTexture, mPageTableTexture->getPixelFormat());
@@ -48,17 +48,17 @@ void GPUPageTable::clearUpAddress(const VirtualAddress & address)
 	//before CPU version, we need to clear up the relationship in the texture(GPU memory)
 	//we get the virtual link from page table to block table
 	//because the virtual link will be removed by calling the PageTable::clearUpAddress
-	auto virtualLink = mMapRelation[getArrayIndex(address)];
+	const auto virtualLink = mMapRelation[getArrayIndex(address)];
 
 	PageTable::clearUpAddress(address);
 	
 	//clear page cache(GPU version, texture)
-	auto size = PageCache::getPageCacheSize();
-	auto startRange = Helper::multiple(size, address);
-	auto textureSize = size.X * size.Y * size.Z * Utility::computePixelFomratBytes(mPageTableTexture->getPixelFormat());
+	const auto size = PageCache::getPageCacheSize();
+	const auto startRange = Helper::multiple(size, address);
+	const auto textureSize = size.X * size.Y * size.Z * Utility::computePixelFomratBytes(mPageTableTexture->getPixelFormat());
 	
 	//reset the clear memory(all zero)
-	if (mPageCacheClearMemory.size() != (size_t)textureSize) mPageCacheClearMemory.resize(textureSize);
+	if (mPageCacheClearMemory.size() != size_t(textureSize)) mPageCacheClearMemory.resize(textureSize);
 
 	//update memory to texture
 	mPageTableTexture->update(&mPageCacheClearMemory[0],
@@ -81,12 +81,12 @@ auto GPUPageTable::queryAddress(const glm::vec3 & position, const Size & size, V
 	return PageTable::queryAddress(position, size, virtualLink);
 }
 
-auto GPUPageTable::getTexture() -> Texture3D *
+auto GPUPageTable::getTexture() const -> Texture3D *
 {
 	return mPageTableTexture;
 }
 
-auto GPUPageTable::getTextureUsage() -> ResourceUsage *
+auto GPUPageTable::getTextureUsage() const -> ResourceUsage *
 {
 	return mTextureUsage;
 }

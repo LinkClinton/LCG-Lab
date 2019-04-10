@@ -6,8 +6,7 @@
 
 #undef max
 
-OccupancyHistogramNode::OccupancyHistogramNode()
-{
+OccupancyHistogramNode::OccupancyHistogramNode(): FrontOrder(0), BackOrder(0), Depth(0) {
 	Parent = nullptr;
 	Type = OccupancyType::Unknown;
 
@@ -32,9 +31,9 @@ void OccupancyHistogramNode::update()
 		memset(OccupancyTypeCount, 0, sizeof(OccupancyTypeCount));
 
 		//update value
-		for (int type = 0; type < (int)OccupancyType::Count; type++) {
-			for (int order = 0; order < (int)SpaceOrder::Count; order++) {
-				OccupancyTypeCount[type] += getTypeCount(Children[order], (OccupancyType)type);
+		for (auto type = 0; type < int(OccupancyType::Count); type++) {
+			for (auto order = 0; order < int(SpaceOrder::Count); order++) {
+				OccupancyTypeCount[type] += getTypeCount(Children[order], OccupancyType(type));
 			}
 		}
 	}
@@ -46,7 +45,7 @@ void OccupancyHistogramNode::update()
 bool OccupancyHistogramNode::isLeaf()
 {
 	//if no children, it is leaf
-	for (int i = 0; i < (int)SpaceOrder::Count; i++)
+	for (auto i = 0; i < int(SpaceOrder::Count); i++)
 		if (Children[i] != nullptr) return false;
 
 	return true;
@@ -54,25 +53,25 @@ bool OccupancyHistogramNode::isLeaf()
 
 auto OccupancyHistogramNode::getOccupancyType() -> OccupancyType
 {
-	int type = 0;
-	int maxCount = 0;
+	auto type = 0;
+	auto maxCount = 0;
 
 	//find max type count
-	for (int i = 0; i < (int)OccupancyType::Count; i++) {
+	for (auto i = 0; i < int(OccupancyType::Count); i++) {
 		if (maxCount <= OccupancyTypeCount[i]) {
 			type = i;
 			maxCount = OccupancyTypeCount[i];
 		}
 	}
 
-	return (OccupancyType)type;
+	return OccupancyType(type);
 }
 
 int OccupancyHistogramNode::getTypeCount(OccupancyHistogramNode * node, OccupancyType type)
 {
 	if (node == nullptr) return 0;
 
-	return node->OccupancyTypeCount[(int)type];
+	return node->OccupancyTypeCount[int(type)];
 }
 
 auto OccupancyHistogramTree::getOccupancyHistogramNode(OccupancyHistogramNode * parent, SpaceOrder order, int depth) -> OccupancyHistogramNode *
@@ -82,7 +81,7 @@ auto OccupancyHistogramTree::getOccupancyHistogramNode(OccupancyHistogramNode * 
 	return new OccupancyHistogramNode(parent, order, depth);
 }
 
-auto OccupancyHistogramTree::getLowestCommonAncestor(OccupancyHistogramNode * nodeu, OccupancyHistogramNode * nodev) -> OccupancyHistogramNode *
+auto OccupancyHistogramTree::getLowestCommonAncestor(OccupancyHistogramNode * nodeu, OccupancyHistogramNode * nodev) const -> OccupancyHistogramNode *
 {
 	//up the node u
 	if (nodeu->Depth < nodev->Depth) std::swap(nodeu, nodev);
@@ -108,7 +107,7 @@ void OccupancyHistogramTree::insert(OccupancyHistogramNode * node, const glm::ve
 		assert(node->OccupancyTypeCount[1] == 0);
 		assert(node->OccupancyTypeCount[2] == 0);
 
-		node->OccupancyTypeCount[(int)type]++;
+		node->OccupancyTypeCount[int(type)]++;
 
 		node->update();
 
@@ -119,24 +118,24 @@ void OccupancyHistogramTree::insert(OccupancyHistogramNode * node, const glm::ve
 	auto order = Helper::getSpaceOrder(node->AxiallyAlignedBoundingBox, position);
 
 	//create new node
-	if (node->Children[(int)order] == nullptr) node->Children[(int)order] =
+	if (node->Children[int(order)] == nullptr) node->Children[int(order)] =
 		getOccupancyHistogramNode(node, order, depth + 1);
 
-	insert(node->Children[(int)order], position, type, depth + 1);
+	insert(node->Children[int(order)], position, type, depth + 1);
 
 	node->update();
 
 	//delete node for optimization
 	//we can delete the node that all nodes are same
-	int maxOccupancyTypeCount = std::max(node->OccupancyTypeCount[0], 
+	const auto maxOccupancyTypeCount = std::max(node->OccupancyTypeCount[0], 
 		std::max(node->OccupancyTypeCount[1], node->OccupancyTypeCount[2]));
 
-	int target = (int)std::pow(8, (mMaxDepth - depth));
+	const auto target = (int)std::pow(8, (mMaxDepth - depth));
 
 	//free memory
 	//becarefull if we use other allocator
 	if (maxOccupancyTypeCount == target) {
-		for (int i = 0; i < (int)SpaceOrder::Count; i++) {
+		for (auto i = 0; i < int(SpaceOrder::Count); i++) {
 			Utility::Delete(node->Children[i]);
 		}
 	}
@@ -148,7 +147,7 @@ void OccupancyHistogramTree::update(OccupancyHistogramNode* node, const glm::vec
 	if (depth >= mMaxDepth) {
 		std::memset(node->OccupancyTypeCount, 0, sizeof(node->OccupancyTypeCount));
 
-		node->OccupancyTypeCount[(int)type]++;
+		node->OccupancyTypeCount[int(type)]++;
 
 		node->update();
 
@@ -159,38 +158,38 @@ void OccupancyHistogramTree::update(OccupancyHistogramNode* node, const glm::vec
 	auto order = Helper::getSpaceOrder(node->AxiallyAlignedBoundingBox, position);
 
 	//create new node
-	if (node->Children[(int)order] == nullptr) node->Children[(int)order] =
+	if (node->Children[int(order)] == nullptr) node->Children[int(order)] =
 		getOccupancyHistogramNode(node, order, depth + 1);
 
-	update(node->Children[(int)order], position, type, depth + 1);
+	update(node->Children[int(order)], position, type, depth + 1);
 
 	node->update();
 
 	//delete node for optimization
 	//we can delete the node that all nodes are same
-	int maxOccupancyTypeCount = std::max(node->OccupancyTypeCount[0],
+	const auto maxOccupancyTypeCount = std::max(node->OccupancyTypeCount[0],
 		std::max(node->OccupancyTypeCount[1], node->OccupancyTypeCount[2]));
 
-	int target = (int)std::pow(8, (mMaxDepth - depth));
+	const auto target = int(std::pow(8, (mMaxDepth - depth)));
 
 	//free memory
 	//becarefull if we use other allocator
 	if (maxOccupancyTypeCount == target) {
-		for (int i = 0; i < (int)SpaceOrder::Count; i++) {
+		for (auto i = 0; i < int(SpaceOrder::Count); i++) {
 			Utility::Delete(node->Children[i]);
 		}
 	}
 }
 
-auto OccupancyHistogramTree::query(OccupancyHistogramNode* node, const glm::vec3& position, int depth) -> OccupancyType
+auto OccupancyHistogramTree::query(OccupancyHistogramNode* node, const glm::vec3& position, int depth) const -> OccupancyType
 {
 	//do not have the node, we return unkown
 	if (node == nullptr) return OccupancyType::Unknown;
 
-	int maxOccupancyTypeCount = std::max(node->OccupancyTypeCount[0],
+	const auto maxOccupancyTypeCount = std::max(node->OccupancyTypeCount[0],
 		std::max(node->OccupancyTypeCount[1], node->OccupancyTypeCount[2]));
 
-	int target = (int)std::pow(8, (mMaxDepth - depth));
+	const auto target = int(std::pow(8, (mMaxDepth - depth)));
 
 	//get leaf or the sub tree's type are same
 	if (node->isLeaf() == true || maxOccupancyTypeCount == target) return node->getOccupancyType();
@@ -198,11 +197,10 @@ auto OccupancyHistogramTree::query(OccupancyHistogramNode* node, const glm::vec3
 	//get space order
 	auto order = Helper::getSpaceOrder(node->AxiallyAlignedBoundingBox, position);
 
-	return query(node->Children[(int)order], position, depth + 1);
+	return query(node->Children[int(order)], position, depth + 1);
 }
 
-void OccupancyHistogramTree::setEyePosition(OccupancyHistogramNode* node, const glm::vec3 &eyePosition, int & travelTimes)
-{
+void OccupancyHistogramTree::setEyePosition(OccupancyHistogramNode* node, const glm::vec3 &eyePosition, int & travelTimes) const {
 	//dfs
 	node->FrontOrder = travelTimes++;
 
@@ -212,9 +210,9 @@ void OccupancyHistogramTree::setEyePosition(OccupancyHistogramNode* node, const 
 	Helper::getAccessOrder(node->AxiallyAlignedBoundingBox, eyePosition, accessOrder);
 
 	for (size_t i = 0; i < accessOrder.size(); i++) {
-		if (node->Children[(int)accessOrder[i]] == nullptr) continue;
+		if (node->Children[int(accessOrder[i])] == nullptr) continue;
 
-		setEyePosition(node->Children[(int)accessOrder[i]], eyePosition, travelTimes);
+		setEyePosition(node->Children[int(accessOrder[i])], eyePosition, travelTimes);
 	}
 
 	node->BackOrder = travelTimes++;
@@ -232,7 +230,7 @@ void OccupancyHistogramTree::setMaxDepth(int maxDepth)
 
 void OccupancyHistogramTree::setEyePosition(const glm::vec3 & eyePosition)
 {
-	int travelTimes = 0;
+	auto travelTimes = 0;
 
 	setEyePosition(&mRoot, eyePosition, travelTimes);
 }
@@ -252,7 +250,7 @@ auto OccupancyHistogramTree::queryNodeType(const glm::vec3& position) -> Occupan
 	return query(&mRoot, position, 1);
 }
 
-auto OccupancyHistogramTree::maxDepth() -> int
+auto OccupancyHistogramTree::maxDepth() const -> int
 {
 	return mMaxDepth;
 }
@@ -270,7 +268,7 @@ void OccupancyHistogramTree::getOccupancyGeometry(std::vector<OccupancyHistogram
 	while (queue.empty() == false) {
 		auto node = queue.front(); queue.pop();
 
-		for (int i = 0; i < (int)SpaceOrder::Count; i++) {
+		for (auto i = 0; i < int(SpaceOrder::Count); i++) {
 			if (node->Children[i] == nullptr) continue;
 			
 			//cull the lca node
@@ -287,11 +285,10 @@ void OccupancyHistogramTree::getOccupancyGeometry(std::vector<OccupancyHistogram
 	if (sort == false) return;
 
 	//sort
-	std::sort(geometry.begin(), geometry.end(), OccupancyHistogramNodeCompareComponent::Compare);
+	std::sort(geometry.begin(), geometry.end(), OccupancyHistogramNodeCompareComponent::compare);
 }
 
-VirtualNode::VirtualNode()
-{
+VirtualNode::VirtualNode(): FrontOrder(0), BackOrder(0) {
 	Parent = nullptr;
 	Target = nullptr;
 

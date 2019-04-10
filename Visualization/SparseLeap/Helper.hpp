@@ -29,7 +29,7 @@ private:
 		float Distance;
 		SpaceOrder SpaceOrderType;
 
-		static bool Compare(const SpaceCompareComponent &first, const SpaceCompareComponent &second) {
+		static bool compare(const SpaceCompareComponent &first, const SpaceCompareComponent &second) {
 			return first.Distance < second.Distance;
 		}
 	};
@@ -165,7 +165,7 @@ public:
 			spaceCompareComponent[i].Distance = glm::distance(eyePosition, getSpaceCenter(box, (SpaceOrder)i));
 		}
 
-		std::sort(spaceCompareComponent.begin(), spaceCompareComponent.end(), SpaceCompareComponent::Compare);
+		std::sort(spaceCompareComponent.begin(), spaceCompareComponent.end(), SpaceCompareComponent::compare);
 
 		for (size_t i = 0; i < spaceCompareComponent.size(); i++) 
 			accessOrder[i] = spaceCompareComponent[i].SpaceOrderType;

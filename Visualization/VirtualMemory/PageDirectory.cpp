@@ -24,13 +24,13 @@ auto PageDirectory::allocateMemory(const std::vector<Size>& resolutionSize) -> S
 }
 
 PageDirectory::PageDirectory(const std::vector<Size>& resolutionSize, PageTable * nextTable)
-	: AddressMap(allocateMemory(resolutionSize)), mResolutionSize(resolutionSize), mNext(nextTable)
+	: AddressMap(allocateMemory(resolutionSize)), mNext(nextTable), mResolutionSize(resolutionSize)
 {
 	assert(mNext != nullptr);
 
 	mResolutionEntry.resize(mResolutionSize.size());
 
-	int xLocation = 0;
+	auto xLocation = 0;
 
 	for (size_t i = 0; i < mResolutionEntry.size(); i++) {
 		//x-Location will be added with the x-size of multi-Size
@@ -41,14 +41,14 @@ PageDirectory::PageDirectory(const std::vector<Size>& resolutionSize, PageTable 
 	}
 
 	//compute the pool size and get address pointer
-	auto memorySize = mSize.X * mSize.Y * mSize.Z;
-	auto arrayPointer = getAddressPointer();
+	const auto memorySize = mSize.X * mSize.Y * mSize.Z;
+	const auto arrayPointer = getAddressPointer();
 
 	//allocate memory(we do not change the size, so we can keep the address of vector)
 	mMemoryPool.resize(memorySize);
 
 	//get the address of virtual link
-	for (int i = 0; i < memorySize; i++) arrayPointer[i] = &mMemoryPool[i];
+	for (auto i = 0; i < memorySize; i++) arrayPointer[i] = &mMemoryPool[i];
 
 	//set from directory for next
 	mNext->mFromDirectory = this;
@@ -60,7 +60,7 @@ PageDirectory::~PageDirectory()
 
 void PageDirectory::mapAddress(int resolution, const glm::vec3 & position, BlockCache * blockCache)
 {
-	assert((size_t)resolution < mResolutionEntry.size());
+	assert(size_t(resolution) < mResolutionEntry.size());
 
 	//compute the address
 	auto resolutionSize = mResolutionSize[resolution];
@@ -91,7 +91,7 @@ void PageDirectory::mapAddress(int resolution, const glm::vec3 & position, Block
 
 auto PageDirectory::queryAddress(int resolution, const glm::vec3 & position) -> BlockCache *
 {
-	assert((size_t)resolution < mResolutionEntry.size());
+	assert(size_t(resolution) < mResolutionEntry.size());
 
 	//compute the address
 	auto resolutionSize = mResolutionSize[resolution];
@@ -107,7 +107,7 @@ auto PageDirectory::queryAddress(int resolution, const glm::vec3 & position) -> 
 	address = Helper::add(mResolutionEntry[resolution], address);
 	
 	//get the address of next page
-	auto nextAddress = getAddress(address);
+	const auto nextAddress = getAddress(address);
 
 	//unmapped, so we only return null
 	//about empty ? no-solution in this current version

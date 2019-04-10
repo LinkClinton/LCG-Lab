@@ -133,8 +133,8 @@ float4 main(InputPixel input) : SV_Target
 
 	float alphaLimit = EMPTY_LIMIT * STEP_SIZE * LIGHT; //we do not sample the value less than EMPTY_LIMIT
 	float alphaScale = STEP_SIZE * LIGHT;  //scale for rendering
-	float step = STEP_SIZE * length(float3(100, 100, 100));
-	float3 texCoordStep = dir / float3(100, 100, 100); //texcoord step
+	float step = STEP_SIZE * length(RenderConfig[2].xyz);
+	float3 texCoordStep = dir / RenderConfig[2].xyz; //texcoord step
 
 	[loop]
 	for (uint i = 0; i < raySegmentListCount; i++)

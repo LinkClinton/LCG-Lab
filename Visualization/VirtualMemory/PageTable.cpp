@@ -13,17 +13,17 @@ void PageTable::deletePageCache(PageCache *& pageCache)
 }
 
 PageTable::PageTable(const Size &size, PageTable* nextTable) : AddressMap(size),
-	mNext(nextTable), mEnd(nullptr), mMapRelation(size.X * size.Y * size.Z), mFromTable(nullptr), mFromDirectory(nullptr)
+	mNext(nextTable), mEnd(nullptr), mFromTable(nullptr), mFromDirectory(nullptr), mMapRelation(size.X * size.Y * size.Z)
 {
 	//compute the pool size and get address pointer
-	auto memorySize = mSize.X * mSize.Y * mSize.Z;
-	auto arrayPointer = getAddressPointer();
+	const auto memorySize = mSize.X * mSize.Y * mSize.Z;
+	const auto arrayPointer = getAddressPointer();
 
 	//allocate memory(we do not change the size, so we can keep the address of vector)
 	mMemoryPool.resize(memorySize);
 
 	//get the address of virtual link
-	for (int i = 0; i < memorySize; i++) arrayPointer[i] = &mMemoryPool[i];
+	for (auto i = 0; i < memorySize; i++) arrayPointer[i] = &mMemoryPool[i];
 
 	//set from table for next
 	mNext->mFromTable = this;
@@ -33,14 +33,14 @@ PageTable::PageTable(const Size &size, BlockTable* endTable) : AddressMap(size),
 	mNext(nullptr), mEnd(endTable), mMapRelation(size.X * size.Y * size.Z), mFromTable(nullptr), mFromDirectory(nullptr)
 {
 	//compute the pool size and get address pointer
-	auto memorySize = mSize.X * mSize.Y * mSize.Z;
-	auto arrayPointer = getAddressPointer();
+	const auto memorySize = mSize.X * mSize.Y * mSize.Z;
+	const auto arrayPointer = getAddressPointer();
 
 	//allocate memory(we do not change the size, so we can keep the address of vector)
 	mMemoryPool.resize(memorySize);
 
 	//get the address of virtual link
-	for (int i = 0; i < memorySize; i++) arrayPointer[i] = &mMemoryPool[i];
+	for (auto i = 0; i < memorySize; i++) arrayPointer[i] = &mMemoryPool[i];
 
 	//set from table for end
 	mEnd->mFromTable = this;
@@ -55,8 +55,8 @@ void PageTable::mallocAddress(VirtualLink * virtualLink)
 	assert(virtualLink != nullptr);
 
 	//malloc address and get array index
-	auto address = AddressMap::mallocAddress();
-	auto arrayIndex = AddressMap::getArrayIndex(address);
+	const auto address = AddressMap::mallocAddress();
+	const auto arrayIndex = AddressMap::getArrayIndex(address);
 
 	//clear up
 	clearUpAddress(address);
@@ -79,7 +79,7 @@ void PageTable::clearUpAddress(const VirtualAddress & address)
 	//Note: this operation do not tigger the LRU system
 
 	//get array index
-	auto arrayIndex = getArrayIndex(address);
+	const auto arrayIndex = getArrayIndex(address);
 
 	//clear the relation between this page and last page
 	if (mMapRelation[arrayIndex] != nullptr) {
@@ -164,7 +164,7 @@ auto PageTable::queryAddress(const glm::vec3 & position, const Size & size, Virt
 	assert((mNext != nullptr) ^ (mEnd != nullptr));
 
 	//get the address of next page
-	auto nextAddress = pageCache->getAddress(address);
+	const auto nextAddress = pageCache->getAddress(address);
 
 	//unmapped, so we only return null
 	//about empty ? no-solution in this current version
@@ -185,7 +185,7 @@ auto PageTable::invertQuery(const VirtualLink* virtualLink) -> PageDirectory* {
 	if (mFromTable == nullptr) return mFromDirectory;
 
 	//get the page cache's address
-	auto address = Helper::div(virtualLink->FromAddress, PageCache::getPageCacheSize());
+	const auto address = Helper::div(virtualLink->FromAddress, PageCache::getPageCacheSize());
 
 	//trigger the LRU system
 	getAddress(address);
@@ -197,14 +197,14 @@ auto PageTable::invertQuery(const VirtualLink* virtualLink) -> PageDirectory* {
 PageCache::PageCache(const Size & size) : DataCache(size)
 {
 	//compute the pool size and get address pointer
-	auto memorySize = mSize.X * mSize.Y * mSize.Z;
-	auto arrayPointer = getDataPointer();
+	const auto memorySize = mSize.X * mSize.Y * mSize.Z;
+	const auto arrayPointer = getDataPointer();
 
 	//allocate memory(we do not change the size, so we can keep the address of vector)
 	mMemoryPool.resize(memorySize);
 
 	//get the address of virtual link
-	for (int i = 0; i < memorySize; i++) arrayPointer[i] = &mMemoryPool[i];
+	for (auto i = 0; i < memorySize; i++) arrayPointer[i] = &mMemoryPool[i];
 }
 
 void PageCache::clearUp()

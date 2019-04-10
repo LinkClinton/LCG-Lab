@@ -2,7 +2,7 @@
 #include "GPUPageTable.hpp"
 
 GPUPageDirectory::GPUPageDirectory(Factory * factory, Graphics * graphics, const std::vector<Size>& resolutionSize, GPUPageTable * nextTable)
-	: PageDirectory(resolutionSize, nextTable), mFactory(factory), mGraphics(graphics)
+	: PageDirectory(resolutionSize, nextTable), mGraphics(graphics), mFactory(factory)
 {
 	//texture size is equal the mSize
 	mPageDirectoryTexture = mFactory->createTexture3D(mSize.X, mSize.Y, mSize.Z, PixelFormat::R8G8B8A8Uint, ResourceInfo::ShaderResource());
@@ -32,12 +32,12 @@ auto GPUPageDirectory::queryAddress(int resolution, const glm::vec3 & position) 
 	return PageDirectory::queryAddress(resolution, position);
 }
 
-auto GPUPageDirectory::getTexture() -> Texture3D *
+auto GPUPageDirectory::getTexture() const -> Texture3D *
 {
 	return mPageDirectoryTexture;
 }
 
-auto GPUPageDirectory::getTextureUsage() -> ResourceUsage *
+auto GPUPageDirectory::getTextureUsage() const -> ResourceUsage *
 {
 	return mTextureUsage;
 }

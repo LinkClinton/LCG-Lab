@@ -6,7 +6,7 @@ GPUBlockTable::GPUBlockTable(Factory * factory, Graphics * graphics, const Size 
 	BlockTable(size), mFactory(factory), mGraphics(graphics), mFromTexture(nullptr)
 {
 	//texture size is equal the table size * block size
-	auto textureSize = Helper::multiple(mSize, BlockCache::getBlockCacheSize());
+	const auto textureSize = Helper::multiple(mSize, BlockCache::getBlockCacheSize());
 
 	mBlockTableTexture = mFactory->createTexture3D(textureSize.X, textureSize.Y, textureSize.Z, PixelFormat::R8Unknown, ResourceInfo::ShaderResource());
 	mTextureUsage = mFactory->createResourceUsage(mBlockTableTexture, mBlockTableTexture->getPixelFormat());
@@ -32,7 +32,7 @@ void GPUBlockTable::clearUpAddress(const VirtualAddress & address)
 	//before CPU version, we need to clear up the relationship in the texture(GPU memory)
 	//we get the virtual link from page table to block table
 	//because the virtual link will be removed by calling the BlockTable::clearUpAddress
-	auto virtualLink = mMapRelation[getArrayIndex(address)];
+	const auto virtualLink = mMapRelation[getArrayIndex(address)];
 
 	BlockTable::clearUpAddress(address);
 
@@ -48,8 +48,8 @@ void GPUBlockTable::mapAddress(const glm::vec3 & position, const Size & size, Bl
 	//because we will delete it not only once
 	//so we only upload the block cache to the texture(GPU memory) and set virtual empty block cache
 	//get block size and the block cache's range([block size * address, block size * address + block size))
-	auto blockSize = BlockCache::getBlockCacheSize();
-	auto startRange = Helper::multiple(blockSize, virtualLink->Address);
+	const auto blockSize = BlockCache::getBlockCacheSize();
+	const auto startRange = Helper::multiple(blockSize, virtualLink->Address);
 
 	//update block cache
 	mBlockTableTexture->update(blockCache->getDataPointer(),
@@ -68,12 +68,12 @@ auto GPUBlockTable::queryAddress(const glm::vec3 & position, const Size & size, 
 	return BlockTable::queryAddress(position, size, virtualLink);
 }
 
-auto GPUBlockTable::getTexture() -> Texture3D *
+auto GPUBlockTable::getTexture() const -> Texture3D *
 {
 	return mBlockTableTexture;
 }
 
-auto GPUBlockTable::getTextureUsage() -> ResourceUsage *
+auto GPUBlockTable::getTextureUsage() const -> ResourceUsage *
 {
 	return mTextureUsage;
 }
@@ -83,13 +83,13 @@ void GPUHelper::modifyVirtualLinkToTexture(VirtualLink * virtualLink, Texture3D 
 	//create the modify data, because we use R8G8B8A8 format, so we need use "byte"
 	//because the address in the range of [0, BLOCK_COUNT_XYZ), we can use "byte"
 	byte modifyData[4];
-	modifyData[0] = (byte)virtualLink->Address.X;
-	modifyData[1] = (byte)virtualLink->Address.Y;
-	modifyData[2] = (byte)virtualLink->Address.Z;
-	modifyData[3] = (byte)virtualLink->State;
+	modifyData[0] = byte(virtualLink->Address.X);
+	modifyData[1] = byte(virtualLink->Address.Y);
+	modifyData[2] = byte(virtualLink->Address.Z);
+	modifyData[3] = byte(virtualLink->State);
 
 	//get from address
-	auto fromAddress = virtualLink->FromAddress;
+	const auto fromAddress = virtualLink->FromAddress;
 
 	//modify the texture
 	texture->update(modifyData,

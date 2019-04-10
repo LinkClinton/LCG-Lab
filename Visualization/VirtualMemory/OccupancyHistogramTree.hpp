@@ -64,13 +64,13 @@ struct OccupancyHistogramNode {
 	int BackOrder; //back face order
 	int Depth; //the depth
 	
-	int OccupancyTypeCount[(int)OccupancyType::Count]; //type count
+	int OccupancyTypeCount[int(OccupancyType::Count)]; //type count
 
 	OccupancyType Type;
 
 	OccupancyHistogramNode* Parent;
 
-	OccupancyHistogramNode* Children[(int)SpaceOrder::Count];
+	OccupancyHistogramNode* Children[int(SpaceOrder::Count)];
 	
 	AxiallyAlignedBoundingBox AxiallyAlignedBoundingBox; //define the area that node contained
 
@@ -105,9 +105,9 @@ struct VirtualNode {
 
 	VirtualNode* Parent; //parent in virtual tree
 
-	VirtualNode* Children[(int)SpaceOrder::Count]; //chilren in virtual tree
+	VirtualNode* Children[int(SpaceOrder::Count)]{}; //children in virtual tree
 
-	OccupancyHistogramNode* Target; //node in occupancy hisyogram node
+	OccupancyHistogramNode* Target; //node in occupancy histogram node
 
 	VirtualNode();
 
@@ -128,7 +128,7 @@ struct OccupancyHistogramNodeCompareComponent {
 		int compareValue = 0) :
 		Node(node), IsFrontFace(isFrontFace), CompareValue(compareValue) {}
 
-	static bool Compare(const OccupancyHistogramNodeCompareComponent &first, const OccupancyHistogramNodeCompareComponent &second) {
+	static bool compare(const OccupancyHistogramNodeCompareComponent &first, const OccupancyHistogramNodeCompareComponent &second) {
 		return first.CompareValue < second.CompareValue;
 	}
 };
@@ -140,8 +140,8 @@ class OccupancyHistogramTree {
 private:
 	OccupancyHistogramNode mRoot; //tree root
 	
-	int mNodeCount;
-	int mMaxDepth; //tree's max depth
+	int mNodeCount = 0;
+	int mMaxDepth = 0; //tree's max depth
 
 	/**
 	 * @brief get a new node, we can replace it by using our allocator
@@ -151,28 +151,30 @@ private:
 	/**
 	 * @brief get the lowest common ancestor from node u and node v
 	 */
-	auto getLowestCommonAncestor(OccupancyHistogramNode* nodeu, OccupancyHistogramNode* nodev) -> OccupancyHistogramNode*;
+	auto getLowestCommonAncestor(OccupancyHistogramNode* nodeu, OccupancyHistogramNode* nodev) const -> OccupancyHistogramNode*;
 
 	/**
 	 * @brief insert a empty or no-empty node at position(input)
 	 */
 	void insert(OccupancyHistogramNode* node, const glm::vec3 &position, OccupancyType type, int depth);
 
+	/**
+	 * @brief update a type of node at position 
+	 */
 	void update(OccupancyHistogramNode* node, const glm::vec3& position, OccupancyType type, int depth);
 
 	/**
 	 * @brief query a node's type(unknown means is not existed)
 	 */
-	auto query(OccupancyHistogramNode* node, const glm::vec3& position, int depth) -> OccupancyType;
+	auto query(OccupancyHistogramNode* node, const glm::vec3& position, int depth) const -> OccupancyType;
 
 	/**
 	 * @brief set the eye position
 	 */
-	void setEyePosition(OccupancyHistogramNode* node, const glm::vec3 &eyePosition, int &travelTimes);
+	void setEyePosition(OccupancyHistogramNode* node, const glm::vec3 &eyePosition, int &travelTimes) const;
 
 public:
-	OccupancyHistogramTree() :
-		mMaxDepth(0), mNodeCount(0), mRoot() {
+	OccupancyHistogramTree() {
 		mRoot.Depth = 1;
 	}
 
@@ -196,11 +198,20 @@ public:
 	 */
 	void insertNoEmpty(const glm::vec3 &position, OccupancyType type);
 
+	/*
+	 * @brief update type of node at position
+	 */
 	void updateBlock(const glm::vec3& position, OccupancyType type);
 
+	/*
+	 * @brief query type of node at position
+	 */
 	auto queryNodeType(const glm::vec3& position) -> OccupancyType;
 
-	auto maxDepth() -> int;
+	/*
+	 * @brief get the max depth
+	 */
+	auto maxDepth() const -> int;
 
 	/**
 	 * @brief get occupancy geometry, some aabb with right order

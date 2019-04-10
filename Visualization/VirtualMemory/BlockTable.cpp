@@ -19,15 +19,15 @@ auto BlockCache::average(const VirtualAddress& from, const VirtualAddress& to) -
 
 	for (size_t z = from.Z; z < to.Z; z++) {
 		for (size_t y = from.Y; y < to.Y; y++) {
-			auto baseAddress = z * mDepthPitch + y * mRowPitch;
+			const auto baseAddress = z * mDepthPitch + y * mRowPitch;
 			for (size_t address = baseAddress + from.X; address < baseAddress + to.X; address++)
 				value = value + mData[address];
 		}
 	}
 
-	Size size = Size(to.X - from.X, to.Y - from.Y, to.Z - from.Z);
+	const auto size = Size(to.X - from.X, to.Y - from.Y, to.Z - from.Z);
 
-	return (byte)(value / (size.X * size.Y * size.Z));
+	return byte(value / (size.X * size.Y * size.Z));
 }
 
 void BlockCache::setBlockCacheSize(const Size & size)
@@ -47,17 +47,17 @@ void BlockTable::deleteBlockCache(BlockCache *& blockCache)
 }
 
 BlockTable::BlockTable(const Size & size) : AddressMap(size),
-	mMapRelation(size.X * size.Y * size.Z), mFromTable(nullptr)
+	mFromTable(nullptr), mMapRelation(size.X * size.Y * size.Z)
 {
 	//compute the pool size and get address pointer
-	auto memorySize = mSize.X * mSize.Y * mSize.Z;
-	auto arrayPointer = getAddressPointer();
+	const auto memorySize = mSize.X * mSize.Y * mSize.Z;
+	const auto arrayPointer = getAddressPointer();
 
 	//allocate memory(we do not change the size, so we can keep the address of vector)
 	mMemoryPool.resize(memorySize);
 
 	//get the address of virtual link
-	for (int i = 0; i < memorySize; i++) arrayPointer[i] = &mMemoryPool[i];
+	for (auto i = 0; i < memorySize; i++) arrayPointer[i] = &mMemoryPool[i];
 }
 
 
@@ -70,8 +70,8 @@ void BlockTable::mallocAddress(VirtualLink * virtualLink)
 	assert(virtualLink != nullptr);
 
 	//malloc address and get array index
-	auto address = AddressMap::mallocAddress();
-	auto arrayIndex = AddressMap::getArrayIndex(address);
+	const auto address = AddressMap::mallocAddress();
+	const auto arrayIndex = AddressMap::getArrayIndex(address);
 
 	//clear up
 	clearUpAddress(address);
@@ -90,7 +90,7 @@ void BlockTable::clearUpAddress(const VirtualAddress & address)
 	//and clear the block cache at "address"
 	
 	//get array index
-	auto arrayIndex = getArrayIndex(address);
+	const auto arrayIndex = getArrayIndex(address);
 
 	//clear the relation between this page and last page
 	if (mMapRelation[arrayIndex] != nullptr) {
@@ -109,8 +109,8 @@ void BlockTable::mapAddress(const glm::vec3 & position, const Size & size, Block
 	assert(blockCache->getSize() == BlockCache::getBlockCacheSize());
 
 	//get address and block size
-	auto address = getAddress(virtualLink->Address);
-	auto blockSize = BlockCache::getBlockCacheSize();
+	const auto address = getAddress(virtualLink->Address);
+	const auto blockSize = BlockCache::getBlockCacheSize();
 	
 	//copy data
 	memcpy(address->getDataPointer(), blockCache->getDataPointer(), blockSize.X * blockSize.Y * blockSize.Z);

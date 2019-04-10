@@ -1,8 +1,24 @@
 #include "SparseLeapManager.hpp"
+#include "SharedMacro.hpp"
 
 SparseLeapManager::SparseLeapManager(Factory* factory, int width, int height) :
-	mFactory(factory), mWidth(width), mHeight(height)
-{
+	mFactory(factory), mWidth(width), mHeight(height), mCube(), mOccupancyGeometryVertexShader(nullptr),
+	mOccupancyGeometryPixelShader(nullptr),
+	mOccupancyGeometryRenderTexture(nullptr),
+	mRaySegmentListCountTexture(nullptr),
+	mRaySegmentListDepthTexture(nullptr),
+	mRaySegmentListBoxTypeTexture(nullptr),
+	mRaySegmentListEventTypeTexture(nullptr),
+	mOccupancyGeometryRenderTarget(nullptr),
+	mRaySegmentListCountUAVUsage(nullptr),
+	mRaySegmentListDepthUAVUsage(nullptr),
+	mRaySegmentListBoxTypeUAVUsage(nullptr),
+	mRaySegmentListEventTypeUAVUsage(nullptr),
+	mRaySegmentListCountSRVUsage(nullptr),
+	mRaySegmentListDepthSRVUsage(nullptr),
+	mRaySegmentListBoxTypeSRVUsage(nullptr),
+	mRaySegmentListEventTypeSRVUsage(nullptr),
+	mOccupancyHistogramTree(nullptr) {
 }
 
 void SparseLeapManager::initialize(const glm::vec3 &cube)
@@ -16,7 +32,9 @@ void SparseLeapManager::initialize(const glm::vec3 &cube)
 	//create texture
 	mOccupancyGeometryRenderTexture = mFactory->createTexture2D(mWidth, mHeight, PixelFormat::R8G8B8A8Unknown, ResourceInfo(BindUsage::RenderTargetUsage));
 
-	auto resourceInfo = ResourceInfo((BindUsage)((unsigned int)BindUsage::ShaderResourceUsage | (unsigned int)BindUsage::UnorderedAccessUsage));
+	const auto resourceInfo = ResourceInfo(BindUsage(
+		static_cast<unsigned int>(BindUsage::ShaderResourceUsage) | 
+		static_cast<unsigned int>(BindUsage::UnorderedAccessUsage)));
 
 	mRaySegmentListCountTexture = mFactory->createTexture2D(mWidth, mHeight, PixelFormat::R32Uint, resourceInfo);
 	mRaySegmentListDepthTexture = mFactory->createTexture3D(mWidth, mHeight, MAX_RAYSEGMENT_COUNT, PixelFormat::R32Float, resourceInfo);
@@ -83,7 +101,7 @@ auto SparseLeapManager::cube() const -> glm::vec3
 	return mCube;
 }
 
-auto SparseLeapManager::tree() -> OccupancyHistogramTree*
+auto SparseLeapManager::tree() const -> OccupancyHistogramTree*
 {
 	return mOccupancyHistogramTree;
 }

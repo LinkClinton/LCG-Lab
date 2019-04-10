@@ -18,11 +18,11 @@ public:
 
 	~GPUPageDirectory();
 
-	virtual void mapAddress(int resolution, const glm::vec3 &position, BlockCache* blockCache);
+	void mapAddress(int resolution, const glm::vec3 &position, BlockCache* blockCache)override;
 
-	virtual auto queryAddress(int resolution, const glm::vec3 &position)->BlockCache*;
+	auto queryAddress(int resolution, const glm::vec3 &position)->BlockCache* override;
 
-	auto getTexture() -> Texture3D*;
+	auto getTexture() const -> Texture3D*;
 
-	auto getTextureUsage() -> ResourceUsage*;
+	auto getTextureUsage() const -> ResourceUsage*;
 };

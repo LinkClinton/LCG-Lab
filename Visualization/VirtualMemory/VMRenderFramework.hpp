@@ -51,9 +51,9 @@ private:
 	void initializeShaderStage();
 	void initializeRasterizerStage();
 
-	void destoryInputStage();
-	void destoryShaderStage();
-	void destoryRasterizerStage();
+	void destroyInputStage();
+	void destroyShaderStage();
+	void destroyRasterizerStage();
 public:
 	VMRenderFramework(const std::string &name, int width, int height);
 

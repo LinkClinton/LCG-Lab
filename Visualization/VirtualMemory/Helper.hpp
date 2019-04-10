@@ -17,14 +17,13 @@ template<typename T>
 struct Vector3 {
 	T X, Y, Z;
 
+	Vector3() :
+		X(0), Y(0), Z(0) {}
+
 	Vector3(T x, T y, T z) :
 		X(x), Y(y), Z(z) {}
 
 	Vector3(T xyz) : Vector3(xyz, xyz, xyz) {}
-
-	template<typename T = int>
-	Vector3(T x = (int)0, T y = (int)0, T z = (int)0) :
-		X(x), Y(y), Z(z) {}
 
 	bool operator == (const Vector3 &vector)const {
 		return (X == vector.X) && (Y == vector.Y) && (Z == vector.Z);
@@ -56,7 +55,7 @@ struct VirtualLink {
 	VirtualAddress FromAddress;
 	PageState State;
 
-	VirtualLink(const VirtualAddress &address = VirtualAddress(),
+	explicit VirtualLink(const VirtualAddress &address = VirtualAddress(),
 		const VirtualAddress &fromAddress = VirtualAddress(),
 		PageState state = PageState::UnMapped) : Address(address), FromAddress(fromAddress), State(state) {}
 };
@@ -80,7 +79,7 @@ struct UInt4 {
 	UInt4(unsigned int value = 0) :
 		X(value), Y(value), Z(value), W(value) {}
 
-	UInt4(Vector3<int> value) :
+	UInt4(const Vector3<int> &value) :
 		X(value.X), Y(value.Y), Z(value.Z), W(0) {}
 
 	template<typename T>
@@ -102,7 +101,7 @@ private:
 		float Distance;
 		SpaceOrder SpaceOrderType;
 
-		static bool Compare(const SpaceCompareComponent& first, const SpaceCompareComponent& second) {
+		static bool compare(const SpaceCompareComponent& first, const SpaceCompareComponent& second) {
 			return first.Distance < second.Distance;
 		}
 	};
@@ -131,9 +130,9 @@ public:
 	template<typename T>
 	static auto divToFloat(const Vector3<T>& left, const Vector3<T>& right) -> glm::vec3 {
 		return glm::vec3(
-			(float)left.X / right.X,
-			(float)left.Y / right.Y,
-			(float)left.Z / right.Z);
+			float(left.X) / right.X,
+			float(left.Y) / right.Y,
+			float(left.Z) / right.Z);
 	}
 
 	template<typename T>
@@ -153,9 +152,9 @@ public:
 	 * @brief make sub-AxiallyAlignedBoundingBox by space order
 	 */
 	static AxiallyAlignedBoundingBox divideAxiallyAlignedBoundingBox(const AxiallyAlignedBoundingBox& box, SpaceOrder order) {
-		float halfX = (box.Max.x + box.Min.x) * 0.5f;
-		float halfY = (box.Max.y + box.Min.y) * 0.5f;
-		float halfZ = (box.Max.z + box.Min.z) * 0.5f;
+		const float halfX = (box.Max.x + box.Min.x) * 0.5f;
+		const float halfY = (box.Max.y + box.Min.y) * 0.5f;
+		const float halfZ = (box.Max.z + box.Min.z) * 0.5f;
 
 		switch (order)
 		{
@@ -175,10 +174,9 @@ public:
 			return AxiallyAlignedBoundingBox(halfX, halfY, box.Min.z, box.Max.x, box.Max.y, halfZ);
 		case SpaceOrder::MaxXMaxYMaxZ:
 			return AxiallyAlignedBoundingBox(halfX, halfY, halfZ, box.Max.x, box.Max.y, box.Max.z);
-			break;
+		default:
+			throw std::runtime_error("not support order.");
 		}
-
-		return AxiallyAlignedBoundingBox();
 	}
 
 	/**
@@ -192,39 +190,39 @@ public:
 	 * @brief get the space order(which space order that the position is)
 	 */
 	static SpaceOrder getSpaceOrder(const AxiallyAlignedBoundingBox & box, const glm::vec3 & position) {
-		int xOrder = 0;
-		int yOrder = 0;
-		int zOrder = 0;
+		auto xOrder = 0;
+		auto yOrder = 0;
+		auto zOrder = 0;
 
-		glm::vec3 half = (box.Max + box.Min) * 0.5f;
+		const auto half = (box.Max + box.Min) * 0.5f;
 
 		if (position.x > half.x) xOrder = 1;
 		if (position.y > half.y) yOrder = 1;
 		if (position.z > half.z) zOrder = 1;
 
 		//combine the sub propetry
-		int result = (zOrder << 2) + (yOrder << 1) + xOrder;
+		auto result = (zOrder << 2) + (yOrder << 1) + xOrder;
 
-		return (SpaceOrder)result;
+		return SpaceOrder(result);
 	}
 
 	/**
 	 * @brief get the space order(aabb version)
 	 */
 	static SpaceOrder getSpaceOrder(const AxiallyAlignedBoundingBox & parent, const AxiallyAlignedBoundingBox & children) {
-		int xOrder = 0;
-		int yOrder = 0;
-		int zOrder = 0;
+		auto xOrder = 0;
+		auto yOrder = 0;
+		auto zOrder = 0;
 
-		glm::vec3 half = (parent.Max + parent.Min) * 0.5f;
+		const auto half = (parent.Max + parent.Min) * 0.5f;
 
 		if (children.Min.x >= half.x && children.Max.x > half.x) xOrder = 1;
 		if (children.Min.y >= half.y && children.Max.y > half.y) yOrder = 1;
 		if (children.Min.z >= half.z && children.Max.z > half.z) zOrder = 1;
 
-		int result = (zOrder << 2) + (yOrder << 1) + xOrder;
+		auto result = (zOrder << 2) + (yOrder << 1) + xOrder;
 
-		return (SpaceOrder)result;
+		return SpaceOrder(result);
 	}
 
 	/**
@@ -248,11 +246,11 @@ public:
 	static auto getSpaceCenter(const AxiallyAlignedBoundingBox & box, SpaceOrder order) -> const glm::vec3 {
 		AxiallyAlignedBoundingBox spaceBox;
 
-		glm::vec3 half = (box.Max + box.Min) * 0.5f;
+		const auto half = (box.Max + box.Min) * 0.5f;
 
-		bool isMaxX = ((int(order) & 1) != 0);
-		bool isMaxY = ((int(order) & 2) != 0);
-		bool isMaxZ = ((int(order) & 4) != 0);
+		const auto isMaxX = ((int(order) & 1) != 0);
+		const auto isMaxY = ((int(order) & 2) != 0);
+		const auto isMaxZ = ((int(order) & 4) != 0);
 
 		spaceBox.Min.x = isMaxX ? half.x : box.Min.x;
 		spaceBox.Min.y = isMaxY ? half.y : box.Min.y;
@@ -274,11 +272,11 @@ public:
 		//we use the distance from box's center to eye position
 		//because some special propetry, we can do this. (need to prove)
 		for (size_t i = 0; i < spaceCompareComponent.size(); i++) {
-			spaceCompareComponent[i].SpaceOrderType = (SpaceOrder)i;
-			spaceCompareComponent[i].Distance = glm::distance(eyePosition, getSpaceCenter(box, (SpaceOrder)i));
+			spaceCompareComponent[i].SpaceOrderType = SpaceOrder(i);
+			spaceCompareComponent[i].Distance = glm::distance(eyePosition, getSpaceCenter(box, SpaceOrder(i)));
 		}
 
-		std::sort(spaceCompareComponent.begin(), spaceCompareComponent.end(), SpaceCompareComponent::Compare);
+		std::sort(spaceCompareComponent.begin(), spaceCompareComponent.end(), SpaceCompareComponent::compare);
 
 		for (size_t i = 0; i < spaceCompareComponent.size(); i++)
 			accessOrder[i] = spaceCompareComponent[i].SpaceOrderType;
@@ -287,12 +285,12 @@ public:
 	static auto readFile(const std::string &fileName) -> std::vector<byte> {
 		std::ifstream file(fileName, std::ios::binary | std::ios::ate);
 
-		auto fileSize = (size_t)file.tellg();
+		const auto fileSize = size_t(file.tellg());
 
 		std::vector<byte> fileCode(fileSize);
 
 		file.seekg(0, std::ios::beg);
-		file.read((char*)&fileCode[0], fileSize);
+		file.read(reinterpret_cast<char*>(&fileCode[0]), fileSize);
 		file.close();
 
 		return fileCode;

@@ -1,6 +1,7 @@
 #include "VirtualMemoryManager.hpp"
 
 #include <algorithm>
+#include "SharedMacro.hpp"
 
 #undef min
 
@@ -15,13 +16,12 @@ void VirtualMemoryManager::analyseFile(const std::string & fileName)
 	mFileSize = Size(800, 800, 800);
 }
 
-void VirtualMemoryManager::mapAddressToGPU(int resolution, const glm::vec3 & position, BlockCache * block)
-{
+void VirtualMemoryManager::mapAddressToGPU(int resolution, const glm::vec3 & position, BlockCache * block) const {
 	//upload block data to GPU virtual memory
 	mGPUDirectoryCache->mapAddress(resolution, position, block);
 
 #ifdef _DEBUG
-	static int count = 0;
+	static auto count = 0;
 
 	printf("Mapped Times from Cpu to Gpu: %d with resolution : %d\n", ++count, resolution);
 #endif // _DEBUG
@@ -30,7 +30,7 @@ void VirtualMemoryManager::mapAddressToGPU(int resolution, const glm::vec3 & pos
 
 void VirtualMemoryManager::initialize(const std::string &fileName, const std::vector<glm::vec3> &resolution)
 {
-	//initialize the virutal memroy resource(CPU and GPU)
+	//initialize the virtual memory resource(CPU and GPU)
 	mResolution = resolution;
 
 	//expand size of CPU virtual memory
@@ -49,20 +49,20 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 	
 	//initialize resolution 0 directory
 	//page size means the size of one page cache can store
-	int pageSize = PAGE_SIZE_XYZ * BLOCK_SIZE_XYZ;
+	const int pageSize = PAGE_SIZE_XYZ * BLOCK_SIZE_XYZ;
 
 	//for all resolution, we compute the real size
 	//then we compute the directory size we need
 	for (size_t i = 0; i < resolution.size(); i++) {
-		auto realSize = Helper::multiple(mFileSize, resolution[i]);
+		const auto realSize = Helper::multiple(mFileSize, resolution[i]);
 		auto directorySize = Size(
-			(int)ceil((float)realSize.X / pageSize),
-			(int)ceil((float)realSize.Y / pageSize),
-			(int)ceil((float)realSize.Z / pageSize)
+			int(ceil(float(realSize.X) / pageSize)),
+			int(ceil(float(realSize.Y) / pageSize)),
+			int(ceil(float(realSize.Z) / pageSize))
 		);
 		
 		//block count size
-		auto blockCount = Helper::multiple(directorySize, Size(PAGE_SIZE_XYZ));
+		const auto blockCount = Helper::multiple(directorySize, Size(PAGE_SIZE_XYZ));
 
 		mMultiResolutionSize.push_back(directorySize);
 		mMultiResolutionBlockCount.push_back(blockCount.X * blockCount.Y * blockCount.Z);
@@ -96,9 +96,9 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 
 		auto voxelCount = Helper::multiple(mDirectoryCache->getResolutionSize((int)i), Size(PAGE_SIZE_XYZ * BLOCK_SIZE_XYZ));
 		auto readBlockSize = Size(
-			(int)((float)BLOCK_SIZE_XYZ / voxelCount.X * mFileSize.X),
-			(int)((float)BLOCK_SIZE_XYZ / voxelCount.Y * mFileSize.Y),
-			(int)((float)BLOCK_SIZE_XYZ / voxelCount.Z * mFileSize.Z));
+			int(float(BLOCK_SIZE_XYZ) / voxelCount.X * mFileSize.X),
+			int(float(BLOCK_SIZE_XYZ) / voxelCount.Y * mFileSize.Y),
+			int(float(BLOCK_SIZE_XYZ) / voxelCount.Z * mFileSize.Z));
 
 		mVoxelCount.push_back(voxelCount);
 		mReadBlockSize.push_back(readBlockSize);
@@ -123,10 +123,10 @@ void VirtualMemoryManager::initialize(const std::string &fileName, const std::ve
 	//for block cache miss texture, we need compute the x and y size and make sure it can cover the render target
 	//so the x and y size is equal "ceil(mResolutionSize / BLOCK_HASH_TABLE_PIXEL_TILE_SIZE_XY)"
 	//and the z size means the array size(0 for count)
-	int blockCacheUsageStateSize = BLOCK_COUNT_XYZ;
-	int blockCacheMissArraySizeX = (int)ceil((float)mResolutionWidth / BLOCK_HASH_TABLE_PIXEL_TILE_SIZE_XY);
-	int blockCacheMissArraySizeY = (int)ceil((float)mResolutionHeight / BLOCK_HASH_TABLE_PIXEL_TILE_SIZE_XY);
-	int blockCacheMissArraySizeZ = BLOCK_HASH_TABLE_ARRAY_SIZE;
+	const int blockCacheUsageStateSize = BLOCK_COUNT_XYZ;
+	const int blockCacheMissArraySizeX = int(ceil(float(mResolutionWidth) / BLOCK_HASH_TABLE_PIXEL_TILE_SIZE_XY));
+	const int blockCacheMissArraySizeY = int(ceil(float(mResolutionHeight) / BLOCK_HASH_TABLE_PIXEL_TILE_SIZE_XY));
+	const int blockCacheMissArraySizeZ = BLOCK_HASH_TABLE_ARRAY_SIZE;
 
 	//create texture 3d and resource usage
 	mBlockCacheUsageStateTexture = new SharedTexture3D(
@@ -162,17 +162,17 @@ void VirtualMemoryManager::solveCacheMiss()
 
 	//solve the usage state texture
 	//map the texture to memory
-	auto usageState = mBlockCacheUsageStateTexture->mapCpuTexture();
+	const auto usageState = mBlockCacheUsageStateTexture->mapCpuTexture();
 
 	//get data pointer
-	byte* usageStateData = (byte*)usageState.Data;
+	byte* usageStateData = static_cast<byte*>(usageState.Data);
 	
 	int blockCacheCount = 0;
 
-	for (int x = 0; x < mBlockCacheUsageStateTexture->getWidth(); x++) {
-		for (int y = 0; y < mBlockCacheUsageStateTexture->getHeight(); y++) {
-			for (int z = 0; z < mBlockCacheUsageStateTexture->getDepth(); z++) {
-				int id = x + y * usageState.RowPitch + z * usageState.DepthPitch;
+	for (auto x = 0; x < mBlockCacheUsageStateTexture->getWidth(); x++) {
+		for (auto y = 0; y < mBlockCacheUsageStateTexture->getHeight(); y++) {
+			for (auto z = 0; z < mBlockCacheUsageStateTexture->getDepth(); z++) {
+				const int id = x + y * usageState.RowPitch + z * usageState.DepthPitch;
 
 				if (usageStateData[id] != 1) continue;
 
@@ -189,7 +189,7 @@ void VirtualMemoryManager::solveCacheMiss()
 	mBlockCacheUsageStateTexture->unmapCpuTexture();
 
 	//if "blockCacheCount" is equal the block texture size, we do not solve the cache miss
-	//because it is meanless
+	//because it is mean less
 	if (blockCacheCount == BLOCK_COUNT_XYZ * BLOCK_COUNT_XYZ * BLOCK_COUNT_XYZ) return;
 
 	//solve the cache miss
@@ -197,28 +197,28 @@ void VirtualMemoryManager::solveCacheMiss()
 	auto cacheMiss = mBlockCacheMissArrayTexture->mapCpuTexture();
 
 	//get data pointer
-	unsigned int* cacheMissData = (unsigned int*)cacheMiss.Data;
+	unsigned int* cacheMissData = static_cast<unsigned int*>(cacheMiss.Data);
 
 	//reset the row pitch and depth pitch to size
 	//the cache miss is unsigned int
 	cacheMiss.RowPitch = cacheMiss.RowPitch / sizeof(unsigned int);
 	cacheMiss.DepthPitch = cacheMiss.DepthPitch / sizeof(unsigned int);
 
-	auto xEndPosition = mBlockCacheMissArrayTexture->getWidth();
-	auto yEndPosition = mBlockCacheMissArrayTexture->getHeight();
+	const auto xEndPosition = mBlockCacheMissArrayTexture->getWidth();
+	const auto yEndPosition = mBlockCacheMissArrayTexture->getHeight();
 
 	int count = 0;
 
 	for (size_t x = 0; x < xEndPosition; x++) {
 		for (size_t y = 0; y < yEndPosition; y++) {
 			//we store count at (x, y, 0) -> x + y * rowPitch + 0 * depthPitch
-			auto cacheMissCount = cacheMissData[x + y * cacheMiss.RowPitch];
+			const auto cacheMissCount = cacheMissData[x + y * cacheMiss.RowPitch];
 
 			for (size_t z = 1; z <= cacheMissCount; z++) {
 				auto id = cacheMissData[x + y * cacheMiss.RowPitch + z * cacheMiss.DepthPitch];
 
 				//get resolution 
-				auto resolution = unsigned int(
+				const auto resolution = unsigned int(
 					std::lower_bound(mMultiResolutionBlockEnd.begin(), mMultiResolutionBlockEnd.end(), id) - mMultiResolutionBlockEnd.begin());
 	
 				id = id - mMultiResolutionBlockBase[resolution];
@@ -259,7 +259,7 @@ void VirtualMemoryManager::mapAddress(int resolution, int blockID)
 	//if it is not in the memory, we will load it from disk
 	//if it is in the memory, we will upload it to GPU virtual memory
 
-	assert(resolution < MAX_MULTIRESOLUTION_COUNT && (size_t)resolution < mResolution.size());
+	assert(resolution < MAX_MULTIRESOLUTION_COUNT && size_t(resolution) < mResolution.size());
 
 	//get the directory cache size of current resolution
 	auto directoryCacheSize = mDirectoryCache->getResolutionSize(resolution);
@@ -302,28 +302,28 @@ void VirtualMemoryManager::mapAddress(int resolution, int blockID)
 		loadBlock(resolution, blockAddress, output);
 
 #ifdef _SPARSE_LEAP
-		auto treeBlockSize = (float)std::pow(2, mSparseLeapManager->tree()->maxDepth() - 1);
+		auto treeBlockSize = float(std::pow(2, mSparseLeapManager->tree()->maxDepth() - 1));
 
 		auto originBox = AxiallyAlignedBoundingBox(
 			treeBlockSize * glm::vec3(
-				((float)blockAddress.X / blockCacheSize.X),
-				((float)blockAddress.Y / blockCacheSize.Y),
-				((float)blockAddress.Z / blockCacheSize.Z)),
+				(float(blockAddress.X) / blockCacheSize.X),
+				(float(blockAddress.Y) / blockCacheSize.Y),
+				(float(blockAddress.Z) / blockCacheSize.Z)),
 			treeBlockSize * glm::vec3(
-				((float)(blockAddress.X + 1) / blockCacheSize.X),
-				((float)(blockAddress.Y + 1) / blockCacheSize.Y),
-				((float)(blockAddress.Z + 1) / blockCacheSize.Z)));
+				(float(blockAddress.X + 1) / blockCacheSize.X),
+				(float(blockAddress.Y + 1) / blockCacheSize.Y),
+				(float(blockAddress.Z + 1) / blockCacheSize.Z)));
 
 		auto roundBox = AxiallyAlignedBoundingBox(glm::trunc(originBox.Min), glm::ceil(originBox.Max));
 
-		auto minRange = Size((int)roundBox.Min.x, (int)roundBox.Min.y, (int)roundBox.Min.z);
-		auto maxRange = Size((int)roundBox.Max.x, (int)roundBox.Max.y, (int)roundBox.Max.z);
+		auto minRange = Size(int(roundBox.Min.x), int(roundBox.Min.y), int(roundBox.Min.z));
+		auto maxRange = Size(int(roundBox.Max.x), int(roundBox.Max.y), int(roundBox.Max.z));
 		auto tree = mSparseLeapManager->tree();
 		auto cube = mSparseLeapManager->cube();
 
-		auto xOffset = (float)BLOCK_SIZE_XYZ / (maxRange.X - minRange.X);
-		auto yOffset = (float)BLOCK_SIZE_XYZ / (maxRange.Y - minRange.Y);
-		auto zOffset = (float)BLOCK_SIZE_XYZ / (maxRange.Z - minRange.Z);
+		auto xOffset = float(BLOCK_SIZE_XYZ) / (maxRange.X - minRange.X);
+		auto yOffset = float(BLOCK_SIZE_XYZ) / (maxRange.Y - minRange.Y);
+		auto zOffset = float(BLOCK_SIZE_XYZ) / (maxRange.Z - minRange.Z);
 		auto offset = glm::vec3(xOffset, yOffset, zOffset);
 
 		for (size_t x = minRange.X; x < maxRange.X; x++) {
@@ -334,13 +334,13 @@ void VirtualMemoryManager::mapAddress(int resolution, int blockID)
 						(y + 0.5f) / treeBlockSize,
 						(z + 0.5f) / treeBlockSize) - glm::vec3(0.5f)) * cube;
 
-					auto address = VirtualAddress((int)x - minRange.X, (int)y - minRange.Y, (int)z - minRange.Z);
+					auto address = VirtualAddress(int(x) - minRange.X, int(y) - minRange.Y, int(z) - minRange.Z);
 
 					auto average = output.average(
 						Helper::multiple(address, offset),
 						Helper::multiple(Helper::add(address, VirtualAddress(1)), offset));
 
-					tree->updateBlock(center, (average > (byte)(255 * EMPTY_LIMIT)) ? OccupancyType::NoEmpty : OccupancyType::Empty);
+					tree->updateBlock(center, (average > byte(255 * EMPTY_LIMIT)) ? OccupancyType::NoEmpty : OccupancyType::Empty);
 				}
 			}
 		}
@@ -371,95 +371,95 @@ void VirtualMemoryManager::loadBlock(int resolution, const VirtualAddress & bloc
 	auto readBlockEntry = Helper::multiple(blockAddress, readBlockSize);
 
 	//z and y offset
-	float xOffset = (float)(readBlockSize.X - 1) / (BLOCK_SIZE_XYZ - 1);
-	float zOffset = (float)(readBlockSize.Z - 1) / (BLOCK_SIZE_XYZ - 1);
-	float yOffset = (float)(readBlockSize.Y - 1) / (BLOCK_SIZE_XYZ - 1);
+	const float xOffset = float(readBlockSize.X - 1) / (BLOCK_SIZE_XYZ - 1);
+	const float zOffset = float(readBlockSize.Z - 1) / (BLOCK_SIZE_XYZ - 1);
+	const float yOffset = float(readBlockSize.Y - 1) / (BLOCK_SIZE_XYZ - 1);
 
-	int fileRowPitch = mFileSize.X;
-	int fileDepthPitch = fileRowPitch * mFileSize.Y;
+	const int fileRowPitch = mFileSize.X;
+	const int fileDepthPitch = fileRowPitch * mFileSize.Y;
 
-	int blockRowPitch = BLOCK_SIZE_XYZ;
-	int blockDepthPitch = blockRowPitch * BLOCK_SIZE_XYZ;
+	const int blockRowPitch = BLOCK_SIZE_XYZ;
+	const int blockDepthPitch = blockRowPitch * BLOCK_SIZE_XYZ;
 
 	static byte buffer[MAX_READ_BUFFER];
 
 	//read block
-	float zPosition = (float)readBlockEntry.Z;
+	float zPosition = float(readBlockEntry.Z);
 
 	for (int zCount = 0; zCount < BLOCK_SIZE_XYZ; zCount++, zPosition += zOffset) {
-		float yPosition = (float)readBlockEntry.Y;
+		float yPosition = float(readBlockEntry.Y);
 
 		for (int yCount = 0; yCount < BLOCK_SIZE_XYZ; yCount++, yPosition += yOffset) {
 			//get the start position in the file we need read
-			int readStartPosition =
-				(int)std::round(zPosition) * fileDepthPitch +
-				(int)std::round(yPosition) * fileRowPitch +
+			const int readStartPosition =
+				int(std::round(zPosition)) * fileDepthPitch +
+				int(std::round(yPosition)) * fileRowPitch +
 				readBlockEntry.X;
 
 			//get the start position in the block we need copy to
-			int blockStartPosition = zCount * blockDepthPitch + yCount * blockRowPitch;
+			const int blockStartPosition = zCount * blockDepthPitch + yCount * blockRowPitch;
 
 			//the memory address we need copy to
 			byte* address = output.getDataPointer() + blockStartPosition;
 
 			//read data
 			mFile.seekg(readStartPosition);
-			mFile.read((char*)buffer, readBlockSize.X);
+			mFile.read(reinterpret_cast<char*>(buffer), readBlockSize.X);
 
 			float xPosition = 0;
 
 			//copy data
 			for (int xCount = 0; xCount < BLOCK_SIZE_XYZ; xCount++, xPosition += xOffset)
-				address[xCount] = buffer[(int)std::round(xPosition)];
+				address[xCount] = buffer[int(std::round(xPosition))];
 		}
 	}
 }
 
 auto VirtualMemoryManager::detectResolutionLevel(float ratio) -> int
 {
-	static auto gpuBlockCount = (unsigned int)(BLOCK_COUNT_XYZ * BLOCK_COUNT_XYZ * BLOCK_COUNT_XYZ);
+	static auto gpuBlockCount = static_cast<unsigned int>(BLOCK_COUNT_XYZ * BLOCK_COUNT_XYZ * BLOCK_COUNT_XYZ);
 
 	for (size_t i = 0; i < mMultiResolutionBlockCount.size(); i++) {
-		unsigned int blockCount = mMultiResolutionBlockCount[i];
-		unsigned int requirement = (unsigned int)ceil(blockCount * ratio);
+		const unsigned int blockCount = mMultiResolutionBlockCount[i];
+		const unsigned int requirement = static_cast<unsigned int>(ceil(blockCount * ratio));
 
-		if (gpuBlockCount >= requirement) return (int)i;
+		if (gpuBlockCount >= requirement) return int(i);
 	}
 
-	return (int)(mMultiResolutionBlockCount.size() - 1);
+	return int(mMultiResolutionBlockCount.size() - 1);
 }
 
-auto VirtualMemoryManager::getPageDirectory() -> GPUPageDirectory *
+auto VirtualMemoryManager::getPageDirectory() const -> GPUPageDirectory *
 {
 	return mGPUDirectoryCache;
 }
 
-auto VirtualMemoryManager::getPageTable() -> GPUPageTable *
+auto VirtualMemoryManager::getPageTable() const -> GPUPageTable *
 {
 	return mGPUPageCacheTable;
 }
 
-auto VirtualMemoryManager::getBlockTable() -> GPUBlockTable *
+auto VirtualMemoryManager::getBlockTable() const -> GPUBlockTable *
 {
 	return mGPUBlockCacheTable;
 }
 
-auto VirtualMemoryManager::getMultiResolutionSizeBuffer() -> ConstantBuffer*
+auto VirtualMemoryManager::getMultiResolutionSizeBuffer() const -> ConstantBuffer*
 {
 	return mMultiResolutionSizeBuffer;
 }
 
-auto VirtualMemoryManager::getMultiResolutionBaseBuffer() -> ConstantBuffer*
+auto VirtualMemoryManager::getMultiResolutionBaseBuffer() const -> ConstantBuffer*
 {
 	return mMultiResolutionBaseBuffer;
 }
 
-auto VirtualMemoryManager::getMultiResolutionBlockBaseBuffer() -> ConstantBuffer *
+auto VirtualMemoryManager::getMultiResolutionBlockBaseBuffer() const -> ConstantBuffer *
 {
 	return mMultiResolutionBlockBaseBuffer;
 }
 
-auto VirtualMemoryManager::getUnorderedAccessUsage() -> std::vector<UnorderedAccessUsage *>
+auto VirtualMemoryManager::getUnorderedAccessUsage() const -> std::vector<UnorderedAccessUsage *>
 {
 	std::vector<UnorderedAccessUsage*> result(2);
 

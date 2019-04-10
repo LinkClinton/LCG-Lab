@@ -4,7 +4,6 @@
 
 #include "OccupancyHistogramTree.hpp"
 #include "SharedTexture3D.hpp"
-#include "SharedMacro.hpp"
 #include "Helper.hpp"
 
 class SparseLeapManager {
@@ -53,7 +52,7 @@ public:
 
 	auto cube() const -> glm::vec3;
 
-	auto tree() -> OccupancyHistogramTree*;
+	auto tree() const -> OccupancyHistogramTree*;
 
 	~SparseLeapManager();
 };

@@ -126,7 +126,7 @@ struct OccupancyHistogramNodeCompareComponent {
 		int compareValue = 0) :
 		Node(node), IsFrontFace(isFrontFace), CompareValue(compareValue) {}
 
-	static bool Compare(const OccupancyHistogramNodeCompareComponent &first, const OccupancyHistogramNodeCompareComponent &second) {
+	static bool compare(const OccupancyHistogramNodeCompareComponent &first, const OccupancyHistogramNodeCompareComponent &second) {
 		return first.CompareValue < second.CompareValue;
 	}
 };

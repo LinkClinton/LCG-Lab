@@ -1,10 +1,7 @@
 #pragma once
 
-#include "Helper.hpp"
-
 #include <list>
 #include <unordered_map>
-#include <cassert>
 
 template<typename T, typename HashFunction>
 class LRUCache {
@@ -40,7 +37,7 @@ public:
 		//we need "erase" it
 		removeElement(element);
 
-		//add elemen, put the element to head of list
+		//add element, put the element to head of list
 		addElement(element);
 	}
 

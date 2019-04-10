@@ -283,7 +283,7 @@ void OccupancyHistogramTree::getOccupancyGeometry(std::vector<OccupancyHistogram
 	if (sort == false) return;
 
 	//sort
-	std::sort(geometry.begin(), geometry.end(), OccupancyHistogramNodeCompareComponent::Compare);
+	std::sort(geometry.begin(), geometry.end(), OccupancyHistogramNodeCompareComponent::compare);
 }
 
 VirtualNode::VirtualNode()

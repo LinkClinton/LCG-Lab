@@ -6,7 +6,6 @@
 #include "GPUPageTable.hpp"
 #include "GPUBlockTable.hpp"
 #include "GPUPageDirectory.hpp"
-#include "SharedMacro.hpp"
 #include "SharedTexture3D.hpp"
 #include "SparseLeapManager.hpp"
 
@@ -36,34 +35,34 @@ private:
 	std::vector<unsigned int> mMultiResolutionBlockCount;
 
 	//CPU resource
-	PageDirectory* mDirectoryCache;
-	PageTable* mPageCacheTable;
-	BlockTable* mBlockCacheTable;
+	PageDirectory* mDirectoryCache = nullptr;
+	PageTable* mPageCacheTable = nullptr;
+	BlockTable* mBlockCacheTable = nullptr;
 
 	//GPU resource
-	GPUPageDirectory* mGPUDirectoryCache;
-	GPUPageTable* mGPUPageCacheTable;
-	GPUBlockTable* mGPUBlockCacheTable;
+	GPUPageDirectory* mGPUDirectoryCache = nullptr;
+	GPUPageTable* mGPUPageCacheTable = nullptr;
+	GPUBlockTable* mGPUBlockCacheTable = nullptr;
 
 	//for cache
-	SharedTexture3D* mBlockCacheUsageStateTexture;
-	SharedTexture3D* mBlockCacheMissArrayTexture;
+	SharedTexture3D* mBlockCacheUsageStateTexture = nullptr;
+	SharedTexture3D* mBlockCacheMissArrayTexture = nullptr;
 
-	ConstantBuffer* mMultiResolutionSizeBuffer;
-	ConstantBuffer* mMultiResolutionBaseBuffer;
-	ConstantBuffer* mMultiResolutionBlockBaseBuffer;
+	ConstantBuffer* mMultiResolutionSizeBuffer = nullptr;
+	ConstantBuffer* mMultiResolutionBaseBuffer = nullptr;
+	ConstantBuffer* mMultiResolutionBlockBaseBuffer = nullptr;
 
-	UnorderedAccessUsage* mBlockCacheUsageStateUsage;
-	UnorderedAccessUsage* mBlockCacheMissArrayUsage;
+	UnorderedAccessUsage* mBlockCacheUsageStateUsage = nullptr;
+	UnorderedAccessUsage* mBlockCacheMissArrayUsage = nullptr;
 
 	SparseLeapManager* mSparseLeapManager;
 
 	void analyseFile(const std::string& fileName);
 
-	void mapAddressToGPU(int resolution, const glm::vec3& position, BlockCache* block);
+	void mapAddressToGPU(int resolution, const glm::vec3& position, BlockCache* block) const;
 public:
 	VirtualMemoryManager(Factory* factory, Graphics* graphics, SparseLeapManager* sparseLeapManager, int width, int height) :
-		mFactory(factory), mGraphics(graphics), mSparseLeapManager(sparseLeapManager), mResolutionWidth(width), mResolutionHeight(height)
+		mFactory(factory), mGraphics(graphics), mResolutionWidth(width), mResolutionHeight(height), mSparseLeapManager(sparseLeapManager)
 	{}
 
 	void initialize(const std::string &fileName, const std::vector<glm::vec3> &resolutions);
@@ -78,17 +77,17 @@ public:
 
 	auto detectResolutionLevel(float ratio) -> int;
 
-	auto getPageDirectory() -> GPUPageDirectory*;
+	auto getPageDirectory() const -> GPUPageDirectory*;
 
-	auto getPageTable() -> GPUPageTable*;
+	auto getPageTable() const -> GPUPageTable*;
 
-	auto getBlockTable() -> GPUBlockTable*;
+	auto getBlockTable() const -> GPUBlockTable*;
 
-	auto getMultiResolutionSizeBuffer() -> ConstantBuffer*;
+	auto getMultiResolutionSizeBuffer() const -> ConstantBuffer*;
 
-	auto getMultiResolutionBaseBuffer() -> ConstantBuffer*;
+	auto getMultiResolutionBaseBuffer() const -> ConstantBuffer*;
 
-	auto getMultiResolutionBlockBaseBuffer() -> ConstantBuffer*;
+	auto getMultiResolutionBlockBaseBuffer() const -> ConstantBuffer*;
 
-	auto getUnorderedAccessUsage() -> std::vector<UnorderedAccessUsage*>;
+	auto getUnorderedAccessUsage() const -> std::vector<UnorderedAccessUsage*>;
 };

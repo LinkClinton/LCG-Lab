@@ -23,11 +23,13 @@ public:
 		mDepthPitch = mSize.X * mSize.Y;	
 	}
 
-	auto virtual getSize() -> Size {
+	virtual ~DataCache() = default;
+
+	auto getSize() const -> Size {
 		return mSize;
 	}
 
-	auto virtual getDataPointer() -> T* const {
+	auto getDataPointer() -> T* const {
 		return &mData[0];
 	}
 
@@ -41,7 +43,7 @@ public:
 		return mData[getArrayIndex(index)];
 	}
 
-	auto virtual getArrayIndex(const VirtualAddress &index) -> int {
+	auto getArrayIndex(const VirtualAddress &index) const -> int {
 		assert(index.X >= 0 && index.Y >= 0 && index.Z >= 0);
 		assert(index.X < mSize.X && index.Y < mSize.Y && index.Z < mSize.Z);
 
