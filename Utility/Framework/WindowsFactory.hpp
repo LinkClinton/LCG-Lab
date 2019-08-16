@@ -44,35 +44,35 @@ public:
 
 	virtual auto createInput(Framework* framework) -> Input* override;
 
-	virtual void destoryVertexbuffer(VertexBuffer* &vertexBuffer)override;
+	virtual void destroyVertexbuffer(VertexBuffer* &vertexBuffer)override;
 
-	virtual void destoryIndexBuffer(IndexBuffer* &indexBuffer)override;
+	virtual void destroyIndexBuffer(IndexBuffer* &indexBuffer)override;
 
-	virtual void destoryConstantBuffer(ConstantBuffer* &constantBuffer)override;
+	virtual void destroyConstantBuffer(ConstantBuffer* &constantBuffer)override;
 
-	virtual void destoryTexture2D(Texture2D* &texture2D)override;
+	virtual void destroyTexture2D(Texture2D* &texture2D)override;
 
-	virtual void destoryTexture3D(Texture3D* &texture3D)override;
+	virtual void destroyTexture3D(Texture3D* &texture3D)override;
 
-	virtual void destoryInputLayout(InputLayout* &inputLayout)override;
+	virtual void destroyInputLayout(InputLayout* &inputLayout)override;
 
-	virtual void destoryRenderTarget(RenderTarget* &renderTarget)override;
+	virtual void destroyRenderTarget(RenderTarget* &renderTarget)override;
 
-	virtual void destoryDepthStencil(DepthStencil* &depthStencil)override;
+	virtual void destroyDepthStencil(DepthStencil* &depthStencil)override;
 
-	virtual void destoryResourceUsage(ResourceUsage* &resourceUsage)override;
+	virtual void destroyResourceUsage(ResourceUsage* &resourceUsage)override;
 
-	virtual void destoryUnorderedAccessUsage(UnorderedAccessUsage* &unorderedAccessUsage)override;
+	virtual void destroyUnorderedAccessUsage(UnorderedAccessUsage* &unorderedAccessUsage)override;
 
-	virtual void destoryVertexShader(VertexShader* &vertexShader)override;
+	virtual void destroyVertexShader(VertexShader* &vertexShader)override;
 
-	virtual void destoryPixelShader(PixelShader* &pixelShader)override;
+	virtual void destroyPixelShader(PixelShader* &pixelShader)override;
 
-	virtual void destoryRasterizerState(RasterizerState* &rasterizerState)override;
+	virtual void destroyRasterizerState(RasterizerState* &rasterizerState)override;
 
-	virtual void destoryDepthStencilState(DepthStencilState* &depthStencilState)override;
+	virtual void destroyDepthStencilState(DepthStencilState* &depthStencilState)override;
 
-	virtual void destoryInput(Input* &input)override;
+	virtual void destroyInput(Input* &input)override;
 };
 
 #endif // _WIN32

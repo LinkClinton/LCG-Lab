@@ -21,6 +21,12 @@ public:
 	~WindowsTexture2D();
 
 	virtual void update(void* data)override;
+
+	virtual auto map()->MappedData override;
+
+	virtual void unmap()override;
+
+	virtual void save(const std::wstring& fileName)override;
 };
 
 #endif // _WIN32

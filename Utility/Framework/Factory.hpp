@@ -70,33 +70,35 @@ public:
 
 	virtual auto createInput(Framework* framework) -> Input* = 0;
 
-	virtual void destoryVertexbuffer(VertexBuffer* &vertexBuffer) = 0;
+	virtual void destroyVertexbuffer(VertexBuffer* &vertexBuffer) = 0;
 
-	virtual void destoryIndexBuffer(IndexBuffer* &indexBuffer) = 0;
+	virtual void destroyIndexBuffer(IndexBuffer* &indexBuffer) = 0;
 
-	virtual void destoryConstantBuffer(ConstantBuffer* &constantBuffer) = 0;
+	virtual void destroyConstantBuffer(ConstantBuffer* &constantBuffer) = 0;
 
-	virtual void destoryTexture2D(Texture2D* &texture2D) = 0;
+	virtual void destroyTexture2D(Texture2D* &texture2D) = 0;
 
-	virtual void destoryTexture3D(Texture3D* &texture3D) = 0;
+	virtual void destroyTexture3D(Texture3D* &texture3D) = 0;
 
-	virtual void destoryInputLayout(InputLayout* &inputLayout) = 0;
+	virtual void destroyInputLayout(InputLayout* &inputLayout) = 0;
 
-	virtual void destoryRenderTarget(RenderTarget* &renderTarget) = 0;
+	virtual void destroyRenderTarget(RenderTarget* &renderTarget) = 0;
 
-	virtual void destoryDepthStencil(DepthStencil* &depthStencil) = 0;
+	virtual void destroyDepthStencil(DepthStencil* &depthStencil) = 0;
 
-	virtual void destoryResourceUsage(ResourceUsage* &resourceUsage) = 0;
+	virtual void destroyResourceUsage(ResourceUsage* &resourceUsage) = 0;
 	
-	virtual void destoryUnorderedAccessUsage(UnorderedAccessUsage* &unorderedAccessUsage) = 0;
+	virtual void destroyUnorderedAccessUsage(UnorderedAccessUsage* &unorderedAccessUsage) = 0;
 
-	virtual void destoryVertexShader(VertexShader* &vertexShader) = 0;
+	virtual void destroyVertexShader(VertexShader* &vertexShader) = 0;
 
-	virtual void destoryPixelShader(PixelShader* &pixelShader) = 0;
+	virtual void destroyPixelShader(PixelShader* &pixelShader) = 0;
 
-	virtual void destoryRasterizerState(RasterizerState* &rasterState) = 0;
+	virtual void destroyRasterizerState(RasterizerState* &rasterState) = 0;
 
-	virtual void destoryDepthStencilState(DepthStencilState* &depthStencilState) = 0;
+	virtual void destroyDepthStencilState(DepthStencilState* &depthStencilState) = 0;
 
-	virtual void destoryInput(Input* &input) = 0;
+	virtual void destroyInput(Input* &input) = 0;
+
+	auto graphics() const -> Graphics* { return mGraphics; }
 };

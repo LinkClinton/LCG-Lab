@@ -3,6 +3,7 @@
 #include "ShaderResource.hpp"
 
 #include "Utility.hpp"
+#include "MappedData.hpp"
 
 class Graphics;
 
@@ -32,4 +33,10 @@ public:
 	auto getRowPitch() -> int const {
 		return mRowPitch;
 	}
+
+	virtual auto map()-> MappedData = 0;
+
+	virtual void unmap() = 0;
+
+	virtual void save(const std::wstring& fileName) = 0;
 };

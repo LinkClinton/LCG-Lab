@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.102
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29123.88
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Visualization", "Visualization", "{307595EB-E1A2-4D1B-88C0-9909D124A44C}"
 EndProject
@@ -20,7 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VirtualMemory", "Visualization\VirtualMemory\VirtualMemory.vcxproj", "{E66A12D2-C5F9-471D-B910-F2C7E1098B72}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3DVectorField", "Visualization\3DVectorField\3DVectorField.vcxproj", "{AC10A341-1861-4A60-968D-27D666A30816}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LineDensity", "Visualization\LineDensity\LineDensity.vcxproj", "{4E5E34D0-CE30-480F-A299-4A1123327811}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,14 +62,14 @@ Global
 		{E66A12D2-C5F9-471D-B910-F2C7E1098B72}.Release|x64.Build.0 = Release|x64
 		{E66A12D2-C5F9-471D-B910-F2C7E1098B72}.Release|x86.ActiveCfg = Release|Win32
 		{E66A12D2-C5F9-471D-B910-F2C7E1098B72}.Release|x86.Build.0 = Release|Win32
-		{AC10A341-1861-4A60-968D-27D666A30816}.Debug|x64.ActiveCfg = Debug|x64
-		{AC10A341-1861-4A60-968D-27D666A30816}.Debug|x64.Build.0 = Debug|x64
-		{AC10A341-1861-4A60-968D-27D666A30816}.Debug|x86.ActiveCfg = Debug|Win32
-		{AC10A341-1861-4A60-968D-27D666A30816}.Debug|x86.Build.0 = Debug|Win32
-		{AC10A341-1861-4A60-968D-27D666A30816}.Release|x64.ActiveCfg = Release|x64
-		{AC10A341-1861-4A60-968D-27D666A30816}.Release|x64.Build.0 = Release|x64
-		{AC10A341-1861-4A60-968D-27D666A30816}.Release|x86.ActiveCfg = Release|Win32
-		{AC10A341-1861-4A60-968D-27D666A30816}.Release|x86.Build.0 = Release|Win32
+		{4E5E34D0-CE30-480F-A299-4A1123327811}.Debug|x64.ActiveCfg = Debug|x64
+		{4E5E34D0-CE30-480F-A299-4A1123327811}.Debug|x64.Build.0 = Debug|x64
+		{4E5E34D0-CE30-480F-A299-4A1123327811}.Debug|x86.ActiveCfg = Debug|Win32
+		{4E5E34D0-CE30-480F-A299-4A1123327811}.Debug|x86.Build.0 = Debug|Win32
+		{4E5E34D0-CE30-480F-A299-4A1123327811}.Release|x64.ActiveCfg = Release|x64
+		{4E5E34D0-CE30-480F-A299-4A1123327811}.Release|x64.Build.0 = Release|x64
+		{4E5E34D0-CE30-480F-A299-4A1123327811}.Release|x86.ActiveCfg = Release|Win32
+		{4E5E34D0-CE30-480F-A299-4A1123327811}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,7 +79,7 @@ Global
 		{88BBBB61-60DC-4C1F-A65E-C52F71DB5485} = {307595EB-E1A2-4D1B-88C0-9909D124A44C}
 		{EC6E22FD-6B97-4FB5-A10D-01DD5B3B1527} = {307595EB-E1A2-4D1B-88C0-9909D124A44C}
 		{E66A12D2-C5F9-471D-B910-F2C7E1098B72} = {307595EB-E1A2-4D1B-88C0-9909D124A44C}
-		{AC10A341-1861-4A60-968D-27D666A30816} = {307595EB-E1A2-4D1B-88C0-9909D124A44C}
+		{4E5E34D0-CE30-480F-A299-4A1123327811} = {307595EB-E1A2-4D1B-88C0-9909D124A44C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7F3DD971-154D-41F5-993C-61E407B14D74}

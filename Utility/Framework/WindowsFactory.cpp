@@ -100,7 +100,7 @@ auto WindowsFactory::createInput(Framework* framework) -> Input *
 	return new WindowsInput(framework);
 }
 
-void WindowsFactory::destoryVertexbuffer(VertexBuffer *& vertexBuffer)
+void WindowsFactory::destroyVertexbuffer(VertexBuffer *& vertexBuffer)
 {
 	if (vertexBuffer == nullptr) return;
 	
@@ -109,7 +109,7 @@ void WindowsFactory::destoryVertexbuffer(VertexBuffer *& vertexBuffer)
 	vertexBuffer = nullptr;
 }
 
-void WindowsFactory::destoryIndexBuffer(IndexBuffer *& indexBuffer)
+void WindowsFactory::destroyIndexBuffer(IndexBuffer *& indexBuffer)
 {
 	if (indexBuffer == nullptr) return;
 
@@ -118,7 +118,7 @@ void WindowsFactory::destoryIndexBuffer(IndexBuffer *& indexBuffer)
 	indexBuffer = nullptr;
 }
 
-void WindowsFactory::destoryConstantBuffer(ConstantBuffer *& constantBuffer)
+void WindowsFactory::destroyConstantBuffer(ConstantBuffer *& constantBuffer)
 {
 	if (constantBuffer == nullptr) return;
 
@@ -127,7 +127,7 @@ void WindowsFactory::destoryConstantBuffer(ConstantBuffer *& constantBuffer)
 	constantBuffer = nullptr;
 }
 
-void WindowsFactory::destoryTexture2D(Texture2D *& texture2D)
+void WindowsFactory::destroyTexture2D(Texture2D *& texture2D)
 {
 	if (texture2D == nullptr) return;
 
@@ -136,7 +136,7 @@ void WindowsFactory::destoryTexture2D(Texture2D *& texture2D)
 	texture2D = nullptr;
 }
 
-void WindowsFactory::destoryTexture3D(Texture3D *& texture3D)
+void WindowsFactory::destroyTexture3D(Texture3D *& texture3D)
 {
 	if (texture3D == nullptr) return;
 
@@ -145,7 +145,7 @@ void WindowsFactory::destoryTexture3D(Texture3D *& texture3D)
 	texture3D = nullptr;
 }
 
-void WindowsFactory::destoryInputLayout(InputLayout *& inputLayout)
+void WindowsFactory::destroyInputLayout(InputLayout *& inputLayout)
 {
 	if (inputLayout == nullptr) return;
 
@@ -154,7 +154,7 @@ void WindowsFactory::destoryInputLayout(InputLayout *& inputLayout)
 	inputLayout = nullptr;
 }
 
-void WindowsFactory::destoryRenderTarget(RenderTarget *& renderTarget)
+void WindowsFactory::destroyRenderTarget(RenderTarget *& renderTarget)
 {
 	if (renderTarget == nullptr) return;
 
@@ -163,7 +163,7 @@ void WindowsFactory::destoryRenderTarget(RenderTarget *& renderTarget)
 	renderTarget = nullptr;
 }
 
-void WindowsFactory::destoryDepthStencil(DepthStencil *& depthStencil)
+void WindowsFactory::destroyDepthStencil(DepthStencil *& depthStencil)
 {
 	if (depthStencil == nullptr) return;
 
@@ -172,7 +172,7 @@ void WindowsFactory::destoryDepthStencil(DepthStencil *& depthStencil)
 	depthStencil = nullptr;
 }
 
-void WindowsFactory::destoryResourceUsage(ResourceUsage *& resourceUsage)
+void WindowsFactory::destroyResourceUsage(ResourceUsage *& resourceUsage)
 {
 	if (resourceUsage == nullptr) return;
 
@@ -181,7 +181,7 @@ void WindowsFactory::destoryResourceUsage(ResourceUsage *& resourceUsage)
 	resourceUsage = nullptr;
 }
 
-void WindowsFactory::destoryUnorderedAccessUsage(UnorderedAccessUsage *& unorderedAccessUsage)
+void WindowsFactory::destroyUnorderedAccessUsage(UnorderedAccessUsage *& unorderedAccessUsage)
 {
 	if (unorderedAccessUsage == nullptr) return;
 
@@ -190,7 +190,7 @@ void WindowsFactory::destoryUnorderedAccessUsage(UnorderedAccessUsage *& unorder
 	unorderedAccessUsage = nullptr;
 }
 
-void WindowsFactory::destoryVertexShader(VertexShader *& vertexShader)
+void WindowsFactory::destroyVertexShader(VertexShader *& vertexShader)
 {
 	if (vertexShader == nullptr) return;
 
@@ -199,7 +199,7 @@ void WindowsFactory::destoryVertexShader(VertexShader *& vertexShader)
 	vertexShader = nullptr;
 }
 
-void WindowsFactory::destoryPixelShader(PixelShader *& pixelShader)
+void WindowsFactory::destroyPixelShader(PixelShader *& pixelShader)
 {
 	if (pixelShader == nullptr) return;
 
@@ -208,7 +208,7 @@ void WindowsFactory::destoryPixelShader(PixelShader *& pixelShader)
 	pixelShader = nullptr;
 }
 
-void WindowsFactory::destoryRasterizerState(RasterizerState *& rasterizerState)
+void WindowsFactory::destroyRasterizerState(RasterizerState *& rasterizerState)
 {
 	if (rasterizerState == nullptr) return;
 
@@ -217,7 +217,7 @@ void WindowsFactory::destoryRasterizerState(RasterizerState *& rasterizerState)
 	rasterizerState = nullptr;
 }
 
-void WindowsFactory::destoryDepthStencilState(DepthStencilState *& depthStencilState)
+void WindowsFactory::destroyDepthStencilState(DepthStencilState *& depthStencilState)
 {
 	if (depthStencilState == nullptr) return;
 
@@ -226,7 +226,7 @@ void WindowsFactory::destoryDepthStencilState(DepthStencilState *& depthStencilS
 	depthStencilState = nullptr;
 }
 
-void WindowsFactory::destoryInput(Input *&input) {
+void WindowsFactory::destroyInput(Input *&input) {
 	if (input == nullptr) return;
 
 	delete (WindowsInput*)input;

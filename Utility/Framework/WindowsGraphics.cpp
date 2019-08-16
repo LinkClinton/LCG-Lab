@@ -54,6 +54,8 @@ WindowsGraphics::WindowsGraphics()
 
 	D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE::D3D_DRIVER_TYPE_HARDWARE,
 		0, createFlag, features, 3, D3D11_SDK_VERSION, &mDevice, &mFeature, &mDeviceContext);
+
+	CoInitialize(nullptr);
 }
 
 WindowsGraphics::~WindowsGraphics()
