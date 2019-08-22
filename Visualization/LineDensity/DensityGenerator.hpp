@@ -34,19 +34,22 @@ private:
 
 	RenderTarget* mRenderTarget;
 
+	StructuredBuffer* mInstanceBuffer;
+
 	ConstantBuffer* mTransformBuffer;
 	VertexBuffer* mVertexBuffer;
 	IndexBuffer* mIndexBuffer;
 
 	VertexShader* mCommonVertexShader;
+	VertexShader* mInstanceVertexShader;
 	
 	RasterizerState* mRasterizerState;
 	
 	PixelShader* mDrawPixelShader;
 	PixelShader* mMergePixelShader;
 
-	ResourceUsage* mHeatMapResourceUsage;
-
+	ResourceUsage* mInstanceUsage;
+	
 	UnorderedAccessUsage* mHeatMapRWUsage;
 	UnorderedAccessUsage* mBufferRWUsage;
 	UnorderedAccessUsage* mCountRWUsage;

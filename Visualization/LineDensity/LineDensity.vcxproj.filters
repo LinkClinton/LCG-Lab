@@ -64,6 +64,9 @@
     <FxCompile Include="DensityGeneratorVertex.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="DensityGeneratorInstanceVertex.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ImageGeneratorInclude.hlsli">

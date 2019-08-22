@@ -13,6 +13,7 @@ private:
 	ID3D11Buffer* mBuffer;
 
 	friend class WindowsGraphics;
+	friend class WindowsResourceUsage;
 public:
 	WindowsStructuredBuffer(Graphics* graphics, int element_size, int element_count, const ResourceInfo& info);
 

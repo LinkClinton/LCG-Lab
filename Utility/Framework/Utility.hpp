@@ -52,7 +52,7 @@ public:
 		return 1;
 	}
 
-	static auto computePixelFomratBytes(PixelFormat pixelFormat) -> int {
+	static auto computePixelFormatBytes(PixelFormat pixelFormat) -> int {
 		switch (pixelFormat)
 		{
 		case PixelFormat::R8G8B8A8Unknown:
@@ -114,6 +114,8 @@ public:
 			return DXGI_FORMAT::DXGI_FORMAT_R32G32_UINT;
 		case PixelFormat::R32G32B32Float:
 			return DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT;
+		case PixelFormat::Unknown:
+			return DXGI_FORMAT::DXGI_FORMAT_UNKNOWN;
 		default:
 			std::runtime_error("The pixel format is not supported.");
 		}

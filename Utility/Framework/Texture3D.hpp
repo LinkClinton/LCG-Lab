@@ -18,14 +18,14 @@ protected:
 	int mDepthPitch;
 
 	Texture3D(Graphics* graphics, int width, int height, int depth, PixelFormat pixelFormat, const ResourceInfo &info) :
-		ShaderResource(graphics, width * height * depth * Utility::computePixelFomratBytes(pixelFormat), pixelFormat, info) {
+		ShaderResource(graphics, width * height * depth * Utility::computePixelFormatBytes(pixelFormat), pixelFormat, info) {
 
 		mWidth = width;
 		mHeight = height;
 		mDepth = depth;
 
-		mRowPitch = mWidth * Utility::computePixelFomratBytes(pixelFormat);
-		mDepthPitch = mWidth * mHeight * Utility::computePixelFomratBytes(pixelFormat);
+		mRowPitch = mWidth * Utility::computePixelFormatBytes(pixelFormat);
+		mDepthPitch = mWidth * mHeight * Utility::computePixelFormatBytes(pixelFormat);
 	}
 
 public:

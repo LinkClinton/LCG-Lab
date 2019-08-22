@@ -2,6 +2,7 @@
 #include "WindowsGraphics.hpp"
 #include "WindowsTexture2D.hpp"
 #include "WindowsTexture3D.hpp"
+#include "WindowsStructuredBuffer.hpp"
 
 #include "Utility.hpp"
 
@@ -35,6 +36,21 @@ WindowsResourceUsage::WindowsResourceUsage(Graphics * graphics, Texture3D * text
 	
 	static_cast<WindowsGraphics*>(mGraphics)->mDevice->CreateShaderResourceView(
 		static_cast<WindowsTexture3D*>(texture3D)->mTexture3D, &viewDesc,
+		&mShaderResourceView);
+}
+
+WindowsResourceUsage::WindowsResourceUsage(Graphics* graphics, StructuredBuffer* buffer)
+	: ResourceUsage(graphics, buffer) {
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc;
+
+	viewDesc.Format = Utility::convertPixelFormat(mPixelFormat);
+	viewDesc.Buffer.FirstElement = 0;
+	viewDesc.Buffer.NumElements = buffer->element_count();
+	viewDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_BUFFER;
+
+	static_cast<WindowsGraphics*>(mGraphics)->mDevice->CreateShaderResourceView(
+		static_cast<WindowsStructuredBuffer*>(buffer)->mBuffer, &viewDesc,
 		&mShaderResourceView);
 }
 

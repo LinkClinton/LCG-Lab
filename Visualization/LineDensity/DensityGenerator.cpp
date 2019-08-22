@@ -1,5 +1,9 @@
 #include "DensityGenerator.hpp"
 
+#include <algorithm>
+
+#undef max
+
 DensityGenerator::DensityGenerator(
 	Factory* factory, 
 	const std::vector<LineSeries>& line_series, 
@@ -10,7 +14,6 @@ DensityGenerator::DensityGenerator(
 	const auto width = static_cast<int>(mWidth);
 	const auto height = static_cast<int>(mHeight);
 
-	
 	mTarget = mFactory->createTexture2D(width, height, PixelFormat::R8G8B8A8Unknown,
 		ResourceInfo(BindUsage::RenderTargetUsage));
 	mHeatMap = mFactory->createTexture2D(width, height, PixelFormat::R32Float,
@@ -34,13 +37,17 @@ DensityGenerator::DensityGenerator(
 	mIndexBuffer = mFactory->createIndexBuffer(sizeof(unsigned) * 6, ResourceInfo::IndexBuffer());
 
 	mCommonVertexShader = mFactory->createVertexShader(ShaderFile::read("DensityGeneratorVertex.cso"), true);
+	mInstanceVertexShader = mFactory->createVertexShader(ShaderFile::read("DensityGeneratorInstanceVertex.cso"), true);
 	
 	mMergePixelShader = mFactory->createPixelShader(ShaderFile::read("DensityGeneratorMergePixel.cso"), true);
 	mDrawPixelShader = mFactory->createPixelShader(ShaderFile::read("DensityGeneratorDrawPixel.cso"), true);
 
 	mRasterizerState = mFactory->createRasterizerState();
 	mRasterizerState->enableDepth(false);
-	
+
+	mInstanceBuffer = nullptr;
+	mInstanceUsage = nullptr;
+
 	vec3 position[] = {
 		vec3(0, 0, 0),
 		vec3(0, 1, 0),
@@ -69,6 +76,7 @@ DensityGenerator::~DensityGenerator() {
 	mFactory->destroyIndexBuffer(mIndexBuffer);
 
 	mFactory->destroyVertexShader(mCommonVertexShader);
+	mFactory->destroyVertexShader(mInstanceVertexShader);
 
 	mFactory->destroyPixelShader(mDrawPixelShader);
 	mFactory->destroyPixelShader(mMergePixelShader);
@@ -104,8 +112,6 @@ void DensityGenerator::run(real width) {
 	graphics->setVertexBuffer(mVertexBuffer);
 	graphics->setIndexBuffer(mIndexBuffer);
 
-	graphics->setVertexShader(mCommonVertexShader);
-
 	graphics->setPrimitiveType(PrimitiveType::TriangleList);
 	graphics->setViewPort(0, 0, 
 		static_cast<float>(mWidth), 
@@ -120,23 +126,57 @@ void DensityGenerator::run(real width) {
 		mHeatMapRWUsage,
 		});
 
+
+	// get the max size of line series
+	auto max_size = 0;
+
+	for (auto& lines : mLineSeries) 
+		max_size = std::max(max_size, static_cast<int>(lines.size()));
+
+	std::vector<mat4> instance_data(max_size);
+
+	//when the size of buffer is less than lines
+	//we need to expand the buffer
+	if (mInstanceBuffer == nullptr ||
+		mInstanceBuffer->element_count() < max_size) {
+
+		//destroy old buffer
+		mFactory->destroyStructuredBuffer(mInstanceBuffer);
+		mFactory->destroyResourceUsage(mInstanceUsage);
+
+		//create new buffer
+		mInstanceBuffer = mFactory->createStructuredBuffer(sizeof(mat4),
+			max_size, ResourceInfo::ShaderResource());
+		mInstanceUsage = mFactory->createResourceUsage(mInstanceBuffer);
+	}
+
+	graphics->setResourceUsage(mInstanceUsage, 0);
+
 	//for each line series
 	for (auto &lines : mLineSeries) {
 		graphics->clearUnorderedAccessUsageFloat(mBufferRWUsage, uav_float_clear);
 		graphics->clearUnorderedAccessUsageUint(mCountRWUsage, uav_uint_clear);
-	
+
+		graphics->setVertexShader(mInstanceVertexShader);
 		graphics->setPixelShader(mDrawPixelShader);
+
+		assert(lines.size() >= 2);
+
+		const auto line_count = static_cast<int>(lines.size());
 
 		for (size_t index = 0; index < lines.size(); index++) {
 			const auto line = lines.line(index);
 
-			matrix[0] = lineTransform(line.first, line.second, width);
-
-			mTransformBuffer->update(matrix);
-
-			graphics->drawIndexed(6, 0, 0);
+			instance_data[index] = lineTransform(line.first, line.second, width);
 		}
 
+		mInstanceBuffer->update(instance_data.data());
+		mTransformBuffer->update(matrix);
+
+		graphics->drawIndexedInstanced(6, line_count, 0, 0);
+
+		//merge line series
+		graphics->setVertexShader(mCommonVertexShader);
 		graphics->setPixelShader(mMergePixelShader);
 
 		matrix[0] = glm::scale(mat4(1), vec3(mTarget->getWidth(), mTarget->getHeight(), 1));

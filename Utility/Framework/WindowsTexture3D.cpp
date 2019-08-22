@@ -42,7 +42,7 @@ void WindowsTexture3D::update(void * data, int left, int top, int front, int rig
 	box.bottom = bottom;
 	box.back = back;
 
-	int dataRowPitch = (right - left) * Utility::computePixelFomratBytes(mPixelFormat);
+	int dataRowPitch = (right - left) * Utility::computePixelFormatBytes(mPixelFormat);
 	int dataDepthPitch = dataRowPitch * (bottom - top);
 
 	static_cast<WindowsGraphics*>(mGraphics)->mDeviceContext->UpdateSubresource(mTexture3D, 0, &box, data, dataRowPitch, dataDepthPitch);

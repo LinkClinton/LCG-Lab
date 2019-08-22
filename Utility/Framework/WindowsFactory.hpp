@@ -28,6 +28,8 @@ public:
 
 	virtual auto createDepthStencil(Texture2D* texture2D, PixelFormat pixelFormat) -> DepthStencil* override;
 
+	virtual auto createResourceUsage(StructuredBuffer* structuredBuffer) -> ResourceUsage* override;
+
 	virtual auto createResourceUsage(Texture2D* texture2D, PixelFormat pixelFormat) -> ResourceUsage* override;
 
 	virtual auto createResourceUsage(Texture3D* texture3D, PixelFormat pixelFormat) -> ResourceUsage* override;

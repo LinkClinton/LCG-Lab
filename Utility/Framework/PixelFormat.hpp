@@ -1,6 +1,7 @@
 #pragma once
 
 enum class PixelFormat : int {
+	Unknown,
 	R8G8B8A8Unknown,
 	R8G8B8A8Uint,
 	R8Uint,

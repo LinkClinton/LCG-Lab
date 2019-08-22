@@ -60,6 +60,11 @@ auto WindowsFactory::createDepthStencil(Texture2D * texture2D, PixelFormat pixel
 	return new WindowsDepthStencil(mGraphics, texture2D, pixelFormat);
 }
 
+auto WindowsFactory::createResourceUsage(StructuredBuffer* structuredBuffer) -> ResourceUsage* 
+{
+	return new WindowsResourceUsage(mGraphics, structuredBuffer);
+}
+
 auto WindowsFactory::createResourceUsage(Texture2D * texture2D, PixelFormat pixelFormat) -> ResourceUsage * 
 {
 	return new WindowsResourceUsage(mGraphics, texture2D, pixelFormat);

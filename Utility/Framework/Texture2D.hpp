@@ -14,11 +14,11 @@ protected:
 	int mRowPitch;
 	
 	Texture2D(Graphics* graphics, int width, int height, PixelFormat pixelFormat, const ResourceInfo &info) :
-		ShaderResource(graphics, width * height * Utility::computePixelFomratBytes(pixelFormat), pixelFormat, info) {
+		ShaderResource(graphics, width * height * Utility::computePixelFormatBytes(pixelFormat), pixelFormat, info) {
 
 		mWidth = width;
 		mHeight = height;
-		mRowPitch = mWidth * Utility::computePixelFomratBytes(pixelFormat);
+		mRowPitch = mWidth * Utility::computePixelFormatBytes(pixelFormat);
 	}
 
 public:

@@ -4,6 +4,7 @@
 
 class Texture2D;
 class Texture3D;
+class StructuredBuffer;
 class Graphics;
 
 class ResourceUsage {
@@ -17,4 +18,7 @@ protected:
 
 	ResourceUsage(Graphics* graphics, Texture3D* texture3D, PixelFormat pixelFormat) :
 		mGraphics(graphics), mPixelFormat(pixelFormat) {}
+
+	ResourceUsage(Graphics* graphics, StructuredBuffer* buffer) :
+		mGraphics(graphics), mPixelFormat(PixelFormat::Unknown) {}
 };

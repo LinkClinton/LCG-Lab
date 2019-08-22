@@ -10,7 +10,7 @@ WindowsStructuredBuffer::WindowsStructuredBuffer(Graphics* graphics, int element
 {
 	D3D11_BUFFER_DESC desc;
 
-	assert(Utility::hasBindUsage(mResourceInfo.BindUsage, BindUsage::ConstantBufferUsage) == true);
+	assert(Utility::hasBindUsage(mResourceInfo.BindUsage, BindUsage::ShaderResourceUsage) == true);
 
 	desc.BindFlags = Utility::convertBindUsage(mResourceInfo.BindUsage);
 	desc.ByteWidth = mSize;

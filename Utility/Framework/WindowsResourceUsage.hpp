@@ -18,6 +18,8 @@ public:
 
 	WindowsResourceUsage(Graphics* graphics, Texture3D* texture3D, PixelFormat pixelFormat);
 
+	WindowsResourceUsage(Graphics* graphics, StructuredBuffer* buffer);
+
 	~WindowsResourceUsage();
 };
 

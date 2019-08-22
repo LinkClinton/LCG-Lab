@@ -17,7 +17,7 @@ public:
 		std::vector<LineSeries> data;
 
 		for (size_t i = 0; i < 1000; i++)
-			data.push_back(LineSeries::random_make(10, 
+			data.push_back(LineSeries::random_make(50, 
 				static_cast<real>(image_width), 
 				static_cast<real>(image_height)));
 
@@ -28,7 +28,7 @@ public:
 			std::vector<vec4>({
 				vec4(0.0f,1.0f,0.0f,1.0f),
 				vec4(1.0f,0.0f,0.0f,1.0f)
-				}), 15.f);
+				}), 15.0f);
 		
 		mImageGenerator = std::make_shared<ImageGenerator>(
 			mDensityGenerator,

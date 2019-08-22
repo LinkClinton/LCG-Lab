@@ -59,6 +59,8 @@ public:
 
 	virtual auto createResourceUsage(Texture3D* texture3D, PixelFormat pixelFormat) -> ResourceUsage* = 0;
 
+	virtual auto createResourceUsage(StructuredBuffer* structuredBuffer) -> ResourceUsage* = 0;
+
 	virtual auto createUnorderedAccessUsage(Texture2D* texture2D, PixelFormat pixelFormat) -> UnorderedAccessUsage* = 0;
 
 	virtual auto createUnorderedAccessUsage(Texture3D* texture3D, PixelFormat pixelFormat) -> UnorderedAccessUsage* = 0;
