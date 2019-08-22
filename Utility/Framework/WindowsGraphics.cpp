@@ -96,6 +96,12 @@ void WindowsGraphics::clearUnorderedAccessUsageUint(UnorderedAccessUsage * unord
 		value);
 }
 
+void WindowsGraphics::clearUnorderedAccessUsageFloat(UnorderedAccessUsage* unorderedAccessUsage, const float value[4]) {
+
+	mDeviceContext->ClearUnorderedAccessViewFloat(static_cast<WindowsUnorderedAccessUsage*>(unorderedAccessUsage)->mUnorderedAccessView,
+		value);
+}
+
 void WindowsGraphics::setViewPort(float left, float top, float right, float bottom)
 {
 	D3D11_VIEWPORT viewPort;

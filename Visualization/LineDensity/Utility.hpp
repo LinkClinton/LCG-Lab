@@ -11,6 +11,7 @@
 using real = float;
 using vec2 = glm::vec<2, real, glm::defaultp>;
 using vec3 = glm::vec<3, real, glm::defaultp>;
+using vec4 = glm::vec<4, real, glm::defaultp>;
 using mat4 = glm::mat<4, 4, real, glm::defaultp>;
 using byte = unsigned char;
 

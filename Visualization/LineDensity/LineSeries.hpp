@@ -15,6 +15,8 @@ public:
 	auto line(size_t index)->std::pair<vec2, vec2>;
 
 	auto size() const -> size_t;
+
+	static auto random_make(size_t size, real width_limit, real height_limit) -> LineSeries;
 private:
 	std::vector<vec2> mLinePoints;
 };

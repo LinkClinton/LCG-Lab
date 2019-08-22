@@ -38,4 +38,9 @@ void WindowsRasterizerState::setCullMode(CullMode cullMode)
 	mRasterizerDesc.CullMode = (D3D11_CULL_MODE)Utility::convertCullMode(mCullMode);
 }
 
+void WindowsRasterizerState::enableDepth(bool enable) 
+{
+	mRasterizerDesc.DepthClipEnable = enable;
+}
+
 #endif // _WIN32

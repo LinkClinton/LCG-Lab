@@ -1,4 +1,4 @@
-#include "ShaderInclude.hlsl"
+#include "DensityGeneratorInclude.hlsli"
 
 float4 main(float4 position : SV_POSITION) : SV_TARGET
 {

@@ -1,4 +1,4 @@
-#include "ShaderInclude.hlsl"
+#include "DensityGeneratorInclude.hlsli"
 
 float4 main(float4 position : SV_POSITION) : SV_TARGET
 {
@@ -7,7 +7,7 @@ float4 main(float4 position : SV_POSITION) : SV_TARGET
 
 	if (CountTexture2D[count] != 0)
 		HeatMapTexture2D[index0] = HeatMapTexture2D[index0] +
-			BufferTexture2D[index0] / CountTexture2D[count];
+		BufferTexture2D[index0] / (float)CountTexture2D[count];
 
 	return float4(1, 0, 0, 1);
 }

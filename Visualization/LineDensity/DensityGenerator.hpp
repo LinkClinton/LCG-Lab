@@ -38,11 +38,14 @@ private:
 	VertexBuffer* mVertexBuffer;
 	IndexBuffer* mIndexBuffer;
 
-	VertexShader* mLineVertexShader;
-	VertexShader* mMergeVertexShader;
-
-	PixelShader* mLinePixelShader;
+	VertexShader* mCommonVertexShader;
+	
+	RasterizerState* mRasterizerState;
+	
+	PixelShader* mDrawPixelShader;
 	PixelShader* mMergePixelShader;
+
+	ResourceUsage* mHeatMapResourceUsage;
 
 	UnorderedAccessUsage* mHeatMapRWUsage;
 	UnorderedAccessUsage* mBufferRWUsage;

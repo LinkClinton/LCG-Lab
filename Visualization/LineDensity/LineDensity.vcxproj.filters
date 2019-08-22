@@ -41,23 +41,35 @@
     <ClInclude Include="ImageGenerator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ColorMapped.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMacro.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="LinePixelShader.hlsl">
+    <FxCompile Include="ImageGeneratorPixel.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="LineVertexShader.hlsl">
+    <FxCompile Include="DensityGeneratorMergePixel.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="MergePixelShader.hlsl">
+    <FxCompile Include="DensityGeneratorDrawPixel.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="MergeVertexShader.hlsl">
+    <FxCompile Include="ImageGeneratorVertex.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="DensityGeneratorVertex.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ShaderInclude.hlsl">
+    <None Include="ImageGeneratorInclude.hlsli">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="DensityGeneratorInclude.hlsli">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

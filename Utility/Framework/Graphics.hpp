@@ -46,6 +46,8 @@ public:
 
 	virtual void clearUnorderedAccessUsageUint(UnorderedAccessUsage* unorderedAccessUsage, const unsigned int value[4]) = 0;
 
+	virtual void clearUnorderedAccessUsageFloat(UnorderedAccessUsage* unorderedAccessUsage, const float value[4]) = 0;
+
 	virtual void setViewPort(float left, float top, float right, float bototm) = 0;
 
 	virtual void setVertexBuffer(VertexBuffer* buffer) = 0;

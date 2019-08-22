@@ -20,6 +20,8 @@ public:
 	virtual void setFillMode(FillMode fillMode)override;
 
 	virtual void setCullMode(CullMode cullMode)override;
+
+	virtual void enableDepth(bool enable) override;
 };
 
 #endif // _WIN32

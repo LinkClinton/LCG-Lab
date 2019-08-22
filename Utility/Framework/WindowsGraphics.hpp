@@ -43,6 +43,8 @@ public:
 
 	virtual void clearUnorderedAccessUsageUint(UnorderedAccessUsage* unorderedAccessUsage, const unsigned int value[4])override;
 
+	virtual void clearUnorderedAccessUsageFloat(UnorderedAccessUsage* unorderedAccessUsage, const float value[4]) override;
+
 	virtual void setViewPort(float left, float top, float right, float bototm)override;
 
 	virtual void setVertexBuffer(VertexBuffer* buffer)override;

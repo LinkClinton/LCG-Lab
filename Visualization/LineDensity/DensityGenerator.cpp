@@ -5,7 +5,7 @@ DensityGenerator::DensityGenerator(
 	const std::vector<LineSeries>& line_series, 
 	size_t heatmap_width, size_t heatmap_height) :
 	mFactory(factory), mLineSeries(line_series), 
-	mWidth(heatmap_width), mHeight(heatmap_height){
+	mWidth(heatmap_width), mHeight(heatmap_height) {
 
 	const auto width = static_cast<int>(mWidth);
 	const auto height = static_cast<int>(mHeight);
@@ -33,11 +33,13 @@ DensityGenerator::DensityGenerator(
 	mVertexBuffer = mFactory->createVertexBuffer(sizeof(vec3) * 4, sizeof(vec3), ResourceInfo::VertexBuffer());
 	mIndexBuffer = mFactory->createIndexBuffer(sizeof(unsigned) * 6, ResourceInfo::IndexBuffer());
 
-	mMergeVertexShader = mFactory->createVertexShader(ShaderFile::read("MergeVertexShader.cso"), true);
-	mLineVertexShader = mFactory->createVertexShader(ShaderFile::read("LineVertexShader.cso"), true);
+	mCommonVertexShader = mFactory->createVertexShader(ShaderFile::read("DensityGeneratorVertex.cso"), true);
+	
+	mMergePixelShader = mFactory->createPixelShader(ShaderFile::read("DensityGeneratorMergePixel.cso"), true);
+	mDrawPixelShader = mFactory->createPixelShader(ShaderFile::read("DensityGeneratorDrawPixel.cso"), true);
 
-	mMergePixelShader = mFactory->createPixelShader(ShaderFile::read("MergePixelShader.cso"), true);
-	mLinePixelShader = mFactory->createPixelShader(ShaderFile::read("LinePixelShader.cso"), true);
+	mRasterizerState = mFactory->createRasterizerState();
+	mRasterizerState->enableDepth(false);
 	
 	vec3 position[] = {
 		vec3(0, 0, 0),
@@ -66,19 +68,22 @@ DensityGenerator::~DensityGenerator() {
 	mFactory->destroyVertexbuffer(mVertexBuffer);
 	mFactory->destroyIndexBuffer(mIndexBuffer);
 
-	mFactory->destroyVertexShader(mLineVertexShader);
-	mFactory->destroyVertexShader(mMergeVertexShader);
+	mFactory->destroyVertexShader(mCommonVertexShader);
 
-	mFactory->destroyPixelShader(mLinePixelShader);
+	mFactory->destroyPixelShader(mDrawPixelShader);
 	mFactory->destroyPixelShader(mMergePixelShader);
 
 	mFactory->destroyUnorderedAccessUsage(mHeatMapRWUsage);
 	mFactory->destroyUnorderedAccessUsage(mBufferRWUsage);
 	mFactory->destroyUnorderedAccessUsage(mCountRWUsage);
+
+	mFactory->destroyRasterizerState(mRasterizerState);
 }
 
 void DensityGenerator::run(real width) {
-	unsigned int uavClear[4] = { 0, 0, 0, 0 };
+	unsigned int uav_uint_clear[4] = { 0, 0, 0, 0 };
+	float uav_float_clear[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	float color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	mat4 matrix[] = {
 		mat4(1.0f),
@@ -88,10 +93,10 @@ void DensityGenerator::run(real width) {
 		0.0f, 1.0f) 
 	};
 
-	auto graphics = mFactory->graphics();
-
+	const auto graphics = mFactory->graphics();
+	
 	graphics->clearState();
-	graphics->clearUnorderedAccessUsageUint(mHeatMapRWUsage, uavClear);
+	graphics->clearUnorderedAccessUsageFloat(mHeatMapRWUsage, uav_float_clear);
 	
 	graphics->setRenderTarget(mRenderTarget);
 	
@@ -99,10 +104,14 @@ void DensityGenerator::run(real width) {
 	graphics->setVertexBuffer(mVertexBuffer);
 	graphics->setIndexBuffer(mIndexBuffer);
 
+	graphics->setVertexShader(mCommonVertexShader);
+
 	graphics->setPrimitiveType(PrimitiveType::TriangleList);
 	graphics->setViewPort(0, 0, 
 		static_cast<float>(mWidth), 
 		static_cast<float>(mHeight));
+
+	graphics->setRasterizerState(mRasterizerState);
 	
 	graphics->setConstantBuffer(mTransformBuffer, 0);
 	graphics->setUnorderedAccessUsage({
@@ -113,10 +122,10 @@ void DensityGenerator::run(real width) {
 
 	//for each line series
 	for (auto &lines : mLineSeries) {
-		graphics->clearUnorderedAccessUsageUint(mBufferRWUsage, uavClear);
-
-		graphics->setVertexShader(mLineVertexShader);
-		graphics->setPixelShader(mLinePixelShader);
+		graphics->clearUnorderedAccessUsageFloat(mBufferRWUsage, uav_float_clear);
+		graphics->clearUnorderedAccessUsageUint(mCountRWUsage, uav_uint_clear);
+	
+		graphics->setPixelShader(mDrawPixelShader);
 
 		for (size_t index = 0; index < lines.size(); index++) {
 			const auto line = lines.line(index);
@@ -128,7 +137,6 @@ void DensityGenerator::run(real width) {
 			graphics->drawIndexed(6, 0, 0);
 		}
 
-		graphics->setVertexShader(mMergeVertexShader);
 		graphics->setPixelShader(mMergePixelShader);
 
 		matrix[0] = glm::scale(mat4(1), vec3(mTarget->getWidth(), mTarget->getHeight(), 1));

@@ -16,6 +16,8 @@ public:
 
 	virtual void setCullMode(CullMode cullMode) = 0;
 
+	virtual void enableDepth(bool enable) = 0;
+
 	virtual auto getFillMode() -> FillMode const {
 		return mFillMode;
 	}
