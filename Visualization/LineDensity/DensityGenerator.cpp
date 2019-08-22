@@ -37,7 +37,6 @@ DensityGenerator::DensityGenerator(
 	mIndexBuffer = mFactory->createIndexBuffer(sizeof(unsigned) * 6, ResourceInfo::IndexBuffer());
 
 	mCommonVertexShader = mFactory->createVertexShader(ShaderFile::read("DensityGeneratorVertex.cso"), true);
-	mInstanceVertexShader = mFactory->createVertexShader(ShaderFile::read("DensityGeneratorInstanceVertex.cso"), true);
 	
 	mMergePixelShader = mFactory->createPixelShader(ShaderFile::read("DensityGeneratorMergePixel.cso"), true);
 	mDrawPixelShader = mFactory->createPixelShader(ShaderFile::read("DensityGeneratorDrawPixel.cso"), true);
@@ -76,8 +75,7 @@ DensityGenerator::~DensityGenerator() {
 	mFactory->destroyIndexBuffer(mIndexBuffer);
 
 	mFactory->destroyVertexShader(mCommonVertexShader);
-	mFactory->destroyVertexShader(mInstanceVertexShader);
-
+	
 	mFactory->destroyPixelShader(mDrawPixelShader);
 	mFactory->destroyPixelShader(mMergePixelShader);
 
@@ -101,16 +99,20 @@ void DensityGenerator::run(real width) {
 		0.0f, 1.0f) 
 	};
 
+	mTransformBuffer->update(matrix);
+
 	const auto graphics = mFactory->graphics();
 	
 	graphics->clearState();
 	graphics->clearUnorderedAccessUsageFloat(mHeatMapRWUsage, uav_float_clear);
 	
 	graphics->setRenderTarget(mRenderTarget);
-	
+
 	graphics->setInputLayout(mInputLayout);
 	graphics->setVertexBuffer(mVertexBuffer);
 	graphics->setIndexBuffer(mIndexBuffer);
+
+	graphics->setVertexShader(mCommonVertexShader);
 
 	graphics->setPrimitiveType(PrimitiveType::TriangleList);
 	graphics->setViewPort(0, 0, 
@@ -157,7 +159,6 @@ void DensityGenerator::run(real width) {
 		graphics->clearUnorderedAccessUsageFloat(mBufferRWUsage, uav_float_clear);
 		graphics->clearUnorderedAccessUsageUint(mCountRWUsage, uav_uint_clear);
 
-		graphics->setVertexShader(mInstanceVertexShader);
 		graphics->setPixelShader(mDrawPixelShader);
 
 		assert(lines.size() >= 2);
@@ -171,19 +172,17 @@ void DensityGenerator::run(real width) {
 		}
 
 		mInstanceBuffer->update(instance_data.data());
-		mTransformBuffer->update(matrix);
-
+		
 		graphics->drawIndexedInstanced(6, line_count, 0, 0);
 
 		//merge line series
-		graphics->setVertexShader(mCommonVertexShader);
 		graphics->setPixelShader(mMergePixelShader);
 
-		matrix[0] = glm::scale(mat4(1), vec3(mTarget->getWidth(), mTarget->getHeight(), 1));
+		instance_data[0] = glm::scale(mat4(1), vec3(mTarget->getWidth(), mTarget->getHeight(), 1));
 
-		mTransformBuffer->update(matrix);
-
-		graphics->drawIndexed(6, 0, 0);
+		mInstanceBuffer->update(instance_data.data());
+		
+		graphics->drawIndexedInstanced(6, 1, 0, 0);
 	}
 }
 

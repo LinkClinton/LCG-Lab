@@ -41,7 +41,6 @@ private:
 	IndexBuffer* mIndexBuffer;
 
 	VertexShader* mCommonVertexShader;
-	VertexShader* mInstanceVertexShader;
 	
 	RasterizerState* mRasterizerState;
 	
