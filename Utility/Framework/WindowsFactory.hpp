@@ -12,6 +12,8 @@ public:
 
 	virtual auto createIndexBuffer(int size, const ResourceInfo &info)->IndexBuffer* override;
 
+	virtual auto createStructuredBuffer(int element_size, int element_count, const ResourceInfo& info) -> StructuredBuffer* override;
+
 	virtual auto createConstantBuffer(int size, const ResourceInfo &info)->ConstantBuffer* override;
 
 	virtual auto createTexture2D(int width, int height, PixelFormat pixelFormat, const ResourceInfo &info)->Texture2D* override;
@@ -44,9 +46,11 @@ public:
 
 	virtual auto createInput(Framework* framework) -> Input* override;
 
-	virtual void destroyVertexbuffer(VertexBuffer* &vertexBuffer)override;
+	virtual void destroyVertexBuffer(VertexBuffer* &vertexBuffer)override;
 
 	virtual void destroyIndexBuffer(IndexBuffer* &indexBuffer)override;
+
+	virtual void destroyStructuredBuffer(StructuredBuffer*& structuredBuffer) override;
 
 	virtual void destroyConstantBuffer(ConstantBuffer* &constantBuffer)override;
 

@@ -2,6 +2,8 @@
 
 #include <random>
 
+#undef min
+
 LineSeries::LineSeries(const std::vector<vec2>& line_points) :
 	mLinePoints(line_points) {
 
@@ -33,12 +35,14 @@ auto LineSeries::random_make(size_t size, real width_limit, real height_limit) -
 
 	std::vector<vec2> lines;
 
-	const auto space = width_limit / static_cast<real>(size + 1);
+	const auto space = width_limit / static_cast<real>(size);
+
+	auto height = 0.0f;
 
 	for (size_t i = 0; i <= size; i++) {
 		lines.push_back({
-			std::uniform_real_distribution<real>(i * space, i * space + space)(engine),
-			std::uniform_real_distribution<real>(0.0f, height_limit)(engine)
+			i * space,
+			height = Utility::clamp(height + std::uniform_real_distribution<real>(-0.5f, 0.5f)(engine) * height_limit, 0.0f, height_limit)
 			});
 	}
 

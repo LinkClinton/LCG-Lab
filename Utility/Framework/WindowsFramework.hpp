@@ -56,6 +56,7 @@ public:
 #include "WindowsRenderTarget.hpp"
 #include "WindowsDepthStencil.hpp"
 #include "WindowsSwapChain.hpp"
+#include "WindowsStructuredBuffer.hpp"
 #include "WindowsConstantBuffer.hpp"
 #include "WindowsVertexBuffer.hpp"
 #include "WindowsIndexBuffer.hpp"

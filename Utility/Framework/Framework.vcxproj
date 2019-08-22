@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BindUsage.hpp" />
+    <ClInclude Include="StructuredBuffer.hpp" />
     <ClInclude Include="Camera.hpp" />
     <ClInclude Include="ComparisonMode.hpp" />
     <ClInclude Include="ConstantBuffer.hpp" />
@@ -78,6 +79,7 @@
     <ClInclude Include="WindowsRasterizerState.hpp" />
     <ClInclude Include="WindowsRenderTarget.hpp" />
     <ClInclude Include="WindowsResourceUsage.hpp" />
+    <ClInclude Include="WindowsStructuredBuffer.hpp" />
     <ClInclude Include="WindowsSwapChain.hpp" />
     <ClInclude Include="WindowsTexture2D.hpp" />
     <ClInclude Include="WindowsTexture3D.hpp" />
@@ -108,6 +110,7 @@
     <ClCompile Include="WindowsRasterizerState.cpp" />
     <ClCompile Include="WindowsRenderTarget.cpp" />
     <ClCompile Include="WindowsResourceUsage.cpp" />
+    <ClCompile Include="WindowsStructuredBuffer.cpp" />
     <ClCompile Include="WindowsSwapChain.cpp" />
     <ClCompile Include="WindowsTexture2D.cpp" />
     <ClCompile Include="WindowsTexture3D.cpp" />

@@ -9,6 +9,7 @@ class Framework;
 class Graphics;
 class VertexBuffer;
 class IndexBuffer;
+class StructuredBuffer;
 class ConstantBuffer;
 class Texture2D;
 class Texture3D;
@@ -37,6 +38,8 @@ public:
 	virtual auto createVertexBuffer(int size, int stride, const ResourceInfo &info) -> VertexBuffer* = 0;
 
 	virtual auto createIndexBuffer(int size, const ResourceInfo &info) -> IndexBuffer* = 0;
+
+	virtual auto createStructuredBuffer(int element_size, int element_count, const ResourceInfo& info) -> StructuredBuffer* = 0;
 
 	virtual auto createConstantBuffer(int size, const ResourceInfo &info) -> ConstantBuffer* = 0;
 
@@ -70,9 +73,11 @@ public:
 
 	virtual auto createInput(Framework* framework) -> Input* = 0;
 
-	virtual void destroyVertexbuffer(VertexBuffer* &vertexBuffer) = 0;
+	virtual void destroyVertexBuffer(VertexBuffer* &vertexBuffer) = 0;
 
 	virtual void destroyIndexBuffer(IndexBuffer* &indexBuffer) = 0;
+
+	virtual void destroyStructuredBuffer(StructuredBuffer*& structuredBuffer) = 0;
 
 	virtual void destroyConstantBuffer(ConstantBuffer* &constantBuffer) = 0;
 

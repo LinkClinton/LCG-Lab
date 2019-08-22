@@ -18,6 +18,7 @@ private:
 	friend class WindowsVertexShader;
 	friend class WindowsPixelShader;
 	friend class WindowsInputLayout;
+	friend class WindowsStructuredBuffer;
 	friend class WindowsConstantBuffer;
 	friend class WindowsVertexBuffer;
 	friend class WindowsIndexBuffer;

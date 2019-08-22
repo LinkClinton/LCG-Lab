@@ -257,6 +257,12 @@
     <ClInclude Include="Mesh.hpp">
       <Filter>Header Files\Extension\Model</Filter>
     </ClInclude>
+    <ClInclude Include="StructuredBuffer.hpp">
+      <Filter>Header Files\Interface\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowsStructuredBuffer.hpp">
+      <Filter>Header Files\Windows</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowsVertexShader.cpp">
@@ -339,6 +345,9 @@
     </ClCompile>
     <ClCompile Include="Frustum.cpp">
       <Filter>Source Files\Extension\Intersections</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowsStructuredBuffer.cpp">
+      <Filter>Source Files\Windows</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

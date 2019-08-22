@@ -65,7 +65,7 @@ DensityGenerator::~DensityGenerator() {
 	mFactory->destroyRenderTarget(mRenderTarget);
 
 	mFactory->destroyConstantBuffer(mTransformBuffer);
-	mFactory->destroyVertexbuffer(mVertexBuffer);
+	mFactory->destroyVertexBuffer(mVertexBuffer);
 	mFactory->destroyIndexBuffer(mIndexBuffer);
 
 	mFactory->destroyVertexShader(mCommonVertexShader);

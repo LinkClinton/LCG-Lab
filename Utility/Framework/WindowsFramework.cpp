@@ -20,7 +20,7 @@ LRESULT WindowsFramework::DefaultWindowProc(HWND hWnd, UINT message, WPARAM wPar
 	default:
 		break;
 	}
-	
+
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 

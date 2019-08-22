@@ -20,6 +20,11 @@ auto WindowsFactory::createIndexBuffer(int size, const ResourceInfo &info) -> In
 	return new WindowsIndexBuffer(mGraphics, size, info);
 }
 
+auto WindowsFactory::createStructuredBuffer(int element_size, int element_count,
+	const ResourceInfo& info) -> StructuredBuffer* {
+	return new WindowsStructuredBuffer(mGraphics, element_size, element_count, info);
+}
+
 auto WindowsFactory::createConstantBuffer(int size, const ResourceInfo &info) -> ConstantBuffer *
 {
 	return new WindowsConstantBuffer(mGraphics, size, info);
@@ -100,7 +105,7 @@ auto WindowsFactory::createInput(Framework* framework) -> Input *
 	return new WindowsInput(framework);
 }
 
-void WindowsFactory::destroyVertexbuffer(VertexBuffer *& vertexBuffer)
+void WindowsFactory::destroyVertexBuffer(VertexBuffer *& vertexBuffer)
 {
 	if (vertexBuffer == nullptr) return;
 	
@@ -116,6 +121,14 @@ void WindowsFactory::destroyIndexBuffer(IndexBuffer *& indexBuffer)
 	delete (WindowsIndexBuffer*)indexBuffer;
 
 	indexBuffer = nullptr;
+}
+
+void WindowsFactory::destroyStructuredBuffer(StructuredBuffer*& structuredBuffer) {
+	if (structuredBuffer == nullptr) return;
+
+	delete (WindowsStructuredBuffer*)structuredBuffer;
+
+	structuredBuffer = nullptr;
 }
 
 void WindowsFactory::destroyConstantBuffer(ConstantBuffer *& constantBuffer)

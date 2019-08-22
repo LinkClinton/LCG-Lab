@@ -19,5 +19,5 @@ float4 main(float4 position : SV_POSITION) : SV_TARGET
 
 	int mapped_index = sample_value / space;
 	
-	return lerp(colors[mapped_index], colors[mapped_index + 1], (sample_value - mapped_index * space) / space);
+	return lerp(colors[mapped_index], colors[mapped_index + 1], clamp((sample_value - mapped_index * space) / space, 0.0f, 1.0f));
 }

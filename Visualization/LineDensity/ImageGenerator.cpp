@@ -89,7 +89,7 @@ ImageGenerator::~ImageGenerator() {
 	mFactory->destroyRenderTarget(mRenderTarget);
 	mFactory->destroyConstantBuffer(mUploadBuffer);
 	mFactory->destroyConstantBuffer(mColorMappedBuffer);
-	mFactory->destroyVertexbuffer(mVertexBuffer);
+	mFactory->destroyVertexBuffer(mVertexBuffer);
 	mFactory->destroyIndexBuffer(mIndexBuffer);
 	mFactory->destroyVertexShader(mVertexShader);
 	mFactory->destroyPixelShader(mPixelShader);

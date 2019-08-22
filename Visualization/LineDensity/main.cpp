@@ -27,10 +27,9 @@ public:
 		mColorMapped = std::make_shared<ColorMapped>(
 			std::vector<vec4>({
 				vec4(0.0f,1.0f,0.0f,1.0f),
-				vec4(1.0f,0.0f,0.0f,1.0f),
-				vec4(0.0f,0.0f,1.0f,1.0f)
-				}), 10.f);
-
+				vec4(1.0f,0.0f,0.0f,1.0f)
+				}), 15.f);
+		
 		mImageGenerator = std::make_shared<ImageGenerator>(
 			mDensityGenerator,
 			mColorMapped,
