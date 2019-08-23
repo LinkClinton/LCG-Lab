@@ -21,9 +21,8 @@ private:
 	size_t mWidth;
 	size_t mHeight;
 
-	auto lineTransform(const vec2& start, const vec2& end, real width = 2.0f) const -> mat4;
-
 	friend class ImageGenerator;
+	friend class SharpGenerator;
 private:
 	Texture2D* mTarget;
 	Texture2D* mHeatMap;

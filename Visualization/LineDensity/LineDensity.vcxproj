@@ -138,6 +138,7 @@
     <ClCompile Include="ImageGenerator.cpp" />
     <ClCompile Include="LineSeries.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="SharpGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Utility\Framework\Framework.vcxproj">
@@ -150,6 +151,7 @@
     <ClInclude Include="ImageGenerator.hpp" />
     <ClInclude Include="LineSeries.hpp" />
     <ClInclude Include="SharedMacro.hpp" />
+    <ClInclude Include="SharpGenerator.hpp" />
     <ClInclude Include="Utility.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -158,6 +160,14 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="SharpGeneratorPixel.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="SharpGeneratorVertex.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
     <None Include="ImageGeneratorInclude.hlsli">
       <FileType>Document</FileType>
@@ -189,6 +199,7 @@
     <None Include="DensityGeneratorInclude.hlsli">
       <FileType>Document</FileType>
     </None>
+    <None Include="SharpGeneratorInclude.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

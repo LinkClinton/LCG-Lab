@@ -1,11 +1,15 @@
 #pragma pack_matrix(row_major) 
 
+struct instance_data {
+	matrix world;
+};
+
 cbuffer Transform : register(b0) {
 	matrix world;
 	matrix project;
 }
 
-StructuredBuffer<matrix> InstanceBuffer : register(t0);
+StructuredBuffer<instance_data> InstanceBuffer : register(t0);
 
 RWTexture2D<float> BufferTexture2D : register(u1);
 RWTexture2D<uint>  CountTexture2D : register(u2);

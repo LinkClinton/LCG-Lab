@@ -70,6 +70,7 @@ DensityGenerator::~DensityGenerator() {
 
 	mFactory->destroyRenderTarget(mRenderTarget);
 
+	mFactory->destroyStructuredBuffer(mInstanceBuffer);
 	mFactory->destroyConstantBuffer(mTransformBuffer);
 	mFactory->destroyVertexBuffer(mVertexBuffer);
 	mFactory->destroyIndexBuffer(mIndexBuffer);
@@ -82,6 +83,8 @@ DensityGenerator::~DensityGenerator() {
 	mFactory->destroyUnorderedAccessUsage(mHeatMapRWUsage);
 	mFactory->destroyUnorderedAccessUsage(mBufferRWUsage);
 	mFactory->destroyUnorderedAccessUsage(mCountRWUsage);
+
+	mFactory->destroyResourceUsage(mInstanceUsage);
 
 	mFactory->destroyRasterizerState(mRasterizerState);
 }
@@ -166,9 +169,7 @@ void DensityGenerator::run(real width) {
 		const auto line_count = static_cast<int>(lines.size());
 
 		for (size_t index = 0; index < lines.size(); index++) {
-			const auto line = lines.line(index);
-
-			instance_data[index] = lineTransform(line.first, line.second, width);
+			instance_data[index] = lines.line_transform(index, width);
 		}
 
 		mInstanceBuffer->update(instance_data.data());
@@ -184,17 +185,4 @@ void DensityGenerator::run(real width) {
 		
 		graphics->drawIndexedInstanced(6, 1, 0, 0);
 	}
-}
-
-auto DensityGenerator::lineTransform(const vec2& start, const vec2& end, real width) const -> mat4 {
-
-	auto matrix = mat4(1);
-	const auto vector = end - start;
-
-	matrix = glm::translate(matrix, vec3(start.x, start.y, 0));
-	matrix = glm::rotate(matrix, glm::atan(vector.y, vector.x), vec3(0, 0, 1));
-	matrix = glm::translate(matrix, vec3(0, -width * 0.5f, 0));
-	matrix = glm::scale(matrix, vec3(glm::length(vector), width, 1));
-	
-	return matrix;
 }

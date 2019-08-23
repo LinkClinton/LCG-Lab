@@ -1,5 +1,6 @@
 #include "DensityGenerator.hpp"
 #include "ImageGenerator.hpp"
+#include "SharpGenerator.hpp"
 #include "ColorMapped.hpp"
 
 #include <WindowsFactory.hpp>
@@ -16,8 +17,8 @@ public:
 
 		std::vector<LineSeries> data;
 
-		for (size_t i = 0; i < 1000; i++)
-			data.push_back(LineSeries::random_make(50, 
+		for (size_t i = 0; i < 3; i++)
+			data.push_back(LineSeries::random_make(20, 
 				static_cast<real>(image_width), 
 				static_cast<real>(image_height)));
 
@@ -26,7 +27,7 @@ public:
 
 		mColorMapped = std::make_shared<ColorMapped>(
 			std::vector<vec4>({
-				vec4(0.0f,1.0f,0.0f,1.0f),
+				vec4(0.0f,0.0f,0.0f,1.0f),
 				vec4(1.0f,0.0f,0.0f,1.0f)
 				}), 15.0f);
 		
@@ -35,7 +36,8 @@ public:
 			mColorMapped,
 			mSwapChain);
 
-		
+		mSharpGenerator = std::make_shared<SharpGenerator>(
+			mFactory, mDensityGenerator, mSwapChain);
 	}
 
 	~DGFramework() {
@@ -43,14 +45,15 @@ public:
 	}
 
 	void render(void* sender, float deltaTime)override {
-
 		mDensityGenerator->run(1.0f);
 		mImageGenerator->run();
+		//mSharpGenerator->run(1.0f);
 		mSwapChain->present(true);
 	}
 private:
 	std::shared_ptr<DensityGenerator> mDensityGenerator;
 	std::shared_ptr<ImageGenerator> mImageGenerator;
+	std::shared_ptr<SharpGenerator> mSharpGenerator;
 	std::shared_ptr<ColorMapped> mColorMapped;
 };
 
@@ -58,22 +61,4 @@ int main() {
 	DGFramework dg = DGFramework("Density-Generator", 1280, 720);
 	dg.showWindow();
 	dg.runLoop();
-
-	/*const auto graphics = std::make_shared<WindowsGraphics>();
-	const auto factory = std::make_shared<WindowsFactory>(graphics.get());
-
-	auto dg = DensityGenerator(factory.get(),
-		{
-			LineSeries(
-				{
-					vec2(0,0),
-					vec2(20, 20),
-					vec2(30, 40),
-					vec2(40, 80)
-				})
-		}, 100, 100);
-
-	dg.run();
-
-	ImageGenerator::save(L"Test.png", dg);*/
 }
