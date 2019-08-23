@@ -36,10 +36,10 @@ DensityGenerator::DensityGenerator(
 	mVertexBuffer = mFactory->createVertexBuffer(sizeof(vec3) * 4, sizeof(vec3), ResourceInfo::VertexBuffer());
 	mIndexBuffer = mFactory->createIndexBuffer(sizeof(unsigned) * 6, ResourceInfo::IndexBuffer());
 
-	mCommonVertexShader = mFactory->createVertexShader(ShaderFile::read("DensityGeneratorVertex.cso"), true);
+	mCommonVertexShader = mFactory->createVertexShader(ShaderFile::read("./Shader/DensityGeneratorVertex.cso"), true);
 	
-	mMergePixelShader = mFactory->createPixelShader(ShaderFile::read("DensityGeneratorMergePixel.cso"), true);
-	mDrawPixelShader = mFactory->createPixelShader(ShaderFile::read("DensityGeneratorDrawPixel.cso"), true);
+	mMergePixelShader = mFactory->createPixelShader(ShaderFile::read("./Shader/DensityGeneratorMergePixel.cso"), true);
+	mDrawPixelShader = mFactory->createPixelShader(ShaderFile::read("./Shader/DensityGeneratorDrawPixel.cso"), true);
 
 	mRasterizerState = mFactory->createRasterizerState();
 	mRasterizerState->enableDepth(false);

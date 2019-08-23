@@ -53,6 +53,9 @@
     <ClInclude Include="SharpGenerator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CommandList.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ImageGeneratorPixel.hlsl">

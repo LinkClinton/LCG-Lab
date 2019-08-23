@@ -29,8 +29,8 @@ SharpGenerator::SharpGenerator(
 	mVertexBuffer = mFactory->createVertexBuffer(sizeof(vec3) * 4, sizeof(vec3), ResourceInfo::VertexBuffer());
 	mIndexBuffer = mFactory->createIndexBuffer(sizeof(unsigned) * 6, ResourceInfo::IndexBuffer());
 
-	mVertexShader = mFactory->createVertexShader(ShaderFile::read("SharpGeneratorVertex.cso"), true);
-	mPixelShader = mFactory->createPixelShader(ShaderFile::read("SharpGeneratorPixel.cso"), true);
+	mVertexShader = mFactory->createVertexShader(ShaderFile::read("./Shader/SharpGeneratorVertex.cso"), true);
+	mPixelShader = mFactory->createPixelShader(ShaderFile::read("./Shader/SharpGeneratorPixel.cso"), true);
 
 	mRasterizerState = mFactory->createRasterizerState();
 	mRasterizerState->enableDepth(false);
