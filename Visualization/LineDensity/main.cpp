@@ -322,9 +322,4 @@ int main(int argc, char** argv) {
 	if (commandList.execute(&context, CommandList::read_from_argv(argc, argv)) == false) return -1;
 
 	context.run();
-
-	/*DGFramework dg = DGFramework("Density-Generator", 1280, 720);
-	dg.showWindow();
-	dg.runLoop();*/
-
 }
