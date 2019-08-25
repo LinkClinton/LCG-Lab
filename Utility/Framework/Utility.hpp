@@ -128,6 +128,10 @@ public:
 		{
 		case PrimitiveType::TriangleList:
 			return D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		case PrimitiveType::LineList:
+			return D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINELIST; 
+		case PrimitiveType::LineStrip:
+				return D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;
 		default:
 			std::runtime_error("The primitive type is not supported.");
 		}

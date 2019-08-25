@@ -24,7 +24,7 @@ enum class PrimitiveType;
 class Graphics {
 protected:
 	InputLayout* mInputLayout;
-	
+
 	VertexShader* mVertexShader;
 	PixelShader* mPixelShader;
 
@@ -32,9 +32,9 @@ protected:
 	DepthStencil* mDepthStencil;
 
 	std::vector<UnorderedAccessUsage*> mUnorderedAccessUsage;
-	
+
 	Graphics() :
-		mInputLayout(nullptr), mVertexShader(nullptr), 
+		mInputLayout(nullptr), mVertexShader(nullptr),
 		mPixelShader(nullptr), mRenderTarget(nullptr),
 		mDepthStencil(nullptr) {}
 public:
@@ -58,7 +58,7 @@ public:
 
 	virtual void setResourceUsage(ResourceUsage* resourceUsage, int registerID) = 0;
 
-	virtual void setUnorderedAccessUsage(const std::vector<UnorderedAccessUsage*> &unorderedAccessUsages) = 0;
+	virtual void setUnorderedAccessUsage(const std::vector<UnorderedAccessUsage*>& unorderedAccessUsages) = 0;
 
 	virtual void setRenderTarget(RenderTarget* renderTarget) = 0;
 
@@ -73,8 +73,10 @@ public:
 	virtual void setRasterizerState(RasterizerState* rasterizerState) = 0;
 
 	virtual void setDepthStencilState(DepthStencilState* depthStencilState) = 0;
-	
+
 	virtual void setPrimitiveType(PrimitiveType primitiveType) = 0;
+
+	virtual void draw(int vertexCount, int startVertexLocation) = 0;
 
 	virtual void drawIndexed(int indexCount, int startIndexLocation, int baseVertexLocation) = 0;
 

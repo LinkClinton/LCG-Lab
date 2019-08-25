@@ -1,5 +1,7 @@
 #pragma once
 
 enum class PrimitiveType : int {
-	TriangleList
+	TriangleList,
+	LineList,
+	LineStrip
 };

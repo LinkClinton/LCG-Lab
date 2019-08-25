@@ -226,6 +226,10 @@ void WindowsGraphics::setPrimitiveType(PrimitiveType primitiveType)
 	mDeviceContext->IASetPrimitiveTopology((D3D11_PRIMITIVE_TOPOLOGY)Utility::convertPrimitiveType(primitiveType));
 }
 
+void WindowsGraphics::draw(int vertexCount, int startVertexLocation) {
+	mDeviceContext->Draw(vertexCount, startVertexLocation);
+}
+
 void WindowsGraphics::drawIndexed(int indexCount, int startIndexLocation, int baseVertexLocation)
 {
 	mDeviceContext->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);

@@ -13,4 +13,8 @@ public:
 	auto getStride() -> int const {
 		return mStride;
 	}
+
+	auto count() const -> int {
+		return mSize / mStride;
+	}
 };

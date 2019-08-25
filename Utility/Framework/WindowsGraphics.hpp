@@ -74,6 +74,8 @@ public:
 
 	virtual void setPrimitiveType(PrimitiveType primitiveType)override;
 
+	virtual void draw(int vertexCount, int startVertexLocation) override;
+
 	virtual void drawIndexed(int indexCount, int startIndexLocation, int baseVertexLocation)override;
 
 	virtual void drawIndexedInstanced(int indexCount, int instanceCount, int startIndexLocation, int baseVertexLocation)override;

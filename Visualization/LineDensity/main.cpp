@@ -80,7 +80,7 @@ private:
 		const auto height = static_cast<real>(mRandomHeatMapHeight);
 
 		for (size_t index = 0; index < mRandomLineSeriesCount;index++) 
-			data.push_back(LineSeries::random_make(mRandomLineCount + 1, width, height));
+			data.push_back(LineSeries::random_make(mRandomLineCount, width, height));
 
 		mDensityGenerator = std::make_shared<DensityGenerator>(mFactory.get(), data, mRandomHeatMapWidth, mRandomHeatMapHeight);
 
@@ -107,14 +107,14 @@ private:
 	void output_heat_map() {
 		if (mOutputHeatMapName.empty() == true) return;
 
-		std::cout << "start build heat map with line width " << mLineWidth << "." << std::endl;
+		std::cout << "start build heat map." << std::endl;
 		std::cout << "heat map width : " << mDensityGenerator->width() << ", heat map height : " << mDensityGenerator->height() << "." << std::endl;
 		
 		const auto start_time = time_point::now();
 
 		mImageGenerator = std::make_shared<ImageGenerator>(mDensityGenerator, mColorMapped);		
 		
-		mDensityGenerator->run(mLineWidth);
+		mDensityGenerator->run();
 		mImageGenerator->run();
 
 		const auto end_time = time_point::now();
@@ -319,6 +319,6 @@ int main(int argc, char** argv) {
 		});
 
 	if (commandList.execute(&context, CommandList::read_from_argv(argc, argv)) == false) return -1;
-
+	
 	context.run();
 }

@@ -12,7 +12,7 @@ public:
 
 	~DensityGenerator();
 
-	void run(real width = 2.0f);
+	void run();
 
 	auto data() const -> const std::vector<LineSeries>&;
 
@@ -39,11 +39,8 @@ private:
 
 	RenderTarget* mRenderTarget;
 
-	StructuredBuffer* mInstanceBuffer;
-
 	ConstantBuffer* mTransformBuffer;
 	VertexBuffer* mVertexBuffer;
-	IndexBuffer* mIndexBuffer;
 
 	VertexShader* mCommonVertexShader;
 	
@@ -52,8 +49,6 @@ private:
 	PixelShader* mDrawPixelShader;
 	PixelShader* mMergePixelShader;
 
-	ResourceUsage* mInstanceUsage;
-	
 	UnorderedAccessUsage* mHeatMapRWUsage;
 	UnorderedAccessUsage* mBufferRWUsage;
 	UnorderedAccessUsage* mCountRWUsage;

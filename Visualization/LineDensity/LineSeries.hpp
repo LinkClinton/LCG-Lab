@@ -24,6 +24,8 @@ public:
 
 	auto color() const -> vec4;
 
+	auto data() -> vec2*;
+
 	friend std::istream& operator>>(std::istream& in, LineSeries& lineSeries);
 
 	friend std::ostream& operator<<(std::ostream& out, const LineSeries& lineSeries);

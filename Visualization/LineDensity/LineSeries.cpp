@@ -68,6 +68,10 @@ auto LineSeries::color() const -> vec4
 	return mColor;
 }
 
+auto LineSeries::data() -> vec2* {
+	return mLinePoints.data();
+}
+
 auto LineSeries::random_make(size_t size, real width_limit, real height_limit) -> LineSeries {
 	static std::random_device device;
 	static std::mt19937 engine(0);
