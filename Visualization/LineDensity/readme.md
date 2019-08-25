@@ -2,24 +2,6 @@
 
 A simple C++ with Direct3D version of [line-density](https://github.com/domoritz/line-density). The main idea is same, but the implementation is different.
 
-## Optimization
-
-We use texture that can read and write in shader(named RWTexture in Direct3D) to count the number of pixel in scan-line instead of read all texel from texture. If there are two lines are crossed at the same line-series, the count is two. But we need to use "interlock" to count.
-
-We use `CPU` to build the vertex buffer for every line-series. We can use "LineStrip" mode to draw all lines in one line-series with one draw call. And we can render lines at merge stage instead of render a texture(the pixel we render lines less than we render a texture at usual). But we need to ensure to add density only once per pixel.
-
-## Performance
-
-The time to generate 10,000 line-series(1,000 lines, random) to 200x200 heatmap is 0.08s.
-
-The time to generate 10,000 line-series(10,000 lines, random) to 200x200 heatmap is 0.52s.
-
-The GPU is NVIDIA GTX 1060 6GB and the CPU is Intel i7-8650u. And the time is not include the data-generator.
-
-## Issue
-
-Wrong result with Intel Graphics Card. I had not find the reason. Maybe the driver is not right.
-
 ## Command
 
 We can use command like `program_name -x param ...` to generate the heat map. 
@@ -53,6 +35,28 @@ There are "line data" file and "color mapped" file. "line data" file include the
 
 - 1st line: number of colors(n), space.
 - 2nd line to (n + 1)th line: red, green, blue, alpha.
+
+## Download
+
+See [Release](https://github.com/LinkClinton/LCG-Lab/releases/tag/line-density-1.0).
+
+## Optimization
+
+We use texture that can read and write in shader(named RWTexture in Direct3D) to count the number of pixel in scan-line instead of read all texel from texture. If there are two lines are crossed at the same line-series, the count is two. But we need to use "interlock" to count.
+
+We use `CPU` to build the vertex buffer for every line-series. We can use "LineStrip" mode to draw all lines in one line-series with one draw call. And we can render lines at merge stage instead of render a texture(the pixel we render lines less than we render a texture at usual). But we need to ensure to add density only once per pixel.
+
+## Performance
+
+The time to generate 10,000 line-series(1,000 lines, random) to 200x200 heatmap is 0.08s.
+
+The time to generate 10,000 line-series(10,000 lines, random) to 200x200 heatmap is 0.52s.
+
+The GPU is NVIDIA GTX 1060 6GB and the CPU is Intel i7-8650u. And the time is not include the data-generator.
+
+## Issue
+
+Wrong result with Intel Graphics Card. I had not find the reason. Maybe the driver is not right.
 
 ## Example
 
