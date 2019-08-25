@@ -11,6 +11,7 @@ We use `CPU` to build the vertex buffer of every line-series. We can use "LineSt
 ## Performance
 
 The time to generate 10,000 line-series(1,000 lines, random) to 200x200 heatmap is 0.08s.
+
 The time to generate 10,000 line-series(10,000 lines, random) to 200x200 heatmap is 0.52s.
 
 The GPU is NVIDIA GTX 1060 6GB and the CPU is Intel i7-8650u. And the time is not include the data-generator.
