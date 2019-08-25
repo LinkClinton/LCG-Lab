@@ -179,11 +179,7 @@ void DensityGenerator::run(real width) {
 		//merge line series
 		graphics->setPixelShader(mMergePixelShader);
 
-		instance_data[0] = glm::scale(mat4(1), vec3(mTarget->getWidth(), mTarget->getHeight(), 1));
-
-		mInstanceBuffer->update(instance_data.data());
-		
-		graphics->drawIndexedInstanced(6, 1, 0, 0);
+		graphics->drawIndexedInstanced(6, line_count, 0, 0);
 	}
 }
 

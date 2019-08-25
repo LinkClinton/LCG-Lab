@@ -82,7 +82,7 @@ auto LineSeries::random_make(size_t size, real width_limit, real height_limit) -
 		lines.push_back({
 			i * space,
 			height = Utility::clamp(
-				height + std::uniform_real_distribution<real>(-0.5f, 0.5f)(engine) * height_limit * 0.5f, 
+				height + std::uniform_real_distribution<real>(-0.5f, 0.5f)(engine) * height_limit * 0.1f, 
 			1.0f, height_limit - 1.0f)
 			});
 	}
