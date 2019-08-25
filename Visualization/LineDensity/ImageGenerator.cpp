@@ -63,9 +63,9 @@ ImageGenerator::ImageGenerator(const std::shared_ptr<DensityGenerator>& densityG
 	mVertexBuffer = mFactory->createVertexBuffer(sizeof(vec3) * 4, sizeof(vec3), ResourceInfo::VertexBuffer());
 	mIndexBuffer = mFactory->createIndexBuffer(sizeof(unsigned) * 6, ResourceInfo::IndexBuffer());
 
-	mVertexShader = mFactory->createVertexShader(ShaderFile::read("ImageGeneratorVertex.cso"), true);
+	mVertexShader = mFactory->createVertexShader(ShaderFile::read("./Shader/ImageGeneratorVertex.cso"), true);
 
-	mPixelShader = mFactory->createPixelShader(ShaderFile::read("ImageGeneratorPixel.cso"), true);
+	mPixelShader = mFactory->createPixelShader(ShaderFile::read("./Shader/ImageGeneratorPixel.cso"), true);
 
 	mRasterizerState = mFactory->createRasterizerState();
 	mRasterizerState->enableDepth(false);

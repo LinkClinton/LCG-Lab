@@ -97,7 +97,7 @@ auto LineSeries::random_make(size_t size, real width_limit, real height_limit) -
 }
 
 auto LineSeries::read_from_file(const std::string& fileName) -> std::tuple<std::vector<LineSeries>, size_t, size_t> {
-	//1th line: (n) number of line series
+	//1th line: (n) number of line series width height
 	//2nd -> (1 + n) th : ni(number of lines) px0 py0 px1 py1 ... px(n + 1) py(n + 1) red green blue alpha
 
 	std::ifstream file;

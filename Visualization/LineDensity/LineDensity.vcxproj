@@ -153,6 +153,7 @@
     <ClInclude Include="LineSeries.hpp" />
     <ClInclude Include="SharedMacro.hpp" />
     <ClInclude Include="SharpGenerator.hpp" />
+    <ClInclude Include="TestUnit.hpp" />
     <ClInclude Include="Utility.hpp" />
   </ItemGroup>
   <ItemGroup>

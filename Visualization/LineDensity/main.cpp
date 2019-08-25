@@ -3,6 +3,7 @@
 #include "SharpGenerator.hpp"
 #include "ColorMapped.hpp"
 #include "CommandList.hpp"
+#include "TestUnit.hpp"
 
 #include <WindowsFactory.hpp>
 #include <WindowsGraphics.hpp>
@@ -21,7 +22,7 @@ public:
 			std::vector<vec4>({
 				vec4(0.0f,0.0f,0.0f,1.0f),
 				vec4(1.0f,0.0f,0.0f,1.0f)
-				}), 15.0f);
+				}), 15.f);
 	}
 
 	void run() {
@@ -222,7 +223,7 @@ int main(int argc, char** argv) {
 			}
 
 			static_cast<DensityContext*>(ctx)->mInputLineName = fileName;
-			
+
 			return true;
 		});
 	commandList.setCommand("-wl", [](void* ctx, const std::string& width)
@@ -319,6 +320,11 @@ int main(int argc, char** argv) {
 		});
 
 	if (commandList.execute(&context, CommandList::read_from_argv(argc, argv)) == false) return -1;
-	
+
 	context.run();
+
+	/*DGFramework dg = DGFramework("Density-Generator", 1280, 720);
+	dg.showWindow();
+	dg.runLoop();*/
+
 }
