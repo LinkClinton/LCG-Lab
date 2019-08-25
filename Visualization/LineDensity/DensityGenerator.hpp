@@ -13,6 +13,12 @@ public:
 	~DensityGenerator();
 
 	void run(real width = 2.0f);
+
+	auto data() const -> const std::vector<LineSeries>&;
+
+	auto width()const -> size_t;
+
+	auto height()const -> size_t;
 private:
 	Factory* mFactory;
 	

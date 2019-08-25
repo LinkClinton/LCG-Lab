@@ -186,3 +186,15 @@ void DensityGenerator::run(real width) {
 		graphics->drawIndexedInstanced(6, 1, 0, 0);
 	}
 }
+
+auto DensityGenerator::data() const -> const std::vector<LineSeries>& {
+	return mLineSeries;
+}
+
+auto DensityGenerator::width() const -> size_t {
+	return mWidth;
+}
+
+auto DensityGenerator::height() const -> size_t {
+	return mHeight;
+}

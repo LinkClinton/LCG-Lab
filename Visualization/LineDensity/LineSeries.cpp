@@ -1,6 +1,8 @@
 #include "LineSeries.hpp"
 
+#include <fstream>
 #include <random>
+#include <tuple>
 
 #undef min
 
@@ -88,4 +90,62 @@ auto LineSeries::random_make(size_t size, real width_limit, real height_limit) -
 	const std::uniform_real_distribution<real> gen_color(0.0f, 1.0f);
 
 	return { lines, vec4(gen_color(engine), gen_color(engine), gen_color(engine), 1.0f) };
+}
+
+auto LineSeries::read_from_file(const std::string& fileName) -> std::tuple<std::vector<LineSeries>, size_t, size_t> {
+	//1th line: (n) number of line series
+	//2nd -> (1 + n) th : ni(number of lines) px0 py0 px1 py1 ... px(n + 1) py(n + 1) red green blue alpha
+
+	std::ifstream file;
+	size_t nLineSeries = 0;
+	size_t width = 0;
+	size_t height = 0;
+
+	file.open(fileName);
+	assert(file.is_open() == true);
+
+	file >> nLineSeries >> width >> height;
+
+	std::vector<LineSeries> lineSeries(nLineSeries);
+	for (size_t index = 0; index < nLineSeries; index++) file >> lineSeries[index];
+
+	file.close();
+
+	return std::make_tuple(lineSeries, width, height);
+}
+
+void LineSeries::save_to_file(const std::string& fileName, std::tuple<const std::vector<LineSeries>&, size_t, size_t> data) {
+	std::ofstream file;
+
+	file.open(fileName);
+	assert(file.is_open() == true);
+
+	auto& lineSeries = std::get<0>(data);
+
+	file << lineSeries.size() << " " << std::get<1>(data) << " " << std::get<2>(data) << std::endl;
+	for (auto& lines : lineSeries) file << lines << std::endl;
+	
+	file.close();
+}
+
+std::istream& operator>>(std::istream& in, LineSeries& lineSeries) {
+	size_t nLines = 0;
+
+	//first, read the number of lines
+	in >> nLines;
+	//second, read the position of lines
+	lineSeries.mLinePoints.resize(nLines + 1);
+	for (size_t index = 0; index <= nLines; index++)
+		in >> lineSeries.mLinePoints[index].x >> lineSeries.mLinePoints[index].y;
+	//third, read the color of line series
+	return in >> lineSeries.mColor.r >> lineSeries.mColor.g >> lineSeries.mColor.b >> lineSeries.mColor.a;
+}
+
+std::ostream& operator<<(std::ostream& out, const LineSeries& lineSeries) {
+	//first, write the number of lines
+	out << lineSeries.size() << " ";
+	//second, write the position of lines
+	for (auto& point : lineSeries.mLinePoints) out << point.x << " " << point.y << " ";
+	//third, write the color of line series
+	return out << lineSeries.mColor.r << " " << lineSeries.mColor.g << " " << lineSeries.mColor.b << " " << lineSeries.mColor.a;
 }
