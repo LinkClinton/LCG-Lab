@@ -249,8 +249,8 @@ void VirtualMemoryManager::finalize()
 	delete mBlockCacheUsageStateTexture;
 	delete mBlockCacheMissArrayTexture;
 
-	mFactory->destoryUnorderedAccessUsage(mBlockCacheUsageStateUsage);
-	mFactory->destoryUnorderedAccessUsage(mBlockCacheMissArrayUsage);
+	mFactory->destroyUnorderedAccessUsage(mBlockCacheUsageStateUsage);
+	mFactory->destroyUnorderedAccessUsage(mBlockCacheMissArrayUsage);
 }
 
 void VirtualMemoryManager::mapAddress(int resolution, int blockID) 

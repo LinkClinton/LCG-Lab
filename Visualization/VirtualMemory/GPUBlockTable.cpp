@@ -14,8 +14,8 @@ GPUBlockTable::GPUBlockTable(Factory * factory, Graphics * graphics, const Size 
 
 GPUBlockTable::~GPUBlockTable()
 {
-	mFactory->destoryResourceUsage(mTextureUsage);
-	mFactory->destoryTexture3D(mBlockTableTexture);
+	mFactory->destroyResourceUsage(mTextureUsage);
+	mFactory->destroyTexture3D(mBlockTableTexture);
 }
 
 void GPUBlockTable::mallocAddress(VirtualLink * virtualLink)

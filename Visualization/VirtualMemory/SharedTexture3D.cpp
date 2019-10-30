@@ -14,8 +14,8 @@ SharedTexture3D::SharedTexture3D(int width, int height, int depth, PixelFormat p
 
 SharedTexture3D::~SharedTexture3D()
 {
-	mFactory->destoryTexture3D(mGpuTexture);
-	mFactory->destoryTexture3D(mCpuTexture);
+	mFactory->destroyTexture3D(mGpuTexture);
+	mFactory->destroyTexture3D(mCpuTexture);
 }
 
 void SharedTexture3D::update() const {

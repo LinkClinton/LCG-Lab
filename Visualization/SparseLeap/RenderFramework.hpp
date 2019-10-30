@@ -2,7 +2,7 @@
 
 #include <WindowsFramework.hpp>
 #include <Camera.hpp>
-#include <Cube.hpp>
+#include <Mesh.hpp>
 
 #include <glm\glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -70,8 +70,10 @@ private:
 
 	OccupancyHistogramTree* mOccupancyHistogramTree; //tree
 
-	Camera mCamera; //camera
-
+	glm::vec3 mPosition;
+	glm::vec3 mLookAt;
+	glm::vec3 mUp;
+	
 	glm::mat4 mMatrix[4]; //matrix data
 
 	std::vector<unsigned char> mVolumeData; //volume data
@@ -81,12 +83,12 @@ private:
 	/**
 	 * @brief update function
 	 */
-	virtual void update(void* sender)override;
+	virtual void update(void* sender, float deltaTime)override;
 
 	/**
 	 * @brief render function
 	 */
-	virtual void render(void* sender)override;
+	virtual void render(void* sender, float deltaTime)override;
 	
 	/**
 	 * @brief render current instance

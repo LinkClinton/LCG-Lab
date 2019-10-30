@@ -14,8 +14,8 @@ GPUPageDirectory::GPUPageDirectory(Factory * factory, Graphics * graphics, const
 
 GPUPageDirectory::~GPUPageDirectory()
 {
-	mFactory->destoryResourceUsage(mTextureUsage);
-	mFactory->destoryTexture3D(mPageDirectoryTexture);
+	mFactory->destroyResourceUsage(mTextureUsage);
+	mFactory->destroyTexture3D(mPageDirectoryTexture);
 }
 
 void GPUPageDirectory::mapAddress(int resolution, const glm::vec3 & position, BlockCache * blockCache)

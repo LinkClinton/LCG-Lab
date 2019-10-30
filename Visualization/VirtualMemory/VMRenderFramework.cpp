@@ -265,25 +265,25 @@ void VMRenderFramework::initializeRasterizerStage()
 
 void VMRenderFramework::destroyInputStage()
 {
-	//destory input layout
-	mFactory->destoryInputLayout(mInputLayout);
+	//destroy input layout
+	mFactory->destroyInputLayout(mInputLayout);
 
-	//destory vertex and index buffer
-	mFactory->destoryIndexBuffer(mIndexBuffer);
-	mFactory->destoryVertexbuffer(mVertexBuffer);
+	//destroy vertex and index buffer
+	mFactory->destroyIndexBuffer(mIndexBuffer);
+	mFactory->destroyVertexBuffer(mVertexBuffer);
 }
 
 void VMRenderFramework::destroyShaderStage()
 {
-	//destory shader
-	mFactory->destoryPixelShader(mPixelShader);
-	mFactory->destoryVertexShader(mVertexShader);
+	//destroy shader
+	mFactory->destroyPixelShader(mPixelShader);
+	mFactory->destroyVertexShader(mVertexShader);
 }
 
 void VMRenderFramework::destroyRasterizerStage()
 {
-	//destory rasterizer state
-	mFactory->destoryRasterizerState(mRasterizerState);
+	//destroy rasterizer state
+	mFactory->destroyRasterizerState(mRasterizerState);
 }
 
 VMRenderFramework::VMRenderFramework(const std::string &name, int width, int height) : WindowsFramework(name, width, height)
@@ -296,7 +296,7 @@ VMRenderFramework::VMRenderFramework(const std::string &name, int width, int hei
 
 VMRenderFramework::~VMRenderFramework()
 {
-	mFactory->destoryInput(mInput);
+	mFactory->destroyInput(mInput);
 
 #ifdef _SPARSE_LEAP
 	mSparseLeapManager->finalize();

@@ -62,27 +62,27 @@ void SparseLeapManager::initialize(const glm::vec3 &cube)
 
 void SparseLeapManager::finalize()
 {
-	mFactory->destoryVertexShader(mOccupancyGeometryVertexShader);
-	mFactory->destoryPixelShader(mOccupancyGeometryPixelShader);
+	mFactory->destroyVertexShader(mOccupancyGeometryVertexShader);
+	mFactory->destroyPixelShader(mOccupancyGeometryPixelShader);
 
-	mFactory->destoryTexture2D(mOccupancyGeometryRenderTexture);
+	mFactory->destroyTexture2D(mOccupancyGeometryRenderTexture);
 
-	mFactory->destoryTexture2D(mRaySegmentListCountTexture);
-	mFactory->destoryTexture3D(mRaySegmentListDepthTexture);
-	mFactory->destoryTexture3D(mRaySegmentListBoxTypeTexture);
-	mFactory->destoryTexture3D(mRaySegmentListEventTypeTexture);
+	mFactory->destroyTexture2D(mRaySegmentListCountTexture);
+	mFactory->destroyTexture3D(mRaySegmentListDepthTexture);
+	mFactory->destroyTexture3D(mRaySegmentListBoxTypeTexture);
+	mFactory->destroyTexture3D(mRaySegmentListEventTypeTexture);
 
-	mFactory->destoryRenderTarget(mOccupancyGeometryRenderTarget);
+	mFactory->destroyRenderTarget(mOccupancyGeometryRenderTarget);
 
-	mFactory->destoryUnorderedAccessUsage(mRaySegmentListCountUAVUsage);
-	mFactory->destoryUnorderedAccessUsage(mRaySegmentListDepthUAVUsage);
-	mFactory->destoryUnorderedAccessUsage(mRaySegmentListBoxTypeUAVUsage);
-	mFactory->destoryUnorderedAccessUsage(mRaySegmentListEventTypeUAVUsage);
+	mFactory->destroyUnorderedAccessUsage(mRaySegmentListCountUAVUsage);
+	mFactory->destroyUnorderedAccessUsage(mRaySegmentListDepthUAVUsage);
+	mFactory->destroyUnorderedAccessUsage(mRaySegmentListBoxTypeUAVUsage);
+	mFactory->destroyUnorderedAccessUsage(mRaySegmentListEventTypeUAVUsage);
 
-	mFactory->destoryResourceUsage(mRaySegmentListCountSRVUsage);
-	mFactory->destoryResourceUsage(mRaySegmentListDepthSRVUsage);
-	mFactory->destoryResourceUsage(mRaySegmentListBoxTypeSRVUsage);
-	mFactory->destoryResourceUsage(mRaySegmentListEventTypeSRVUsage);
+	mFactory->destroyResourceUsage(mRaySegmentListCountSRVUsage);
+	mFactory->destroyResourceUsage(mRaySegmentListDepthSRVUsage);
+	mFactory->destroyResourceUsage(mRaySegmentListBoxTypeSRVUsage);
+	mFactory->destroyResourceUsage(mRaySegmentListEventTypeSRVUsage);
 
 	Utility::Delete(mOccupancyHistogramTree);
 }

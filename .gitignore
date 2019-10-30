@@ -262,8 +262,6 @@ __pycache__/
 
 # Self
 
-ThirdParty/
-*.raw
 /Visualization/VirtualMemory/volume
 /Visualization/VirtualMemory/data_gen.cpp
 /Visualization/VirtualMemory/data_gen

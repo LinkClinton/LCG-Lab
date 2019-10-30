@@ -2,30 +2,19 @@
 
 #include "Helper.hpp"
 
-void RenderFramework::update(void * sender)
+void RenderFramework::update(void * sender, float deltaTime)
 {
-	//rotate the camera, because rotate the object is not easy(bug of texcoord)
-	auto newCameraPosition = glm::vec4(mCamera.getPosition(), 1.0f) * glm::rotate(glm::mat4(1),
-		glm::pi<float>() * 0.5f * 0.01f, glm::vec3(0, 0, 1));
-
-	mCamera.setPosition(newCameraPosition);
-
-	//update camera matrix and position
-	mMatrix[1] = mCamera.getMatrix();
-	mMatrix[3][0] = glm::vec4(mCamera.getPosition(), 1.0f);
-	mMatrixBuffer->update(&mMatrix[0]);
-
 	mOccupancyGeometry.clear();
 
 	//new occupancy geometry
-	mOccupancyHistogramTree->setEyePosition(mCamera.getPosition());
+	mOccupancyHistogramTree->setEyePosition(mPosition);
 	mOccupancyHistogramTree->getOccupancyGeometry(mOccupancyGeometry);
 	
 	//new ray segment list
 	renderRaySegmentList();
 }
 
-void RenderFramework::render(void * sender)
+void RenderFramework::render(void * sender, float deltaTime)
 {
 	float rgba[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
@@ -183,25 +172,25 @@ void RenderFramework::buildState()
 
 void RenderFramework::buildCamera()
 {
-	mCamera.setPosition(glm::vec3(0.0f, -5.0f, 0.0f));
-	mCamera.setLookAt(glm::vec3(0.0f, 0.0f, 0.0f));
-	mCamera.setUp(glm::vec3(0.0f, 0.0f, -1.0f));
+	mPosition = glm::vec3(0.0f, -5.0f, 0.0f);
+	mLookAt = glm::vec3(0.0f, 0.0f, 0.0f);
+	mUp = glm::vec3(0.0f, 0.0f, -1.0f);
 }
 
 void RenderFramework::buildBuffer()
 {
-	mCubeVertexBuffer = mFactory->createVertexBuffer(sizeof(CubeVertex) * 8, sizeof(CubeVertex));
-	mCubeIndexBuffer = mFactory->createIndexBuffer(sizeof(unsigned int) * 36);
-	mMatrixBuffer = mFactory->createConstantBuffer(sizeof(mMatrix));
-	mInstanceBuffer = mFactory->createConstantBuffer(sizeof(InstanceData) * MAX_INSTANCE_PER_DRAW);
+	mCubeVertexBuffer = mFactory->createVertexBuffer(sizeof(Mesh::Vertex) * 8, sizeof(Mesh::Vertex), ResourceInfo::VertexBuffer());
+	mCubeIndexBuffer = mFactory->createIndexBuffer(sizeof(unsigned int) * 36, ResourceInfo::IndexBuffer());
+	mMatrixBuffer = mFactory->createConstantBuffer(sizeof(mMatrix), ResourceInfo::ConstantBuffer());
+	mInstanceBuffer = mFactory->createConstantBuffer(sizeof(InstanceData) * MAX_INSTANCE_PER_DRAW, ResourceInfo::ConstantBuffer());
 
 	mMatrix[0] = glm::scale(glm::mat4(1), glm::vec3(3, 3, 3));
-	mMatrix[1] = mCamera.getMatrix();
+	mMatrix[1] = glm::lookAt(mPosition, mLookAt, mUp);
 	mMatrix[2] = glm::perspectiveFov(glm::pi<float>() * 0.55f, (float)mWidth, (float)mHeight, 1.0f, 100.0f);
-	mMatrix[3][0] = glm::vec4(mCamera.getPosition(), 1.0f);
+	mMatrix[3][0] = glm::vec4(mPosition, 0.0f);
 
-	mCubeVertexBuffer->update(&Cube::GetVertics(1.0f, 1.0f, 1.0f)[0]);
-	mCubeIndexBuffer->update(&Cube::GetIndices()[0]);
+	mCubeVertexBuffer->update(Mesh::Cube(glm::vec3(1.0f)).vertices().data());
+	mCubeIndexBuffer->update(Mesh::Cube(glm::vec3(1.0f)).indices().data());
 	mMatrixBuffer->update(mMatrix);
 }
 
@@ -218,10 +207,14 @@ void RenderFramework::buildTexture()
 {
 	mOccupancyGeometryRenderTexture = mFactory->createTexture2D(mWidth, mHeight, PixelFormat::R8G8B8A8Unknown, BindUsage::RenderTargetUsage);
 
-	mRaySegmentListCountTexture = mFactory->createTexture2D(mWidth, mHeight, PixelFormat::R32Uint, BindUsage::NoneUsage);
-	mRaySegmentListDepthTexture = mFactory->createTexture3D(mWidth, mHeight, MAX_RAYSEGMENT, PixelFormat::R32Float, BindUsage::NoneUsage);
-	mRaySegmentListBoxTypeTexture = mFactory->createTexture3D(mWidth, mHeight, MAX_RAYSEGMENT, PixelFormat::R8Uint, BindUsage::NoneUsage);
-	mRaySegmentListEventTypeTexture = mFactory->createTexture3D(mWidth, mHeight, MAX_RAYSEGMENT, PixelFormat::R8Uint, BindUsage::NoneUsage);
+	const auto resourceInfo = ResourceInfo(BindUsage(
+		static_cast<unsigned int>(BindUsage::ShaderResourceUsage) |
+		static_cast<unsigned int>(BindUsage::UnorderedAccessUsage)));
+
+	mRaySegmentListCountTexture = mFactory->createTexture2D(mWidth, mHeight, PixelFormat::R32Uint, resourceInfo);
+	mRaySegmentListDepthTexture = mFactory->createTexture3D(mWidth, mHeight, MAX_RAYSEGMENT, PixelFormat::R32Float, resourceInfo);
+	mRaySegmentListBoxTypeTexture = mFactory->createTexture3D(mWidth, mHeight, MAX_RAYSEGMENT, PixelFormat::R8Uint, resourceInfo);
+	mRaySegmentListEventTypeTexture = mFactory->createTexture3D(mWidth, mHeight, MAX_RAYSEGMENT, PixelFormat::R8Uint, resourceInfo);
 
 	mOccupancyGeometryRenderTarget = mFactory->createRenderTarget(mOccupancyGeometryRenderTexture, PixelFormat::R8G8B8A8Unknown);
 
@@ -238,7 +231,7 @@ void RenderFramework::buildTexture()
 
 void RenderFramework::buildVolumeData()
 {
-	std::ifstream file("Teddybear.raw", std::ios::ate);
+	std::ifstream file("Teddybear.raw", std::ios::ate | std::ios::binary);
 
 	size_t fileSize = (size_t)file.tellg();
 
@@ -286,14 +279,14 @@ void RenderFramework::buildVolumeData()
 	}
 
 	mOccupancyHistogramTree->buildVirtualTree();
-	mOccupancyHistogramTree->setEyePosition(mCamera.getPosition());
+	mOccupancyHistogramTree->setEyePosition(mPosition);
 	mOccupancyHistogramTree->getOccupancyGeometry(mOccupancyGeometry);
 
 	//build volume texture
-	mVolumeTexture = mFactory->createTexture3D(width, height, depth, PixelFormat::R8Unknown);
+	mVolumeTexture = mFactory->createTexture3D(width, height, depth, PixelFormat::R8Unknown, ResourceInfo::ShaderResource());
 	mVolumeTextureUsage = mFactory->createResourceUsage(mVolumeTexture, PixelFormat::R8Unknown);
 
-	mVolumeTexture->update(&mVolumeData[0]);
+	mVolumeTexture->update(&mVolumeData[0], 0, 0, 0, width, height, depth);
 }
 
 void RenderFramework::buildInputLayout()
@@ -306,8 +299,8 @@ void RenderFramework::buildInputLayout()
 
 void RenderFramework::destoryState()
 {
-	mFactory->destoryRasterizerState(mRasterizerState);
-	mFactory->destoryDepthStencilState(mDepthStencilState);
+	mFactory->destroyRasterizerState(mRasterizerState);
+	mFactory->destroyDepthStencilState(mDepthStencilState);
 }
 
 void RenderFramework::destoryCamera()
@@ -316,54 +309,54 @@ void RenderFramework::destoryCamera()
 
 void RenderFramework::destoryBuffer()
 {
-	mFactory->destoryVertexbuffer(mCubeVertexBuffer);
-	mFactory->destoryIndexBuffer(mCubeIndexBuffer);
-	mFactory->destoryConstantBuffer(mMatrixBuffer);
-	mFactory->destoryConstantBuffer(mInstanceBuffer);
+	mFactory->destroyVertexBuffer(mCubeVertexBuffer);
+	mFactory->destroyIndexBuffer(mCubeIndexBuffer);
+	mFactory->destroyConstantBuffer(mMatrixBuffer);
+	mFactory->destroyConstantBuffer(mInstanceBuffer);
 }
 
 void RenderFramework::destoryShader()
 {
-	mFactory->destoryVertexShader(mOccupancyGeometryVertexShader);
-	mFactory->destoryPixelShader(mOccupancyGeometryPixelShader);
+	mFactory->destroyVertexShader(mOccupancyGeometryVertexShader);
+	mFactory->destroyPixelShader(mOccupancyGeometryPixelShader);
 
-	mFactory->destoryVertexShader(mRayCastRenderingVertexShader);
-	mFactory->destoryPixelShader(mRayCastRenderingPixelShader);
+	mFactory->destroyVertexShader(mRayCastRenderingVertexShader);
+	mFactory->destroyPixelShader(mRayCastRenderingPixelShader);
 }
 
 void RenderFramework::destoryTexture()
 {
-	mFactory->destoryTexture2D(mOccupancyGeometryRenderTexture);
+	mFactory->destroyTexture2D(mOccupancyGeometryRenderTexture);
 
-	mFactory->destoryTexture2D(mRaySegmentListCountTexture);
-	mFactory->destoryTexture3D(mRaySegmentListDepthTexture);
-	mFactory->destoryTexture3D(mRaySegmentListBoxTypeTexture);
-	mFactory->destoryTexture3D(mRaySegmentListEventTypeTexture);
+	mFactory->destroyTexture2D(mRaySegmentListCountTexture);
+	mFactory->destroyTexture3D(mRaySegmentListDepthTexture);
+	mFactory->destroyTexture3D(mRaySegmentListBoxTypeTexture);
+	mFactory->destroyTexture3D(mRaySegmentListEventTypeTexture);
 
-	mFactory->destoryRenderTarget(mOccupancyGeometryRenderTarget);
+	mFactory->destroyRenderTarget(mOccupancyGeometryRenderTarget);
 
-	mFactory->destoryUnorderedAccessUsage(mRaySegmentListCountUAVUsage);
-	mFactory->destoryUnorderedAccessUsage(mRaySegmentListDepthUAVUsage);
-	mFactory->destoryUnorderedAccessUsage(mRaySegmentListBoxTypeUAVUsage);
-	mFactory->destoryUnorderedAccessUsage(mRaySegmentListEventTypeUAVUsage);
+	mFactory->destroyUnorderedAccessUsage(mRaySegmentListCountUAVUsage);
+	mFactory->destroyUnorderedAccessUsage(mRaySegmentListDepthUAVUsage);
+	mFactory->destroyUnorderedAccessUsage(mRaySegmentListBoxTypeUAVUsage);
+	mFactory->destroyUnorderedAccessUsage(mRaySegmentListEventTypeUAVUsage);
 
-	mFactory->destoryResourceUsage(mRaySegmentListCountSRVUsage);
-	mFactory->destoryResourceUsage(mRaySegmentListDepthSRVUsage);
-	mFactory->destoryResourceUsage(mRaySegmentListBoxTypeSRVUsage);
-	mFactory->destoryResourceUsage(mRaySegmentListEventTypeSRVUsage);
+	mFactory->destroyResourceUsage(mRaySegmentListCountSRVUsage);
+	mFactory->destroyResourceUsage(mRaySegmentListDepthSRVUsage);
+	mFactory->destroyResourceUsage(mRaySegmentListBoxTypeSRVUsage);
+	mFactory->destroyResourceUsage(mRaySegmentListEventTypeSRVUsage);
 }
 
 void RenderFramework::destoryVolumeData()
 {
 	Utility::Delete(mOccupancyHistogramTree);
 	
-	mFactory->destoryTexture3D(mVolumeTexture);
-	mFactory->destoryResourceUsage(mVolumeTextureUsage);
+	mFactory->destroyTexture3D(mVolumeTexture);
+	mFactory->destroyResourceUsage(mVolumeTextureUsage);
 }
 
 void RenderFramework::destoryInputLayout()
 {
-	mFactory->destoryInputLayout(mInputLayout);
+	mFactory->destroyInputLayout(mInputLayout);
 }
 
 RenderFramework::RenderFramework(const std::string & name, int width, int height)

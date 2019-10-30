@@ -30,8 +30,8 @@ GPUPageTable::GPUPageTable(Factory * factory, Graphics * graphics, const Size & 
 
 GPUPageTable::~GPUPageTable()
 {
-	mFactory->destoryResourceUsage(mTextureUsage);
-	mFactory->destoryTexture3D(mPageTableTexture);
+	mFactory->destroyResourceUsage(mTextureUsage);
+	mFactory->destroyTexture3D(mPageTableTexture);
 }
 
 void GPUPageTable::mallocAddress(VirtualLink * virtualLink)
@@ -55,7 +55,7 @@ void GPUPageTable::clearUpAddress(const VirtualAddress & address)
 	//clear page cache(GPU version, texture)
 	const auto size = PageCache::getPageCacheSize();
 	const auto startRange = Helper::multiple(size, address);
-	const auto textureSize = size.X * size.Y * size.Z * Utility::computePixelFomratBytes(mPageTableTexture->getPixelFormat());
+	const auto textureSize = size.X * size.Y * size.Z * Utility::computePixelFormatBytes(mPageTableTexture->getPixelFormat());
 	
 	//reset the clear memory(all zero)
 	if (mPageCacheClearMemory.size() != size_t(textureSize)) mPageCacheClearMemory.resize(textureSize);
