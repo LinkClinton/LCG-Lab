@@ -13,7 +13,7 @@ void VirtualMemoryManager::analyseFile(const std::string & fileName)
 
 	mFile.sync_with_stdio(false);
 	mFile.open(fileName, std::ios::binary);
-	mFileSize = Size(800, 800, 800);
+	mFileSize = Size(128, 128, 62);
 }
 
 void VirtualMemoryManager::mapAddressToGPU(int resolution, const glm::vec3 & position, BlockCache * block) const {
